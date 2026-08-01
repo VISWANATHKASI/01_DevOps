@@ -1,0 +1,42 @@
+
+Linux is a free, open-source operating system kernel that serves as the foundation for many complete operating systems called Linux distributions (or "distros"). It was created in 1991 by Linus Torvalds.
+
+
+
+Think of it this way:
+====================
+Kernel: The core software that manages your computer's hardware (CPU, memory, storage, devices).
+Operating system: The kernel plus tools, libraries, desktop environments, and applications that make a usable system.
+
+
+
+Popular Linux distributions include:
+====================================
+Ubuntu – beginner-friendly and widely used.
+Fedora Project – features newer software and is popular with developers.
+Debian Project – known for stability.
+Arch Linux – highly customizable for advanced users.
+Linux Mint – designed to be easy for people switching from Windows.
+
+
+
+Why people use Linux
+====================
+Free and open source:        Anyone can inspect, modify, and distribute the source code.
+Secure:                      Strong permissions and a large open-source community help identify and fix issues.
+Stable:                      Many servers run Linux because it can operate reliably for long periods.
+Customizable:                You can choose different desktop environments, software, and system configurations.
+Efficient:                   It can run well on both modern and older hardware.
+
+
+
+Linux vs. Windows vs. macOS
+===========================
+| Feature       | Linux                      | Windows                       | macOS                                 |
+| ------------- | -------------------------- | ----------------------------- | ------------------------------------- |
+| Cost          | Usually free               | Paid license                  | Included with Apple hardware          |
+| Source code   | Open source                | Proprietary                   | Mostly proprietary                    |
+| Customization | Very high                  | Moderate                      | Limited                               |
+| Software      | Huge open-source ecosystem | Excellent commercial software | Strong creative and productivity apps |
+| Gaming        | Improving rapidly          | Best overall support          | Limited compared to Windows           |
+
