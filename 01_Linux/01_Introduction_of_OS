@@ -19,8 +19,10 @@ Without an OS, your computer cannot run applications.
 
 Types of Operating Systems
 ==========================
-Desktop OS ==>	Windows, Linux, macOS
-Mobile OS	 ==>  Android, iOS
-Server OS	 ==>  Ubuntu Server, Red Hat Enterprise Linux, Windows Server
-Real-Time OS ==> 	VxWorks, QNX
-Embedded OS	 ==> FreeRTOS
+| Type         | Example                                                 |
+| ------------ | ------------------------------------------------------- |
+| Desktop OS   | Windows, Linux, macOS                                   |
+| Mobile OS    | Android, iOS                                            |
+| Server OS    | Ubuntu Server, Red Hat Enterprise Linux, Windows Server |
+| Real-Time OS | VxWorks, QNX                                            |
+| Embedded OS  | FreeRTOS                                                |
