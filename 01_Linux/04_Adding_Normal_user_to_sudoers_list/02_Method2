@@ -1,0 +1,11 @@
+
+# Edit the sudoers file
+sudo visudo
+
+# Add this line:
+viswa ALL=(ALL) ALL
+
+# Verify , After logging back in as viswa:
+sudo whoami
+
+# Output should be: root
