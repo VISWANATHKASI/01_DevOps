@@ -1,0 +1,10 @@
+
+| File System | Description                                                  |
+| ----------- | ------------------------------------------------------------ |
+| **ext4**    | Default Linux file system on many distributions              |
+| **XFS**     | High-performance filesystem, common on RHEL and Amazon Linux |
+| **Btrfs**   | Advanced filesystem with snapshots and compression           |
+| **FAT32**   | Compatible with many operating systems, limited file size    |
+| **NTFS**    | Common on Windows systems                                    |
+| **NFS**     | Network File System for shared storage                       |
+| **EFS**     | Managed network file system provided by AWS                  |
