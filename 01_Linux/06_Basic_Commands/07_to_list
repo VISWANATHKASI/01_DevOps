@@ -8,6 +8,12 @@ ls /var   --> to list the directories and files in var directory
 ls -l   --> to list in long format
 
 
+ls -a   -->  Show all files, including hidden files (starting with .).
+
+
+ls -lh  -->  Long listing with human-readable file sizes (KB, MB, GB).
+
+
 ls -t   --> to list in timely order
 
 
@@ -18,3 +24,16 @@ ls -ltr  --> to list in long, timely and reverse order
 
 
 ll --> long list
+
+
+ls -R  --> Recursively list all directories and subdirectories.
+
+
+ls -d */ --> List only directories.
+
+
+ls -1  -->  Display one file per line.
+
+
+ls -lS   --> sort by size
+
