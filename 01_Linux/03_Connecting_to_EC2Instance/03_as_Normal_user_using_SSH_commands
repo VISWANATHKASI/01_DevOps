@@ -1,0 +1,25 @@
+
+Copy the authorized_keys from ec2-user to created user (viswa)
+==============================================================
+
+sudo mkdir -p /home/viswa/.ssh
+sudo cp /home/ec2-user/.ssh/authorized_keys /home/viswa/.ssh/
+sudo chown -R viswa:viswa /home/viswa/.ssh
+sudo chmod 700 /home/viswa/.ssh
+sudo chmod 600 /home/viswa/.ssh/authorized_keys
+
+
+
+To connect:
+===========
+ssh -i my-key.pem viswa@54.210.100.25
+
+
+whoami   --> to verify the user
+
+
+
+
+To disconnect:
+==============
+exit  or  ctrl+D   
