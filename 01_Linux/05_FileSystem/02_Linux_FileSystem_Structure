@@ -1,0 +1,23 @@
+
+
+Linux uses a hierarchical directory structure that starts from the root directory (/).
+
+/
+├── bin
+├── boot
+├── dev
+├── etc
+├── home
+├── lib
+├── media
+├── mnt
+├── opt
+├── proc
+├── root
+├── run
+├── sbin
+├── srv
+├── sys
+├── tmp
+├── usr
+└── var
