@@ -1,0 +1,9 @@
+
+# Add viswa to the sudo group (recommended)
+sudo usermod -aG wheel viswa
+
+# Verify:
+groups viswa
+
+# You should see: viswa : viswa wheel
+
