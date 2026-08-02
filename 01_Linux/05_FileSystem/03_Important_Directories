@@ -1,0 +1,18 @@
+
+| Directory | Purpose                                                |
+| --------- | ------------------------------------------------------ |
+| `/`       | Root directory (top of the filesystem)                 |
+| `/home`   | Home directories for users                             |
+| `/root`   | Home directory of the root user                        |
+| `/etc`    | System configuration files                             |
+| `/var`    | Variable data (logs, caches, mail, databases)          |
+| `/tmp`    | Temporary files                                        |
+| `/opt`    | Optional third-party software                          |
+| `/usr`    | User applications and libraries                        |
+| `/bin`    | Essential user commands                                |
+| `/sbin`   | System administration commands                         |
+| `/dev`    | Device files                                           |
+| `/proc`   | Virtual filesystem with process and kernel information |
+| `/boot`   | Bootloader and kernel files                            |
+| `/mnt`    | Temporary mount point                                  |
+| `/media`  | Removable media (USB, CD-ROM)                          |
