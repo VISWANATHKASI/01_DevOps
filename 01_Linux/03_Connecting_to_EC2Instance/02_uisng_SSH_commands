@@ -1,5 +1,12 @@
 
-
+To connect:
+==========
 cd Downloads
 chmod 400 chandra-nv.pem
 ssh -i chandra-nv.pem ec2-user@98.81.155.74
+
+
+
+To Disconnect:
+==============
+exit   or   ctrl + D
