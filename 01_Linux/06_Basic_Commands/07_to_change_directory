@@ -1,0 +1,13 @@
+
+
+cd /  --> to change directory to root directory
+
+
+cd /var   --> to change directory to var dirctory
+
+
+cd ..      --> to go 1 directory back
+
+
+cd ../../   --> to go 2 directories back
+
