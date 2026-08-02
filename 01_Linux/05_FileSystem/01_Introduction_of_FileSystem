@@ -1,0 +1,21 @@
+
+
+A file system is the method an operating system uses to store, organize, retrieve, and manage files and directories on a storage device such as a hard disk, SSD, or USB drive.
+
+File system → The catalog system that tells you where every book is located.
+
+Without a file system, the operating system would not know where files are stored or how to retrieve them.
+
+
+
+
+What does a file system do?
+===========================
+A file system is responsible for:
+
+> Storing files on disk.
+> Organizing files into directories.
+> Managing file names and paths.
+> Controlling permissions and ownership.
+> Tracking free and used disk space.
+> Retrieving files efficiently.
