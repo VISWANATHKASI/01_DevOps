@@ -7,3 +7,19 @@ groups viswa
 
 # You should see: viswa : viswa wheel
 
+
+
+
+
+To remove viswa from sudo group
+===============================
+
+# you can remove viswa from the wheel group with:
+sudo gpasswd -d viswa wheel
+
+# Example output: Removing user viswa from group wheel
+
+# Verify that viswa is no longer in the wheel group:
+groups viswa
+
+# Expected output: any other groups except wheel
