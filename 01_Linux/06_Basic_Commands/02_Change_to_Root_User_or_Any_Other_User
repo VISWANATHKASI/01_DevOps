@@ -3,8 +3,8 @@
 To Login as root user
 =====================
 sudo -i  --> to change to root user
-sudo -s
-sudo su
+sudo -s  --> it still be there are /home/ec2-user
+sudo su  --> it still be there are /home/ec2-user 
 
 
 To Login as viswa user
