@@ -1,11 +1,20 @@
 
-# Edit the sudoers file
-sudo visudo
+# To add viswa to sudoers list
+============================
+Better practice: use /etc/sudoers.d/
+Instead of editing /etc/sudoers directly, it's recommended to create a separate file:
 
-# Add this line:
-viswa ALL=(ALL) ALL
+echo "viswa ALL=(ALL) ALL" | sudo tee /etc/sudoers.d/viswa
+sudo chmod 440 /etc/sudoers.d/viswa
 
-# Verify , After logging back in as viswa:
-sudo whoami
 
-# Output should be: root
+
+
+
+
+
+To remove sudo access later, simply delete the file:
+===================================================
+sudo rm /etc/sudoers.d/viswa
+
+This approach is safer and easier to manage than modifying the main /etc/sudoers file.
