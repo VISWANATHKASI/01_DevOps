@@ -1,0 +1,28 @@
+
+ex:
+===
+-rw-r--r-- 1 viswa developers 2048 Aug  2 18:30 file.txt
+
+| Property                | Example       | Description                                                                        |
+| ----------------------- | ------------- | ---------------------------------------------------------------------------------- |
+| File Type & Permissions | `-rw-r--r--`  | Indicates whether it's a file or directory and the read/write/execute permissions. |
+| Hard Link Count         | `1`           | Number of hard links pointing to the file.                                         |
+| Owner                   | `viswa`       | User who owns the file.                                                            |
+| Group                   | `developers`  | Group that owns the file.                                                          |
+| Size                    | `2048`        | File size in bytes.                                                                |
+| Modified Date           | `Aug 2 18:30` | Last modification time.                                                            |
+| Name                    | `file.txt`    | File or directory name.                                                            |
+
+
+
+The first character indicates the type.
+
+| Symbol | Type              |
+| ------ | ----------------- |
+| `-`    | Regular file      |
+| `d`    | Directory         |
+| `l`    | Symbolic link     |
+| `c`    | Character device  |
+| `b`    | Block device      |
+| `p`    | Named pipe (FIFO) |
+| `s`    | Socket            |
