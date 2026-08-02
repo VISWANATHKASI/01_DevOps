@@ -1,0 +1,12 @@
+
+Absolute Path: An absolute path is the complete path to a file or directory starting from the root directory (/).
+=============
+ex: /home/viswa/Documents/
+
+
+
+
+Relative Path: A relative path is the path relative to your current working directory.
+==============
+Current working directory: /home/viswa
+ex: Documents   --> this is relative path
