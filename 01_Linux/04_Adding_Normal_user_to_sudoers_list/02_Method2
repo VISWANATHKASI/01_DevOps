@@ -33,7 +33,13 @@ sudo rm /etc/sudoers.d/viswa
 This approach is safer and easier to manage than modifying the main /etc/sudoers file.
 
 
+# verify the configuration
+==========================
 
+sudo visudo -c
+
+# Expected output: without below
+/etc/sudoers.d/viswa: parsed OK
 
 
 
