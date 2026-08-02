@@ -1,0 +1,24 @@
+
+
+To Login as root user
+=====================
+sudo -i  --> to change to root user
+sudo -s
+sudo su
+
+
+To Login as viswa user
+======================
+su - viswa   --> to go to specific user
+
+
+
+To Login as jenkins user with shell
+===================================
+su -s /bin/bash jenkins
+
+
+
+To exit of current user
+=======================
+exit   --> to come out of root user
