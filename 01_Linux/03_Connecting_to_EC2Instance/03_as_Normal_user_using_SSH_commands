@@ -1,7 +1,57 @@
 
-Copy the authorized_keys from ec2-user to created user (viswa)
-==============================================================
+Method:1 : Connect using username and password
+==============================================
 
+Security recommendation : 
+=======================
+For EC2 instances, SSH key authentication is the recommended and more secure method. 
+Password authentication is generally disabled by default because it is more vulnerable to brute-force attacks
+If you enable password authentication, it's a good idea to restrict SSH access in your security group to only your own public IP address instead of allowing access from everywhere (0.0.0.0/0).
+
+
+
+# Edit the SSH configuration:
+sudo vi /etc/ssh/sshd_config
+
+
+# Ensure these settings are present:
+PasswordAuthentication yes
+PubkeyAuthentication yes
+
+
+# Restart the SSH service:
+sudo systemctl restart sshd
+
+
+# Make sure the viswa account has a password:
+sudo passwd viswa
+
+
+
+#To Connect:
+===========
+ssh viswa@54.210.100.25
+
+# When prompted: viswa@54.210.100.25's password: Enter the password (it won't be displayed as you type) and press Enter.
+
+
+whoami   --> to verify the user
+
+
+To disconnect:
+==============
+exit  or  ctrl+D   
+
+
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+Method:2 : Connect using username and pem (private key)
+=======================================================
+
+
+# Copy the authorized_keys from ec2-user to created user (viswa)
 sudo mkdir -p /home/viswa/.ssh
 sudo cp /home/ec2-user/.ssh/authorized_keys /home/viswa/.ssh/
 sudo chown -R viswa:viswa /home/viswa/.ssh
@@ -16,7 +66,6 @@ ssh -i my-key.pem viswa@54.210.100.25
 
 
 whoami   --> to verify the user
-
 
 
 
