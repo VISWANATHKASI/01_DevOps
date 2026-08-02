@@ -1,4 +1,17 @@
 
+# Verify the wheel group is enabled
+grep wheel /etc/sudoers
+
+# Typical working output:
+%wheel ALL=(ALL) ALL
+
+or
+
+# %wheel ALL=(ALL) ALL  --> then uncomment it.
+
+
+
+
 # Add viswa to the sudo group (recommended)
 sudo usermod -aG wheel viswa
 
