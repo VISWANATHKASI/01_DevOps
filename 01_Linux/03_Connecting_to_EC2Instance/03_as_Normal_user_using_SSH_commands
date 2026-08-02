@@ -62,7 +62,7 @@ sudo chmod 600 /home/viswa/.ssh/authorized_keys
 
 To connect:
 ===========
-ssh -i my-key.pem viswa@54.210.100.25
+ssh -i chandra-nv.pem ec2-user@98.81.155.74
 
 
 whoami   --> to verify the user
