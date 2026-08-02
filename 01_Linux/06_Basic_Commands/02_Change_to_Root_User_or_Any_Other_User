@@ -9,13 +9,13 @@ sudo su
 
 To Login as viswa user
 ======================
-su - viswa   --> to go to specific user
+su - viswa   --> to go to specific user, it will go to /home/viswa
 
 
 
 To Login as jenkins user with shell
 ===================================
-su -s /bin/bash jenkins
+su -s /bin/bash jenkins     --> let say you executed this command as ec2-user, it won't direct to /home/viswa, it still be there are /home/ec2-user
 
 
 
