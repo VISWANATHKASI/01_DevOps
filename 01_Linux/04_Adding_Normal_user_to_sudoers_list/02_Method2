@@ -14,9 +14,12 @@ sudo chmod 440 /etc/sudoers.d/viswa
 
 sudo visudo -c
 
-
+# Expected output:
 /etc/sudoers: parsed OK
 /etc/sudoers.d/viswa: parsed OK
+
+
+
 
 
 
@@ -28,3 +31,80 @@ To remove sudo access later, simply delete the file:
 sudo rm /etc/sudoers.d/viswa
 
 This approach is safer and easier to manage than modifying the main /etc/sudoers file.
+
+
+
+
+
+
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+Create one file containing multiple users
+=========================================
+
+# Create a single file:
+sudo vi /etc/sudoers.d/devops-users
+
+# Add:
+viswa ALL=(ALL) ALL
+john  ALL=(ALL) ALL
+alice ALL=(ALL) ALL
+
+# Set permissions:
+sudo chmod 440 /etc/sudoers.d/devops-users
+
+# Verify the configuration
+sudo visudo -c
+
+# Expected output:
+/etc/sudoers: parsed OK
+/etc/sudoers.d/viswa: parsed OK
+/etc/sudoers.d/john: parsed OK
+/etc/sudoers.d/alice: parsed OK
+
+# or, if using a single file:
+/etc/sudoers.d/devops-users: parsed OK
+
+
+
+
+
+
+
+
+
+To remove one user's access later, edit the file and delete that user's line.
+============================================================================
+
+sudo vi /etc/sudoers.d/devops-users
+
+
+remove:
+=======
+john  ALL=(ALL) ALL
+
+
+# Set permissions:
+sudo chmod 440 /etc/sudoers.d/devops-users
+
+# Verify the configuration
+sudo visudo -c
+
+# Expected output:
+/etc/sudoers: parsed OK
+/etc/sudoers.d/viswa: parsed OK
+/etc/sudoers.d/alice: parsed OK
+
+# or, if using a single file:
+/etc/sudoers.d/devops-users: parsed OK
+
+
+
+
+
+
+
+
+
