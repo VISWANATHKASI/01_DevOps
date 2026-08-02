@@ -1,0 +1,20 @@
+
+ls   --> to list the directories and files  in current directory
+
+
+ls /var   --> to list the directories and files in var directory
+
+
+ls -l   --> to list in long format
+
+
+ls -t   --> to list in timely order
+
+
+ls -r   --> to list in reverse order
+
+
+ls -ltr  --> to list in long, timely and reverse order
+
+
+ll --> long list
