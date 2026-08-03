@@ -3,8 +3,8 @@
 To Login as root user
 =====================
 sudo -i  --> to change to root user
-sudo -s  --> it still be there are /home/ec2-user
-sudo su  --> it still be there are /home/ec2-user 
+sudo -s  --> let say you executed this command as ec2-user, it won't direct to /root, it still be there at /home/ec2-user
+sudo su  --> let say you executed this command as ec2-user, it won't direct to /root, it still be there at /home/ec2-user 
 
 
 To Login as viswa user
@@ -15,7 +15,7 @@ su - viswa   --> to go to specific user, it will go to /home/viswa
 
 To Login as jenkins user with shell
 ===================================
-su -s /bin/bash jenkins     --> let say you executed this command as ec2-user, it won't direct to /home/viswa, it still be there are /home/ec2-user
+su -s /bin/bash jenkins     --> let say you executed this command as ec2-user, it won't direct to /home/viswa, it still be there at /home/ec2-user
 
 
 
