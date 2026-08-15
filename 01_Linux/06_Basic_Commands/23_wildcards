@@ -3,15 +3,24 @@ wildcards are special characters used by the shell to match filenames and paths.
 
 
 
-| Wildcard / Character | Meaning                                                       | Example         |
-| -------------------- | ------------------------------------------------------------- | --------------- |
-| `*`                  | Matches zero or more characters                               | `*.txt`         |
-| `?`                  | Matches exactly one character                                 | `file?.txt`     |
-| `[ ]`                | Matches one character from a set/range                        | `file[123].txt` |
-| `[! ]` / `[^ ]`      | Matches one character **NOT** in the set                      | `file[!0].txt`  |
-| `\`                  | Escape character; treats the next special character literally | `my\ file.txt`  |
-| `^`                  | Beginning of the line                                         | `^viswa`        |
-| `$`                  | End of the line                                               | `viswa$`        |
+| Character | Meaning                                      | Example                          | What it matches                                 |
+| --------- | -------------------------------------------- | -------------------------------- | ----------------------------------------------- |
+| `*`       | Zero or more characters                      | `ls *.txt`                       | `a.txt`, `file.txt`, `backup.txt`               |
+| `?`       | Exactly one character                        | `ls file?.txt`                   | `file1.txt`, `fileA.txt`                        |
+| `[abc]`   | One character from the set                   | `ls file[abc].txt`               | `filea.txt`, `fileb.txt`, `filec.txt`           |
+| `[a-z]`   | Any lowercase letter                         | `ls file[a-z].txt`               | `filea.txt` – `filez.txt`                       |
+| `[A-Z]`   | Any uppercase letter                         | `ls file[A-Z].txt`               | `fileA.txt` – `fileZ.txt`                       |
+| `[0-9]`   | Any digit                                    | `ls file[0-9].txt`               | `file0.txt` – `file9.txt`                       |
+| `[!abc]`  | Any character except `a`, `b`, `c` *(shell)* | `ls file[!abc].txt`              | `filed.txt`, `file1.txt`                        |
+| `[^abc]`  | Any character except `a`, `b`, `c` *(regex)* | `grep '[^abc]' file`             | Lines containing a character other than `a/b/c` |
+| `\`       | Escape character                             | `ls my\ file.txt`                | File named `my file.txt`                        |
+| `^`       | Beginning of line *(regex)*                  | `grep '^root' file`              | `root:x:0:0...`                                 |
+| `$`       | End of line *(regex)*                        | `grep 'bash$' file`              | Lines ending in `bash`                          |
+| `.`       | Any single character *(regex)*               | `grep 'c.t' file`                | `cat`, `cut`, `cot`                             |
+| `+`       | One or more occurrences *(regex)*            | `grep -E 'ab+' file`             | `ab`, `abb`, `abbb`                             |
+| `\|`      | OR *(regex)*                                 | `grep -E 'error\|failed' file`   | Lines containing `error` or `failed`            |
+| `()`      | Groups patterns *(regex)*                    | `grep -E '(error\|failed)' file` | `error` or `failed`                             |
+
 
 
 
@@ -22,7 +31,14 @@ wildcards are special characters used by the shell to match filenames and paths.
 [a-z]    → any lowercase letter
 [A-Z]    → any uppercase letter
 [0-9]    → any digit
-[!abc]   → anything except a, b, or c
+[!abc]   → anything except a, b, or c (shell)
+[^abc]   → anything except a, b, or c (regex)
 \        → escape character
 ^        → beginning of the line
 $        → ending of the line
+.        → any single character (regex)
++        → one or more occurrences (regex)
+|        → OR (regex)
+()       → grouping (regex)
+
+
