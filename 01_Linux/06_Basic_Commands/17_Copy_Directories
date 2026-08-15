@@ -1,5 +1,6 @@
 
-cp -r folder1 folder2  --> to copy folder1 along with contents in folder2, folder2 will be created if it doesn't exist.
+cp -r folder1 folder2  --> to copy folder1 along with contents in folder2
+                       --> folder2 will be created if it doesn't exist.
 
 
 mv file1 file2 folder  --> to move files to folder
