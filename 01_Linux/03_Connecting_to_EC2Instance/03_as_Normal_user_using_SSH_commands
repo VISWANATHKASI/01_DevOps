@@ -57,6 +57,8 @@ sudo cp /home/ec2-user/.ssh/authorized_keys /home/viswa/.ssh/
 sudo chown -R viswa:viswa /home/viswa/.ssh
 sudo chmod 700 /home/viswa/.ssh
 sudo chmod 600 /home/viswa/.ssh/authorized_keys
+sudo chmod 600 /home/viswa/.ssh/id_rsa
+sudo chmod 644 /home/viswa/.ssh/id_rsa.pub
 
 
 
