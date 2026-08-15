@@ -1,0 +1,11 @@
+
+mkdir flm   --> to create folder
+
+
+mkdir balu mustafa krishna   --> to create multiple folders
+
+
+mkdir flm{1..5}  --> to create multiple folders
+
+
+mkdir -p folder1/folder2/folder3   --> to create folder inside folder at a time
