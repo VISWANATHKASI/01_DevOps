@@ -1,0 +1,2 @@
+
+cp file1.txt file2.txt  --> it will create file2.txt with content of file1.txt
