@@ -1,0 +1,26 @@
+
+find /home/user -name "myfile.txt"    --> Find a file by name (case-sensitive)
+
+
+find / -iname "myfile.txt"   -->  Find a file by name (case-insensitive)
+
+
+find . -type f -name "*.log"  --> Only find regular files (not directories)
+
+
+find . -user viswa    --> to search based on user
+
+
+find . -group flm     --> to search based on group
+
+
+find . -perm 777    --> to search based on permissions
+
+
+find / -type f -size +100M   --> Find files by size (e.g., larger than 100 MB)
+
+
+find /path/to/search -type f -mtime -7    --> Find files modified within last 7 days
+
+
+find . -type f -exec grep -l "search_string" {} \;   --> Combine find with grep to search file contents
