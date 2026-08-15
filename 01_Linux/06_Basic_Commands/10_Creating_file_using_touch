@@ -1,0 +1,11 @@
+
+touch file_name.txt  --> to create file
+
+
+touch jenkins docker terraform   --> to create multiple files
+
+
+touch flm{1..4}  --> to create multiple files with similar name
+
+
+
