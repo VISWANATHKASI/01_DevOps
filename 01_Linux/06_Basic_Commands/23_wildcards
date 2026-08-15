@@ -2,12 +2,18 @@
 wildcards are special characters used by the shell to match filenames and paths. They are also called globbing patterns.
 
 
-| Wildcard        | Meaning                                | Example         |
-| --------------- | -------------------------------------- | --------------- |
-| `*`             | Matches zero or more characters        | `*.txt`         |
-| `?`             | Matches exactly one character          | `file?.txt`     |
-| `[ ]`           | Matches one character from a set/range | `file[123].txt` |
-| `[! ]` / `[^ ]` | Matches one character NOT in the set   | `file[!0].txt`  |
+
+| Wildcard / Character | Meaning                                                       | Example         |
+| -------------------- | ------------------------------------------------------------- | --------------- |
+| `*`                  | Matches zero or more characters                               | `*.txt`         |
+| `?`                  | Matches exactly one character                                 | `file?.txt`     |
+| `[ ]`                | Matches one character from a set/range                        | `file[123].txt` |
+| `[! ]` / `[^ ]`      | Matches one character **NOT** in the set                      | `file[!0].txt`  |
+| `\`                  | Escape character; treats the next special character literally | `my\ file.txt`  |
+| `^`                  | Beginning of the line                                         | `^viswa`        |
+| `$`                  | End of the line                                               | `viswa$`        |
+
+
 
 
 *        → zero or more characters
@@ -17,3 +23,6 @@ wildcards are special characters used by the shell to match filenames and paths.
 [A-Z]    → any uppercase letter
 [0-9]    → any digit
 [!abc]   → anything except a, b, or c
+\        → escape character
+^        → beginning of the line
+$        → ending of the line
