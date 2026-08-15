@@ -3,6 +3,10 @@ cp file1 file2  --> it will create another copy of file1 if file2 doesn't exist
                 --> it will copy content of file1 to file2 if file2 is already exists but data in file2 will be overridden
 
 
+cat file1 > file2  --> it will create another copy of file1 if file2 doesn't exist
+                   --> it will copy content of file1 to file2 if file2 is already exists but data in file2 will be overridden
+
+
 cat file1 >> file2  --> to concat file1 data to file2 data
 
 
