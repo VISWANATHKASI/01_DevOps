@@ -1,0 +1,5 @@
+
+rm file_name  --> to remove file with permission
+
+
+rm -f file_name   --> to remove file forcefully
