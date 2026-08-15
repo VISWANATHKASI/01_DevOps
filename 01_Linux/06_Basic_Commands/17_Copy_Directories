@@ -1,0 +1,12 @@
+
+cp -r folder1 folder2  --> to copy folder1 along with contents in folder2
+
+
+mv file1 file2 folder  --> to move files to folder
+
+
+mv file1 file2  --> to rename
+
+
+mv folder1 folder2  --> if folder2 doesn't exist, it will rename the folder name
+                    --> if folder2 exists, it move folder1 into folder2
