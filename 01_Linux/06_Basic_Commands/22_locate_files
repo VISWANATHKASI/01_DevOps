@@ -2,6 +2,9 @@
 #yum install locate -y (or) yum install mlocate -y
 # updatedb
 
-locate -i filename
+locate filename   --> case-sensitive
+
+locate -i filename   --> case-insensitive
+
 
 Note: The database must be updated (usually via updatedb) for locate to reflect recent changes.
