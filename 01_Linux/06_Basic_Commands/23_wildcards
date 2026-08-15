@@ -8,3 +8,12 @@ wildcards are special characters used by the shell to match filenames and paths.
 | `?`             | Matches exactly one character          | `file?.txt`     |
 | `[ ]`           | Matches one character from a set/range | `file[123].txt` |
 | `[! ]` / `[^ ]` | Matches one character NOT in the set   | `file[!0].txt`  |
+
+
+*        → zero or more characters
+?        → exactly one character
+[abc]    → a OR b OR c
+[a-z]    → any lowercase letter
+[A-Z]    → any uppercase letter
+[0-9]    → any digit
+[!abc]   → anything except a, b, or c
