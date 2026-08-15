@@ -24,3 +24,21 @@ find /path/to/search -type f -mtime -7    --> Find files modified within last 7 
 
 
 find . -type f -exec grep -l "search_string" {} \;   --> Combine find with grep to search file contents
+
+explanation:
+============
+find .
+   ↓
+Find everything under current directory
+   ↓
+-type f
+   ↓
+Keep only regular files
+   ↓
+-exec
+   ↓
+Run grep on each file
+   ↓
+grep -l "viswa"   --> -l Only print the filename, not the matching line.
+   ↓
+Print only files containing "viswa"
