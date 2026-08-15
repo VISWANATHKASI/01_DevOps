@@ -23,7 +23,8 @@ find / -type f -size +100M   --> Find files by size (e.g., larger than 100 MB)
 find /path/to/search -type f -mtime -7    --> Find files modified within last 7 days
 
 
-find . -type f -exec grep -l "search_string" {} \;   --> Combine find with grep to search file contents
+find . -type f -exec grep -l "search_string" {} \;   --> Combine find with grep to search file contents , -l -> Only print the filename, not the matching line.
+                          -Hn                        --> -H    → print filename , -n    → print line number
 
 explanation:
 ============
@@ -40,5 +41,6 @@ Keep only regular files
 Run grep on each file
    ↓
 grep -l "viswa"   --> -l Only print the filename, not the matching line.
+     -Hn          --> -H    → print filename , -n    → print line number
    ↓
 Print only files containing "viswa"
