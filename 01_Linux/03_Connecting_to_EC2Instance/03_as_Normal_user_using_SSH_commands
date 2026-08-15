@@ -60,7 +60,7 @@ sudo chmod 600 /home/viswa/.ssh/authorized_keys
 sudo chmod 600 /home/viswa/.ssh/id_rsa
 sudo chmod 644 /home/viswa/.ssh/id_rsa.pub
 
-
+chown -R viswa:viswa /home/viswa/.ssh
 
 To connect:
 ===========
