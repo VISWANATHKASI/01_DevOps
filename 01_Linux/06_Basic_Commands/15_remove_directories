@@ -1,0 +1,5 @@
+
+rmdir balu   --> to delete empty folders
+
+
+rm -rf folder  --> to remove folder along with files in it (recurring)
