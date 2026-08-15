@@ -1,0 +1,3 @@
+
+mv folder1 folder2  --> if folder2 doesn't exist, it will rename the folder name
+                    --> if folder2 exists, it move folder1 into folder2
