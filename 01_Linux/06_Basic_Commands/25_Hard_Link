@@ -20,3 +20,16 @@ ls -li
 12345 -rw-r--r-- 2 user user 100 Aug 16 hardlink.txt
 
 Notice: 12345 is the same inode number. And the link count is: 2 because two filenames point to that inode.
+
+
+Important Characteristics:
+=========================
+Can link to files only (normally cannot be used for directories)
+Cannot point to a file on a different filesystem
+Does not have its own inode — it shares the same inode as the original file
+If the original filename is deleted, the hard link still works
+Multiple hard links can point to the same inode
+Changes made through one hard link are visible through all other hard links
+The file's data is removed only when all hard links are deleted and no process still has the file open
+Hard links generally cannot be created for symbolic links; ln normally creates a hard link to the symlink's target inode rather than making a hard link to the symlink itself
+Hard links must be on the same filesystem as the original file
