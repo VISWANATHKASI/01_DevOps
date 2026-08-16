@@ -1,0 +1,22 @@
+
+Hard Link : A hard link is another filename pointing to the same inode/data as the original file.
+=========
+
+# Create it with:
+ln original.txt hardlink.txt
+
+# Conceptually:
+              ┌── original.txt
+Same inode ───┤
+              └── hardlink.txt
+Both filenames refer to the same actual file data.
+
+
+# Check:
+ls -li
+
+# Example:
+12345 -rw-r--r-- 2 user user 100 Aug 16 original.txt
+12345 -rw-r--r-- 2 user user 100 Aug 16 hardlink.txt
+
+Notice: 12345 is the same inode number. And the link count is: 2 because two filenames point to that inode.
