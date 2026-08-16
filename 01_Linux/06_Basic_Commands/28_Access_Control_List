@@ -26,6 +26,7 @@ setfacl -x g:testers report.txt
 
 # Default ACL for directories
 setfacl -m d:u:alice:r /var/www/project    --> d: means default ACL.
+setfacl -Rm d:u:alice:r /var/www/project   --> recursive
 getfacl /var/www/project
 
 
