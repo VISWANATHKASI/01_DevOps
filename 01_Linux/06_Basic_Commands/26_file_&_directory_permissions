@@ -13,9 +13,11 @@ _ rwx rwx rwx
 1 --> tells which type either file or folder
       -  --> file
       d  --> directory
-2 --> user permissions
-3 --> group permissions
-4 --> others permissions
+2 --> u - user permissions
+3 --> g - group permissions
+4 --> o - others permissions
+
+Note: a -> ugo
 
 
 chmod 777 file_name  --> to change permissions to a file
