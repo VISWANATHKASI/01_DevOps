@@ -1,0 +1,10 @@
+
+| Command   | Purpose                | Example              |
+| --------- | ---------------------- | -------------------- |
+| `man`     | Detailed manual        | `man ls`             |
+| `--help`  | Quick command help     | `ls --help`          |
+| `help`    | Bash built-in help     | `help cd`            |
+| `type`    | Identify command type  | `type cd`            |
+| `which`   | Find executable path   | `which python`       |
+| `whereis` | Find binary/man/source | `whereis ls`         |
+| `apropos` | Find commands by topic | `apropos permission` |
