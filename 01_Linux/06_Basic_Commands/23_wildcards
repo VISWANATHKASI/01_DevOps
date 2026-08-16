@@ -3,42 +3,43 @@ wildcards are special characters used by the shell to match filenames and paths.
 
 
 
-| Character | Meaning                                      | Example                          | What it matches                                 |
-| --------- | -------------------------------------------- | -------------------------------- | ----------------------------------------------- |
-| `*`       | Zero or more characters                      | `ls *.txt`                       | `a.txt`, `file.txt`, `backup.txt`               |
-| `?`       | Exactly one character                        | `ls file?.txt`                   | `file1.txt`, `fileA.txt`                        |
-| `[abc]`   | One character from the set                   | `ls file[abc].txt`               | `filea.txt`, `fileb.txt`, `filec.txt`           |
-| `[a-z]`   | Any lowercase letter                         | `ls file[a-z].txt`               | `filea.txt` – `filez.txt`                       |
-| `[A-Z]`   | Any uppercase letter                         | `ls file[A-Z].txt`               | `fileA.txt` – `fileZ.txt`                       |
-| `[0-9]`   | Any digit                                    | `ls file[0-9].txt`               | `file0.txt` – `file9.txt`                       |
-| `[!abc]`  | Any character except `a`, `b`, `c` *(shell)* | `ls file[!abc].txt`              | `filed.txt`, `file1.txt`                        |
-| `[^abc]`  | Any character except `a`, `b`, `c` *(regex)* | `grep '[^abc]' file`             | Lines containing a character other than `a/b/c` |
-| `\`       | Escape character                             | `ls my\ file.txt`                | File named `my file.txt`                        |
-| `^`       | Beginning of line *(regex)*                  | `grep '^root' file`              | `root:x:0:0...`                                 |
-| `$`       | End of line *(regex)*                        | `grep 'bash$' file`              | Lines ending in `bash`                          |
-| `.`       | Any single character *(regex)*               | `grep 'c.t' file`                | `cat`, `cut`, `cot`                             |
-| `+`       | One or more occurrences *(regex)*            | `grep -E 'ab+' file`             | `ab`, `abb`, `abbb`                             |
-| `\|`      | OR *(regex)*                                 | `grep -E 'error\|failed' file`   | Lines containing `error` or `failed`            |
-| `()`      | Groups patterns *(regex)*                    | `grep -E '(error\|failed)' file` | `error` or `failed`                             |
+Shell Wildcards
+===============
+
+| Character | Meaning                            | Example             | Matches                               |
+| --------- | ---------------------------------- | ------------------- | ------------------------------------- |
+| `*`       | Zero or more characters            | `ls *.txt`          | `a.txt`, `file.txt`, `backup.txt`     |
+| `?`       | Exactly one character              | `ls file?.txt`      | `file1.txt`, `fileA.txt`              |
+| `[abc]`   | One character from the set         | `ls file[abc].txt`  | `filea.txt`, `fileb.txt`, `filec.txt` |
+| `[a-z]`   | Any lowercase letter               | `ls file[a-z].txt`  | `filea.txt` – `filez.txt`             |
+| `[A-Z]`   | Any uppercase letter               | `ls file[A-Z].txt`  | `fileA.txt` – `fileZ.txt`             |
+| `[0-9]`   | Any digit                          | `ls file[0-9].txt`  | `file0.txt` – `file9.txt`             |
+| `[!abc]`  | Any character except `a`, `b`, `c` | `ls file[!abc].txt` | `filed.txt`, `file1.txt`              |
+| `\`       | Escape character                   | `ls my\ file.txt`   | `my file.txt`                         |
 
 
 
 
+Regular Expressions (Regex)
+===========================
 
-*        → zero or more characters
-?        → exactly one character
-[abc]    → a OR b OR c
-[a-z]    → any lowercase letter
-[A-Z]    → any uppercase letter
-[0-9]    → any digit
-[!abc]   → anything except a, b, or c (shell)
-[^abc]   → anything except a, b, or c (regex)
-\        → escape character
-^        → beginning of the line
-$        → ending of the line
-.        → any single character (regex)
-+        → one or more occurrences (regex)
-|        → OR (regex)
-()       → grouping (regex)
+
+| Regex   | Meaning                     | Example                          | What it matches                    |
+| ------- | --------------------------- | -------------------------------- | ---------------------------------- |
+| `^`     | Beginning of line           | `grep '^root' file`              | Lines starting with `root`         |
+| `$`     | End of line                 | `grep 'bash$' file`              | Lines ending with `bash`           |
+| `.`     | Any single character        | `grep 'c.t' file`                | `cat`, `cot`, `cut`                |
+| `+`     | One or more occurrences     | `grep -E 'ab+' file`             | `ab`, `abb`, `abbb`                |
+| `\|`    | OR                          | `grep -E 'error\|failed' file`   | `error` or `failed`                |
+| `()`    | Grouping                    | `grep -E '(error\|failed)' file` | `error` or `failed`                |
+| `[]`    | Character set               | `grep '[abc]' file`              | `a`, `b`, or `c`                   |
+| `[^]`   | Character NOT in set        | `grep '[^abc]' file`             | Any character except `a`, `b`, `c` |
+| `*`     | Zero or more occurrences    | `grep -E 'ab*' file`             | `a`, `ab`, `abb`, `abbb`           |
+| `?`     | Zero or one occurrence      | `grep -E 'ab?' file`             | `a`, `ab`                          |
+| `{n}`   | Exactly n occurrences       | `grep -E 'a{3}' file`            | `aaa`                              |
+| `{n,m}` | Between n and m occurrences | `grep -E 'a{2,4}' file`          | `aa`, `aaa`, `aaaa`                |
+
+
+
 
 
