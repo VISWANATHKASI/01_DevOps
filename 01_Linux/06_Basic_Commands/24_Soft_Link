@@ -1,0 +1,36 @@
+
+Soft Link (Symbolic Link)
+=========================
+
+# Create it with:
+ln -s original.txt softlink.txt
+
+
+# Example:
+original.txt
+     ↑
+     |
+softlink.txt
+
+# If you run: cat softlink.txt
+Linux follows the link and reads original.txt.
+
+
+# Check it:
+ls -l
+
+# You might see:
+-rw-r--r-- 1 user user 100 Aug 16 original.txt
+lrwxrwxrwx 1 user user  12 Aug 16 softlink.txt -> original.txt
+
+The l at the beginning means it is a symbolic link.
+
+
+Important characteristics
+=========================
+Can link to a file or directory
+Can point to a file on a different filesystem
+Has its own inode
+If the original file is deleted, the soft link becomes broken
+Can point to another soft link
+
