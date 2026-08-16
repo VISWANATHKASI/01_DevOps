@@ -1,0 +1,35 @@
+
+
+Access Control List:
+====================
+sometimes you need to give specific permissions to a particular user or group without changing the file's owner or group. That's where ACL is useful.
+
+# to add permissions for a user
+setfacl -m u:alice:rw report.txt
+
+
+# Give permission to a group
+setfacl -m g:developers:rw report.txt
+
+
+# View ACL
+getfacl report.txt
+
+
+# Remove ACL for user
+setfacl -x u:alice report.txt
+
+
+# Remove ACL for group
+setfacl -x g:testers report.txt
+
+
+# Default ACL for directories
+setfacl -m d:u:alice:r /var/www/project    --> d: means default ACL.
+getfacl /var/www/project
+
+
+# remove all extended ACL entries from a file.
+setfacl -b file          --> for file
+setfacl -b directory     --> for directory, it won't remove for inside folders
+setfacl -Rb directory    --> recursive, it will remove for inside folders also
