@@ -1,0 +1,33 @@
+
+
+r --> read (4)
+w --> write (2)
+x --> execute (1)
+- -> no vlaue (0)
+
+
+_ rwx rwx rwx
+1  2   3   4
+
+
+1 --> tells which type either file or folder
+      -  --> file
+      d  --> directory
+2 --> user permissions
+3 --> group permissions
+4 --> others permissions
+
+
+chmod 777 file_name  --> to change permissions to a file
+
+
+chmod +x file_name  --> to add execute permissions to existing permissions
+
+
+chmod 743 folder  --> to change permiisions to folder alone
+
+
+chmod 761 folder/*  --> to change permissions inside folder, not for folder
+
+
+chmod 755 folder -R  --> to change permissions to folder along with files in it
