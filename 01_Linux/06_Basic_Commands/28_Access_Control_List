@@ -32,5 +32,8 @@ getfacl /var/www/project
 
 # remove all extended ACL entries from a file.
 setfacl -b file          --> for file
+
+
+# remove all extended ACL entries from a directory.
 setfacl -b directory     --> for directory, it won't remove for inside folders
 setfacl -Rb directory    --> recursive, it will remove for inside folders also
