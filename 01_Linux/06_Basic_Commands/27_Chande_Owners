@@ -1,0 +1,17 @@
+
+chown user file_name   --> to change user to file
+
+
+chgrp group file_name   --> to change group to file
+
+
+chown user:group file_name   --> to change both user & group to a file
+
+
+chown user:group folder  --> to change for folder alone
+
+
+chown user:group folder -R   --> to change for folder along with files in that folder
+
+
+chown user:group folder/*  --> to change for files inside folder, not for folder
