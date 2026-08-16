@@ -25,6 +25,8 @@ find /path/to/search -type f -mtime -7    --> Find files modified within last 7 
 
 find . -type f -exec grep -l "search_string" {} \;   --> Combine find with grep to search file contents , -l -> Only print the filename, not the matching line.
                           -Hn                        --> -H    → print filename , -n    → print line number
+                                                     --> {} represents each file found by find
+                                                     --> \; Marks the end of the -exec command
 
 explanation:
 ============
