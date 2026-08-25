@@ -1,0 +1,11 @@
+
+The semicolon ; allows you to execute multiple commands one after another, regardless of whether the previous command succeeds or fails.
+
+pwd ; ls ; date
+
+========================================================================================================================================
+
+
+&& allows you to execute multiple commands one after another, only if the previous command succeeds.
+
+mkdir test && cd test && touch file.txt
