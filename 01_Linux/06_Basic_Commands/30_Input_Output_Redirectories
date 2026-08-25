@@ -1,0 +1,52 @@
+
+| Number | Stream | Meaning       |
+| ------ | ------ | ------------- |
+| `0`    | stdin  | Input         |
+| `1`    | stdout | Normal output |
+| `2`    | stderr | Error output  |
+
+
+Standard input — stdin
+======================
+Normally, a command takes input from the keyboard.
+
+cat < input.txt --> Here, input.txt becomes the input to cat.
+
+
+Standard output — stdout
+========================
+Normally, command output appears on the terminal.
+
+ls > files.txt  --> Use > to redirect output to a file. If files.txt already exists, > overwrites it.
+ls >> files.txt --> It does not overwrite the existing content.
+
+
+Standard error — stderr
+=======================
+Errors normally appear on the terminal.
+
+ls /wrongfolder 2> error.txt  --> Redirect errors using 2> . The error message goes into error.txt.
+
+
+
+Redirect output and errors separately
+=====================================
+command > output.txt 2> error.txt
+
+Normal output → output.txt
+Errors → error.txt
+
+
+Redirect both output and errors to the same file
+================================================
+command > output.txt 2>&1     or     command &> output.txt
+
+> → send stdout to output.txt
+2>&1 → send stderr to the same place as stdout
+
+
+Pipe |
+======
+A pipe sends the output of one command directly as input to another command. 
+
+cat file.txt | grep "error"
