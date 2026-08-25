@@ -1,0 +1,12 @@
+
+The tee command reads input from stdin and writes it to a file while also displaying it on the terminal.
+
+Think of it as:
+Command → tee → Terminal
+             ↘ File
+
+
+cat file1 | tee file2 file3 file4 file5     --> to display & to copy file1 data to remaining all files at a time (override the data)
+
+
+cat file1 | tee -a file2 file3 file4 file5    --> -a --> it won't override the existing data, it just append to existing data in remaining files
