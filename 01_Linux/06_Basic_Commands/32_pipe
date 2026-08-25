@@ -1,0 +1,15 @@
+
+A pipe (|) sends the output of one command as the input to another command.
+
+Think of it like:
+Command 1 → output → | → input → Command 2
+
+EX:
+cat file.txt | grep "error" | wc -l
+
+This means:
+cat → reads the file
+grep → finds lines containing error
+wc -l → counts those lines
+
+So the final result is the number of lines containing error.
