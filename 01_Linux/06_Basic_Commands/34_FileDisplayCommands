@@ -1,0 +1,72 @@
+
+cat — Display entire file
+=========================
+cat filename
+cat /var/log/app.log
+cat -n filename  --> Display with line numbers:
+
+
+more — Display file page by page
+================================
+more filename
+more application.log
+
+Note: enter space for next page, enter q to quit
+
+
+less — View large files page by page
+====================================
+less filename
+
+Note:
+Space → next page
+b → previous page
+j -> one line forward or downward arrow key
+k -> one line backward or upward arrow key
+/word → search
+n → next search result
+q → quit
+
+
+head — Display beginning of a file
+==================================
+head filename   --> first 10 lines
+head -20 filename   --> first 20 lines
+
+
+tail — Display end of a file
+============================
+tail filename     --> Last 10 lines
+tail -20 filename  --> Last 20 lines
+tail -f application.log   --> Monitor a file continuously, Very useful for real-time application logs
+Note: Press Ctrl+C to stop.
+
+
+nl — Display file with line numbers
+===================================
+nl test.txt
+
+
+sed — Display specific lines
+============================
+sed -n '50p' filename    --> Display line 50
+sed -n '50,100p' filename --> Display lines 50–100
+
+
+awk — Display selected columns
+==============================
+awk '{print $1, $2}' filename    --> For a space-separated file, Display first and second columns
+
+
+grep — Display lines matching a pattern
+=======================================
+grep "ERROR" application.log
+grep -i "error" application.log   --> Case-insensitive
+grep -n "ERROR" application.log   --> With line numbers
+
+
+
+
+
+
+
