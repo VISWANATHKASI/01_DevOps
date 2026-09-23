@@ -1,0 +1,10 @@
+cut:  cut is command line utility that allows your to cut parts of lines from specified files or piped data and print the result to standard output.
+=== 
+
+cut -c1 filename                 --> list one character
+cut -c1,2,4 filename             --> pick and choose character
+cut -c1-3 filename               --> list range of characters
+cut -c1-5, 6-8 filename          --> list specific range of characters
+cut -d: -f 6 /etc/password       --> list 6th column separated by :
+cut -d: -f 6-7 /etc/password     --> list 6th & 7th column separated by :
+ls -l | cut -c2-4                --> lists owner permissions alone
