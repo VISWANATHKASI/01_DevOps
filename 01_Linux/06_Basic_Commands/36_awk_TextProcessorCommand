@@ -1,0 +1,8 @@
+awk: awk is utility designed for data extraction. Most of the time, it is used to extract fields from a file or an output.
+===
+
+awk '{print $1}' filename         --> to print first column
+ls -l | awk '{print $1,$3}'       --> to print permissions and owner
+ls -l | awk '{print $NF}'         --> to print last column
+awk '/word/ {print}' filename     --> to search specific word
+awk -F: '{print $1}' /etc/passwd  --> print 1st field of /etc/passwd
