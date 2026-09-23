@@ -6,3 +6,7 @@ ls -l | awk '{print $1,$3}'       --> to print permissions and owner
 ls -l | awk '{print $NF}'         --> to print last column
 awk '/word/ {print}' filename     --> to search specific word
 awk -F: '{print $1}' /etc/passwd  --> print 1st field of /etc/passwd
+cat filename | awk '{$2="Replace_Word"; print $0}'  --> replace words 
+awk 'length($0) > 15' filename     --> to print lines which has more than 15 characters
+ls -l | awk '{print NF}'   --> to print no of coloumns
+ls -l | awk '{if($9 == "Viswa") print $0;}'  --> print entire row if column 9 maches with name viswa.
