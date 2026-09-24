@@ -11,10 +11,18 @@ gunzip  --> it uncompress
 tar(archier)  --> files & folders: tapes all into one file, Preserving Linux file permissions and ownership,
 -------------------------
 
-tar -czf test.tar.gz file/folder   --> to compress  (combination of gzip to make file smaller)
+tar -czvf test.tar.gz file/folder   --> to compress  (combination of gzip to make file smaller)
+c → create archive
+z → use gzip compression
+v → verbose
+f → filename
 
 
-tar -xzf test.tar.gz    --> to extract
+tar -xzvf test.tar.gz    --> to extract
+x → extract
+z → gzip
+v → verbose
+f → filename
 
 
 
