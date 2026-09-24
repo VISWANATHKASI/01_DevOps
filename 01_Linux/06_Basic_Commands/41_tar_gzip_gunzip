@@ -48,5 +48,6 @@ zip -r folder.zip folder        --> to zip folder
 zip -re folder.zip folder      --> e-->encrypt, password protect
 zip -re -P "password" folder.zip folder    --> in scripts
 
-
+unzip myfiles.zip
+unzip -P "password" myfiles.zip
 
