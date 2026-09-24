@@ -1,0 +1,9 @@
+
+diff --> line by line
+cmp  --> byte by byte
+
+
+diff file1 file2   --> to know actual diff between 2 files
+
+
+cmp file1 file2    --> it will give whether both files are same or not
