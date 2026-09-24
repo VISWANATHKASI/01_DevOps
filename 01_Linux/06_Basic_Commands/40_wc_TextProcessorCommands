@@ -1,5 +1,5 @@
 
-wc filename  --> to know no of lines, words, characters in file
+wc filename  --> to know no of lines, words, bytes in file
 wc -l filename  --> lines
 wc -w filename  --> words
 wc -m file      --> Characters
