@@ -1,0 +1,10 @@
+
+cat file1 file2 file3 > file4
+
+
+
+split -l 2 file4 sep  
+
+split    -l 2    file4    sep
+  ↓       ↓        ↓       ↓
+command  lines   input    prefix
