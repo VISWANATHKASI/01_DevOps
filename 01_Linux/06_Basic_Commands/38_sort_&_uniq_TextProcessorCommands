@@ -1,0 +1,28 @@
+
+sort filename  --> to sort in alphabetical order
+
+
+sort -r filename  --> sort in reverse alphabetical order
+
+
+sort -k2 filename   --> sort by field value
+
+
+===========================================================
+
+
+Note: sorr is mandatory for uniq
+
+
+sort filename | uniq     --> remove duplicates
+
+
+sort filename | uniq -c   --> count
+
+
+sort filename | uniq -d   --> show only repeated/duplicate line
+
+
+
+
+
