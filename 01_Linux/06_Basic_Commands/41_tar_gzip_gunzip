@@ -1,0 +1,44 @@
+
+tar  --> won't compress
+
+gzip  --> it compress
+
+gunzip  --> it uncompress
+
+
+=====================================
+
+tar(archier)  --> files & folders: tapes all into one file, Preserving Linux file permissions and ownership,
+-------------------------
+
+tar -czf test.tar.gz file/folder   --> to compress  (combination of gzip to make file smaller)
+
+
+tar -xzf test.tar.gz    --> to extract
+
+
+
+
+gzip(compresser) --> files alone:
+---------------------
+
+gzip file1       --> it will remove the file1 and create zip
+gzip -k file1    --> it will keep the file1 and create zip
+gzip -r folder   --> it will zip all files in folder individually, we will find multiple zips for each file in that folder
+
+gunzip file1.gz   --> to unzip
+
+
+
+
+
+zip  --> multiple files:  -->  It compresses each file individually before putting them in the archive.
+------------------------
+
+zip myfiles.zip blog.txt file.txt    --> to zip
+zip -r folder.zip folder        --> to zip folder
+zip -re folder.zip folder      --> e-->encrypt, password protect
+zip -re -P "password" folder.zip folder    --> in scripts
+
+
+
