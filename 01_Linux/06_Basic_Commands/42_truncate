@@ -1,0 +1,11 @@
+truncate:
+========= 
+     it is used to shrink or extend the size of the file to specified size.
+
+
+truncate -s 10 filename
+
+============================
+Note: it will remove the data.
+==============================
+
