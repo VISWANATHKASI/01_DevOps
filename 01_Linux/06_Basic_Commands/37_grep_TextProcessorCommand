@@ -8,6 +8,9 @@ grep -n word filename  --> to print line numbers
 grep -i word filename  --> to serach word in file with case sensitive
 
 
+grep -c word filename  --> to count of times word appeared
+
+
 grep -ic word filename   --> to count no of lines a word appeared
 
 
