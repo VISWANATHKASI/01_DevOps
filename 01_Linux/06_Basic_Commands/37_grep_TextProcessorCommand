@@ -1,0 +1,20 @@
+
+grep word filename  --> to serach word in file
+
+
+grep -n word filename  --> to print line numbers
+
+
+grep -i word filename  --> to serach word in file with case sensitive
+
+
+grep -ic word filename   --> to count no of lines a word appeared
+
+
+grep -in -e word1 -e word2 -e word3 filename  --> to search multiple words
+
+
+grep -in word file1 file2  --> to search in multiple files
+
+
+grep -in -e word1 -e word2 -e word3 file1 file2  --> to search multiple words in multiple files
