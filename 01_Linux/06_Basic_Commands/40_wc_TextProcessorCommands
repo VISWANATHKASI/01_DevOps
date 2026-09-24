@@ -4,3 +4,10 @@ wc -l filename  --> lines
 wc -w filename  --> words
 wc -m file      --> Characters
 wc -c filename  --> bytes
+
+ls -l | wc -l   --> no of files & directories (1 less)
+
+ls -l | grep "drwx*" | wc -l   --> no of dirctores
+
+grep word filename | wc -l   --> no of lines contains word
+
