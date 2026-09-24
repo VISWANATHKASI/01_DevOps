@@ -18,6 +18,7 @@ grep -ic word filename   --> to count no of times a word appeared
 
 
 grep -in -e word1 -e word2 -e word3 filename  --> to search multiple words
+egrep -i "word1|word2" filename               --> to search multiple words
 
 
 grep -in word file1 file2  --> to search in multiple files
