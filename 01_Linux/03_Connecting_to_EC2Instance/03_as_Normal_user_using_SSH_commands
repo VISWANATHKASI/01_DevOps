@@ -9,6 +9,9 @@ Password authentication is generally disabled by default because it is more vuln
 If you enable password authentication, it's a good idea to restrict SSH access in your security group to only your own public IP address instead of allowing access from everywhere (0.0.0.0/0).
 
 
+# create a user
+sudo useradd -m -s /bin/bash viswa   # -m --> to create home directory, -s /bin/bash → set login shell
+
 
 # Edit the SSH configuration:
 sudo vi /etc/ssh/sshd_config
