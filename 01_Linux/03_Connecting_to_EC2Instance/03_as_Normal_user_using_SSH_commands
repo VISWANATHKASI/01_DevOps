@@ -63,6 +63,7 @@ sudo useradd -m -s /bin/bash viswa   # -m --> to create home directory, -s /bin/
 
 
 # create ssh keys in created user home directory (viswa)
+su - viswa
 cd /home/viswa
 ssh-keygen
 
