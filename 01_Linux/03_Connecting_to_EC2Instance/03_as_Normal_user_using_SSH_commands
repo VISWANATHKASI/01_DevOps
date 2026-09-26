@@ -62,9 +62,10 @@ Method:2 : Connect using username and pem (private key)
 sudo useradd -m -s /bin/bash viswa   # -m --> to create home directory, -s /bin/bash → set login shell
 
 
-# Copy the authorized_keys from ec2-user to created user (viswa)
-sudo mkdir -p /home/viswa/.ssh
-sudo cp /home/ec2-user/.ssh/authorized_keys /home/viswa/.ssh/
+# create ssh keys in created user home directory (viswa)
+cd /home/viswa
+ssh-keygen
+
 sudo chown -R viswa:viswa /home/viswa/.ssh
 sudo chmod 700 /home/viswa/.ssh
 sudo chmod 600 /home/viswa/.ssh/authorized_keys
@@ -72,7 +73,6 @@ sudo chmod 600 /home/viswa/.ssh/authorized_keys
 sudo chmod 600 /home/viswa/.ssh/id_rsa
 sudo chmod 644 /home/viswa/.ssh/id_rsa.pub
 
-chown -R viswa:viswa /home/viswa/.ssh
 
 To connect:
 ===========
