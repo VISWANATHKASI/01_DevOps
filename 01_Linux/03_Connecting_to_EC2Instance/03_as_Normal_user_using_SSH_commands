@@ -78,3 +78,13 @@ whoami   --> to verify the user
 To disconnect:
 ==============
 exit  or  ctrl+D   
+
+
+=============================================================================================
+
+To delete user
+==============
+sudo userdel john        #  --> user home directory won't be delete
+sudo userdel -r john     # -r: it removes the user's home directory and its contents.
+
+
