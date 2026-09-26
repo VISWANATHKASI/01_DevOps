@@ -66,12 +66,14 @@ sudo useradd -m -s /bin/bash viswa   # -m --> to create home directory, -s /bin/
 cd /home/viswa
 ssh-keygen
 
-sudo chown -R viswa:viswa /home/viswa/.ssh
-sudo chmod 700 /home/viswa/.ssh
-sudo chmod 600 /home/viswa/.ssh/authorized_keys
+cat /home/viswa/.ssh/id_rsa.pub >> /home/viswa/.ssh/authorized_keys
 
-sudo chmod 600 /home/viswa/.ssh/id_rsa
-sudo chmod 644 /home/viswa/.ssh/id_rsa.pub
+chown -R viswa:viswa /home/viswa/.ssh
+
+chmod 700 /home/viswa/.ssh
+chmod 600 /home/viswa/.ssh/authorized_keys
+chmod 600 /home/viswa/.ssh/id_rsa
+chmod 644 /home/viswa/.ssh/id_rsa.pub
 
 
 To connect:
