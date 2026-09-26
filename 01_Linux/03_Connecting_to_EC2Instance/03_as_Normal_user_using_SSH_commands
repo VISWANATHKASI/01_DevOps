@@ -75,9 +75,18 @@ chmod 600 /home/viswa/.ssh/authorized_keys
 chmod 600 /home/viswa/.ssh/id_rsa
 chmod 644 /home/viswa/.ssh/id_rsa.pub
 
+# either copy key from another server 
+echo key_from_another_server >> /home/viswa/.ssh/authorized_keys
 
-To connect:
-===========
+# to connect
+ssh  viswa@98.81.155.74
+
+     (or) 
+
+# download  /home/viswa/.ssh/id_rsa to local
+scp viswa@172.31.15.153:/home/viswa/.ssh/id_rsa /c/Users/HP/Downloads
+
+# to connect:
 ssh -i chandra-nv.pem viswa@98.81.155.74
 
 
