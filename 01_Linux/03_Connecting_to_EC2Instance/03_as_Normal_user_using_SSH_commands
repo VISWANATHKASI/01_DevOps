@@ -46,12 +46,20 @@ To disconnect:
 exit  or  ctrl+D   
 
 
+To delete user
+==============
+sudo userdel john        #  --> user home directory won't be delete
+sudo userdel -r john     # -r: it removes the user's home directory and its contents.
+
 
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 Method:2 : Connect using username and pem (private key)
 =======================================================
+
+# create a user
+sudo useradd -m -s /bin/bash viswa   # -m --> to create home directory, -s /bin/bash → set login shell
 
 
 # Copy the authorized_keys from ec2-user to created user (viswa)
@@ -79,8 +87,6 @@ To disconnect:
 ==============
 exit  or  ctrl+D   
 
-
-=============================================================================================
 
 To delete user
 ==============
