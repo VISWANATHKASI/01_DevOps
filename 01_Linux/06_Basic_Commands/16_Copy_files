@@ -10,4 +10,4 @@ cat file1 > file2  --> it will create another copy of file1 if file2 doesn't exi
 cat file1 >> file2  --> to concat file1 data to file2 data
 
 
-cp file1 file2 folder  --> to copy files to folder
+cp file1 file2 folder  --> to copy files to folder, folder should be present 
