@@ -1,0 +1,30 @@
+
+sudoers rule: viswa ALL=(ALL) ALL
+=============
+        You can change different parts of it to control where, as whom, and which commands viswa can run.
+
+
+
+Basic syntax:
+=============
+USER  HOSTS  =  (RUN_AS_USERS)  COMMANDS
+
+| Sudoers entry                                                                        | Meaning                                            |
+| ------------------------------------------------------------------------------------ | -------------------------------------------------- |
+| `viswa ALL=(ALL) ALL`                                                                | `viswa` can run **any command as any user**        |
+| `viswa ALL=(root) ALL`                                                               | `viswa` can run **any command as root**            |
+| `viswa ALL=(ALL) /usr/bin/systemctl`                                                 | `viswa` can run only `systemctl` as any user       |
+| `viswa ALL=(root) /usr/bin/systemctl`                                                | `viswa` can run `systemctl` only as root           |
+| `viswa ALL=(root) /usr/bin/systemctl restart nginx`                                  | `viswa` can restart nginx only                     |
+| `viswa ALL=(root) /usr/bin/systemctl restart nginx, /usr/bin/systemctl status nginx` | `viswa` can restart/status nginx only              |
+| `viswa ALL=(root) /usr/bin/journalctl`                                               | `viswa` can run `journalctl` as root               |
+| `viswa ALL=(root) /usr/bin/tail /var/log/messages`                                   | `viswa` can use `tail` only on `/var/log/messages` |
+| `%developers ALL=(ALL) ALL`                                                          | All users in `developers` group get full sudo      |
+| `%developers ALL=(root) /usr/bin/systemctl`                                          | `developers` group can run `systemctl` as root     |
+| 'viswa ALL=(root) NOPASSWD: /usr/bin/systemctl restart nginx'                        | 'viswa' can restart nginx without password         |
+| 'viswa server1=(ALL) ALL'                                                            | 'viswa' has full access on server1 alone           |
+| 'viswa server1,server2,server3=(ALL) ALL'                                            | 'viswa' has full access on server1, 2 and 3        |
+| 'viswa 192.168.1.10=(ALL) ALL'                                                       | 'viswa' has full access on 192.168.1.10            |
+| 'viswa 192.168.1.10,192.168.1.20=(ALL) ALL'                                          | 'viswa' has full access on specified ips hosts     |
+
+
