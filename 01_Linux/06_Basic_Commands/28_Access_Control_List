@@ -4,6 +4,12 @@ Access Control List:
 ====================
 sometimes you need to give specific permissions to a particular user or group without changing the file's owner or group. That's where ACL is useful.
 
+
+-rw-r--r--+
+          ↑
+        ACL exists
+
+
 # to add permissions for a user
 setfacl -m u:alice:rw report.txt
 
