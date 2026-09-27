@@ -8,8 +8,9 @@ find / -iname "myfile.txt"   -->  Find a file by name (case-insensitive)
 find . -type f -name "*.log"  --> Only find regular files (not directories)
 
 
-find . -user viswa    --> to search based on user
-
+find . -user viswa 2>/dev/null   --> to search based on user
+find / -not -user viswa -type f 2>/dev/null
+find / -uid 1001 -type f 2>/dev/null      --> to serach using user id
 
 find . -group flm     --> to search based on group
 
