@@ -78,7 +78,7 @@ chmod 600 /home/viswa/.ssh/id_rsa
 chmod 644 /home/viswa/.ssh/id_rsa.pub
 
 # either copy key from another server 
-echo key_from_another_server >> /home/viswa/.ssh/authorized_keys
+echo pub_key_from_another_server >> /home/viswa/.ssh/authorized_keys
 
 # to connect
 ssh  viswa@98.81.155.74
