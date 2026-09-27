@@ -25,3 +25,28 @@ grep -in word file1 file2  --> to search in multiple files
 
 
 grep -in -e word1 -e word2 -e word3 file1 file2  --> to search multiple words in multiple files
+
+
+find . -type f -exec grep -l "search_string" {} \;   --> Combine find with grep to search file contents , -l -> Only print the filename, not the matching line.
+                          -Hn                        --> -H    → print filename , -n    → print line number
+                                                     --> {} represents each file found by find
+                                                     --> \; Marks the end of the -exec command
+
+explanation:
+============
+find .
+   ↓
+Find everything under current directory
+   ↓
+-type f
+   ↓
+Keep only regular files
+   ↓
+-exec
+   ↓
+Run grep on each file
+   ↓
+grep -l "viswa"   --> -l Only print the filename, not the matching line.
+     -Hn          --> -H    → print filename , -n    → print line number
+   ↓
+Print only files containing "viswa"
