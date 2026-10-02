@@ -9,6 +9,7 @@ ls -l   --> to list in long format
 
 
 ls -a   -->  Show all files, including hidden files (starting with .).
+ls -A   -->  without . & ..
 
 
 ls -lh  -->  Long listing with human-readable file sizes (KB, MB, GB).
@@ -32,11 +33,25 @@ ls -R  --> Recursively list all directories and subdirectories.
 ls -d */ --> List only directories.
 
 
+ls -i   --> to know inode number
+
+
 ls -1  -->  Display one file per line.
+
+
+ls -m  --> file1, file2, file3, Documents, Downloads
+
+
+ls -Q   --> "file1.txt" "my document.txt" "test.log"
 
 
 ls -lS   --> sort by size
 
+
+ls -lX   --> sort by extension
+
+
+ls -ln   --> print UID/GID instead od owner and group
 
 
 
