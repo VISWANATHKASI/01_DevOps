@@ -90,6 +90,10 @@ grep -qxF 'pub_key_from_another_server' /home/viswa/.ssh/authorized_keys || echo
 echo $?  --> to  check matching status, 0 or 1.
 
 
+# to remove duplcates
+awk '!seen[$0]++' authorized_keys > authorized_keys.tmp && mv authorized_keys.tmp authorized_keys
+
+
 # to connect
 ssh  viswa@98.81.155.74
 
