@@ -86,6 +86,7 @@ grep -qxF 'pub_key_from_another_server' /home/viswa/.ssh/authorized_keys || echo
 -x  --> whole line must match.
 -F  --> treat special characters as ordinary text.
 
+echo $?  --> to  check matching status, 0 or 1.
 
 
 # to connect
