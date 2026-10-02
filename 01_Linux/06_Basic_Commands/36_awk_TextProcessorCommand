@@ -10,3 +10,7 @@ cat filename | awk '{$2="Replace_Word"; print $0}'  --> replace words
 awk 'length($0) > 15' filename     --> to print lines which has more than 15 characters
 ls -l | awk '{print NF}'   --> to print no of coloumns
 ls -l | awk '{if($9 == "Viswa") print $0;}'  --> print entire row if column 9 maches with name viswa.
+
+
+# to remove duplicates
+awk '!seen[$0]++' authorized_keys > authorized_keys.tmp && mv authorized_keys.tmp authorized_keys
