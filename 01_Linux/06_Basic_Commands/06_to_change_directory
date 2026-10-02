@@ -19,3 +19,8 @@ cd -    --> Go to the previous working directory.
 
 
 cd ./directory_name   --> Go to a subdirectory in the current directory.
+
+
+pwd -P  --> to know physical directory for symbolic link
+cd -P /home/viswa/logs     --> to change directory of physical directory of path /home/viswa/logs
+cd -L /home/viswa/logs     --> to preserve directory Logical path
