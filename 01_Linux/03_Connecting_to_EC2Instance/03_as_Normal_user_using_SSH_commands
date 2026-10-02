@@ -80,9 +80,13 @@ chmod 644 /home/viswa/.ssh/id_rsa.pub
 # either copy key from another server 
 
 # verify whether key is already add before adding to avoid duplicates
-grep -qxF 'pub_key_from_another_server' /home/viswa/.ssh/authorized_keys
+grep -qxF 'pub_key_from_another_server' /home/viswa/.ssh/authorized_keys || echo 'pub_key_from_another_server' >> /home/viswa/.ssh/authorized_keys
 
-echo 'pub_key_from_another_server' >> /home/viswa/.ssh/authorized_keys
+-q  --> don't display anything, 0 → match found, 1 → match not found, other value → error
+-x  --> whole line must match.
+-F  --> treat special characters as ordinary text.
+
+
 
 # to connect
 ssh  viswa@98.81.155.74
