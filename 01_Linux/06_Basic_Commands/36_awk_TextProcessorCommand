@@ -12,5 +12,5 @@ ls -l | awk '{print NF}'   --> to print no of coloumns
 ls -l | awk '{if($9 == "Viswa") print $0;}'  --> print entire row if column 9 maches with name viswa.
 
 
-# to remove duplicates
+# to remove duplicates in authorized_keys
 awk '!seen[$0]++' authorized_keys > authorized_keys.tmp && mv authorized_keys.tmp authorized_keys
