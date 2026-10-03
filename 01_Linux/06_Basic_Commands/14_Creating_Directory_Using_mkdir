@@ -3,9 +3,22 @@ mkdir flm   --> to create folder
 
 
 mkdir balu mustafa krishna   --> to create multiple folders
+mkdir {balu,mustafa,krishna}
 
 
 mkdir flm{1..5}  --> to create multiple folders
 
 
 mkdir -p folder1/folder2/folder3   --> to create folder inside folder at a time
+
+
+mkdir -p folder1/folder2/folder3/{balu,mustafa,krishna} 
+
+
+mkdir -v folder    --> verbose
+
+
+mkdir -m 755 logs    --> set permissins while creating folder
+
+
+mkdir -p -v -m 755 folder1/folder2/folder3/{balu,mustafa,krishna}   --> creating folders with permissins
