@@ -72,7 +72,7 @@ find /home -type f -cmin -30  --> within 30 min
 find /home -type f -cmin -30  --> more than 30 min ago
 
 
-find /home -type f -links 2   --> finds files having exactly 2 hard links
+find /home -type f -links 2   --> finding hard-linked regular files, not symbolic links.
 
 
 find /home/viswa -type f \( -name "*.log" -o -name "*.txt" \)   -->  or condition
