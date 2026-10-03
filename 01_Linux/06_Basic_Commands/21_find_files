@@ -19,8 +19,10 @@ find / -type l -exec readlink -f {} \; 2>/dev/null | sort | uniq -c | awk '$1 > 
                                                                                           readlink -f = resolve it to its final absolute path
 
 
-find . -type f -links 2   --> finding hard-linked regular files, not symbolic links.
-find / -inum 123456 -ls 2>/dev/null  --> to know physical path of hardlink
+find . -type f -links 2 -exec ls -li {} \; --> finding hard-linked regular files, not symbolic links.
+find / -xdev -inum 123456 -ls 2>/dev/null   --> it will provide in same file system, -xdev prevents find to cross the filesystem
+find / -inum 123456 -ls 2>/dev/null  --> Find all pathnames having inode number 123456, including matches from different filesystems.
+
 
 
 find . -user viswa 2>/dev/null   --> to search based on user
