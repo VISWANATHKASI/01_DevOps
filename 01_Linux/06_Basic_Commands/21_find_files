@@ -6,6 +6,14 @@ find / -iname "myfile.txt"   -->  Find a file by name (case-insensitive)
 
 
 find . -type f -name "*.log"  --> Only find regular files (not directories)
+find /home -type f -empty     --> to find empty files
+
+
+find . -type d -name "*log"   --> to find directory
+find /home -type d -empty     --> to find empty directories
+
+
+find . -type l -name "*log"   --> to find Symbolic link
 
 
 find . -user viswa 2>/dev/null   --> to search based on user
@@ -19,16 +27,56 @@ find . -group flm 2>/dev/null     --> to search based on group
 find / -not -group flm -type f 2>/dev/null
 find / -gid 1002 -type f 2>/dev/null      --> to serach using group id
 
+
 find /home -group flm -type f -ls 2>/dev/null  --> to show details of files owned by group
 
 
 find . -perm 777    --> to search based on permissions
 
 
-find / -type f -size +100M   --> Find files by size (e.g., larger than 100 MB)
+find / -type f -size +100M   --> Find files by size more than 100M (e.g., larger than 100 MB)
+find / -type f -size -100M   --> Find files by size less than 100M 
+find / -type f -size  100M   --> Find files with exactly 100M 
+c → bytes
+k → KiB
+M → MiB
+G → GiB
 
 
-find /path/to/search -type f -mtime -7    --> Find files modified within last 7 days
+find /path/to/search -type f -mtime 0     --> Modified within the last 24 hours
+find /path/to/search -type f -mtime -7    --> files modified within last 7 days
+find /path/to/search -type f -mtime +7    --> Files modified more than 7 days ago
+
+
+find /path/to/search -type f -mmin -30    --> files modified within last 30 min
+find /path/to/search -type f -mmin +30    --> Files modified more than 30 min ago
+
+
+find /home -type f -atime 0  --> files accessed with in 24 hrs
+find /home -type f -atime -7  --> files accessed with in last 7 days
+find /home -type f -atime +7  --> files accessed more than 7 days ago
+
+
+find /home -type f -ctime -1  --> Finds files whose inode metadata/status changed within approximately the last 24 hours
+For example, changing: permissions , ownership, link count, file contents can update ctime.
+
+find /home -type f -cmin -30  --> in mins
+
+
+find /home -type f -links 2   --> finds files having exactly 2 hard links
+
+
+find /home/viswa -type f \( -name "*.log" -o -name "*.txt" \)   -->  or condition
+
+
+find /home/viswa -type f ! -name "*.log"      --> not condition
+find /home/viswa -type f -not -name "*.log"
+
+
+find /home -type f -print0 | xargs -0 -r ls -l  --> This safely handles filenames such as: my file.txt, report 2026.txt
+xargs ls -l  --> effectively builds something like: ls -l /home/viswa/a.txt /home/viswa/b.txt /home/viswa/c.txt
+-print0 , xargs -0     --> Read NULL-separated filenames safely.
+-r --> Don't run the command if there is no input.
 
 
 find . -type f -exec grep -l "search_string" {} \;   --> Combine find with grep to search file contents , -l -> Only print the filename, not the matching line.
