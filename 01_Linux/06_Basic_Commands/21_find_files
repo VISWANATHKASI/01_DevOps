@@ -58,8 +58,11 @@ find /home -type f -atime -7  --> files accessed with in last 7 days
 find /home -type f -atime +7  --> files accessed more than 7 days ago
 
 
-find /home -type f -ctime -1  --> Finds files whose inode metadata/status changed within approximately the last 24 hours
+find /home -type f -ctime 0     --> Finds files whose inode metadata/status changed within approximately the last 24 hours
 For example, changing: permissions , ownership, link count, file contents can update ctime.
+find /home -type f -ctime -7    --> within 7 days
+find /home -type f -ctime +7    --> more than 7 days
+
 
 find /home -type f -cmin -30  --> in mins
 
