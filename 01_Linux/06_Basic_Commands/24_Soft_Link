@@ -10,10 +10,6 @@ ln -s original.txt softlink.txt
 ln -s directory  directory
 
 
-# to unlink
-unlink file_name   --> removes the directory entry (name) file1. Whether the actual data becomes inaccessible/deleted depends on whether other links to the same inode exist.
-
-
 
 # Example:
 original.txt
@@ -47,6 +43,13 @@ pwd -P
 pwd -P  --> to know physical directory for symbolic link
 cd -P /home/viswa/logs     --> to change directory of physical directory of path /home/viswa/logs
 cd -L /home/viswa/logs     --> to preserve directory Logical path
+
+
+
+# to unlink
+unlink file_name   --> removes the directory entry (name) file1. Whether the actual data becomes inaccessible/deleted depends on whether other links to the same inode exist.
+
+
 
 
 Important characteristics
