@@ -21,4 +21,4 @@ mkdir -v folder    --> verbose
 mkdir -m 755 logs    --> set permissins while creating folder
 
 
-mkdir -p -v -m 755 folder1/folder2/folder3/{balu,mustafa,krishna}   --> creating folders with permissins
+mkdir -p -v -m 755 folder1/folder2/folder3/{balu,mustafa,krishna}   --> creating folders with permissins, it doesn't give permissions reculsively.
