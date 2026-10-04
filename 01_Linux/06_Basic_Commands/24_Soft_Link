@@ -25,12 +25,9 @@ Linux follows the link and reads original.txt.
 readlink -f symlink_file    --> to know physical path of file
 
 
-# Check it:
-ls -l file_name/directory    --> information about the link
-
-
-# Check it:
-ls -lL file_name/directory   --> follow the link and show target information
+ln -s /home/viswa/file1.txt(target file)  /tmp/file2.txt(link)
+ls -l /tmp/file2.txt   --> You should see something like:  lrwxrwxrwx. 1 viswa viswa 21 Oct 4 16:52 /tmp/file2.txt -> /home/viswa/file1.txt  --> it is link details
+ls -lL /tmp/file2.txt  --> You should get something like:  -rw-r--r--. 1 viswa viswa 8 Oct 4 16:53 /tmp/file2.txt                            --> it is target details
 
 
 # You might see:
