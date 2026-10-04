@@ -10,6 +10,10 @@ ln -s original.txt softlink.txt
 ln -s directory  directory
 
 
+# to unlink
+unlink file1   --> removes the directory entry (name) file1. Whether the actual data becomes inaccessible/deleted depends on whether other links to the same inode exist.
+
+
 
 # Example:
 original.txt
