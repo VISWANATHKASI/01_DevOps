@@ -33,6 +33,11 @@ The inode does not normally contain the filename.
 
 
 
+# to unlink
+unlink file_name   --> removes the directory entry (name) file1. Whether the actual data becomes inaccessible/deleted depends on whether other links to the same inode exist.
+
+
+
 
 Important Characteristics:
 =========================
