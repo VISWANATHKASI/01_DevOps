@@ -2,8 +2,13 @@
 Soft Link (Symbolic Link) : A soft link is like a shortcut to another file.
 =========================
 
-# Create it with:
+# Create symlink for file
 ln -s original.txt softlink.txt
+
+
+# create symlink for directory
+ln -s directory  directory
+
 
 
 # Example:
@@ -12,12 +17,17 @@ original.txt
      |
 softlink.txt
 
+
 # If you run: cat softlink.txt
 Linux follows the link and reads original.txt.
 
 
 # Check it:
-ls -l file_name
+ls -l file_name/directory    --> information about the link
+
+
+# Check it:
+ls -lL file_name/directory   --> follow the link and show target information
 
 
 # You might see:
