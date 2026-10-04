@@ -1,2 +1,8 @@
 
 pwd   --> to know present working directory
+
+
+pwd -L  --> Logical path, preserves symlink path
+
+
+pwd -P  -->  To see the physical path of directory for symlink
