@@ -22,7 +22,7 @@ softlink.txt
 Linux follows the link and reads original.txt.
 
 
-readlink -f file    --> to know physical path of file
+readlink -f symlink_file    --> to know physical path of file
 
 
 # Check it:
