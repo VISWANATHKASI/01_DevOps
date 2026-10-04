@@ -40,6 +40,9 @@ The l at the beginning means it is a symbolic link.
 # To see the physical path:
 pwd -P
 
+pwd -P  --> to know physical directory for symbolic link
+cd -P /home/viswa/logs     --> to change directory of physical directory of path /home/viswa/logs
+cd -L /home/viswa/logs     --> to preserve directory Logical path
 
 
 Important characteristics
