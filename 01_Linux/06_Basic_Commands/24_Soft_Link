@@ -40,7 +40,7 @@ lrwxrwxrwx 1 user user  12 Aug 16 softlink.txt -> original.txt
 The l at the beginning means it is a symbolic link.
 
 
-# To see the physical path:
+# To see the physical path of directory
 pwd -P
 
 pwd -P  --> to know physical directory for symbolic link
