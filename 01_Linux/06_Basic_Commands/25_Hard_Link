@@ -22,6 +22,18 @@ ls -li
 Notice: 12345 is the same inode number. And the link count is: 2 because two filenames point to that inode.
 
 
+
+What exactly is an inode?
+==========================
+An inode is a filesystem data structure containing information about a file.
+
+It contains information such as:
+File type, Permissions, Owner, Group, File size, Timestamps, Link count, Pointers/references to file data
+The inode does not normally contain the filename.
+
+
+
+
 Important Characteristics:
 =========================
 Can link to files only (normally cannot be used for directories)
