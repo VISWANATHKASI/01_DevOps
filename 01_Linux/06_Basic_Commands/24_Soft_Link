@@ -17,7 +17,8 @@ Linux follows the link and reads original.txt.
 
 
 # Check it:
-ls -l
+ls -l file_name
+
 
 # You might see:
 -rw-r--r-- 1 user user 100 Aug 16 original.txt
