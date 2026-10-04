@@ -14,7 +14,7 @@ find /home -type d -empty     --> to find empty directories
 
 
 find . -type l -name "*log"   --> to find Symbolic/Soft link
-readlink /var/lock            --> to know physical path of symbolic link
+readlink -f /var/lock            --> to know physical path of symbolic link
 find / -type l -exec readlink -f {} \; 2>/dev/null | sort | uniq -c | awk '$1 > 2'    --> to list files which has more than 2 symbolic links, 
                                                                                           readlink -f = resolve it to its final absolute path
 
