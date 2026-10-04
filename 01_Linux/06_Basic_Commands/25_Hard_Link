@@ -1,5 +1,5 @@
 
-Hard Link : A hard link is another filename pointing to the same inode/data as the original file.
+Hard Link : A hard link is another filename pointing to the same inode/data as the original file. Hard links do not point to a filename. They point to the same inode.
 =========
 
 # Create it with:
