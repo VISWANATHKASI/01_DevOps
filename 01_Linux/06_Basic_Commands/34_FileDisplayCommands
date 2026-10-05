@@ -6,12 +6,31 @@ cat /var/log/app.log
 cat -n filename  --> Display with line numbers:
 
 
+
+
+
 more — Display file page by page
 ================================
 more filename
 more application.log
 
 Note: enter space for next page, enter q to quit
+
+| Key        | Action                   |
+| ---------- | ------------------------ |
+| `Space`    | Next page                |
+| `Enter`    | Next line                |
+| `q`        | Quit                     |
+| `b`        | Previous page*           |
+| `/pattern` | Search for pattern       |
+| `n`        | Next search result       |
+| `=`        | Show current line number |
+| `Ctrl+L`   | Refresh screen           |
+| `h`        | Show help                |
+
+
+
+
 
 
 less — View large files page by page
