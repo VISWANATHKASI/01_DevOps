@@ -37,14 +37,29 @@ less — View large files page by page
 ====================================
 less filename
 
-Note:
-Space → next page
-b → previous page
-j -> one line forward or downward arrow key
-k -> one line backward or upward arrow key
-/word → search
-n → next search result
-q → quit
+
+| Key      | Meaning                |
+| -------- | ---------------------- |
+| `Space`  | Page down              |
+| `Enter`  | One line down          |
+| `q`      | Quit                   |
+| `b`      | Page up                |
+| `↑`or `k`| One line up            |
+| `↓`or `j`| One line down          |
+| `g`      | Beginning              |
+| `G`      | End                    |
+| `/word`  | Search forward         |
+| `?word`  | Search backward        |
+| `n`      | Next search result     |
+| `N`      | Previous search result |
+| `d`      | Half page down         |
+| `u`      | Half page up           |
+| `h`      | Help                   |
+| `Ctrl+L` | Refresh screen         |
+| `Ctrl+C` | Stop follow mode       |
+| `:n`     | Next file              |
+| `:p`     | Previous file          |
+
 
 
 head — Display beginning of a file
