@@ -2,5 +2,5 @@
 cp file1.txt file2.txt  --> it will create file2.txt with content of file1.txt
 
 
-cat > file.txt   or    cat file.txt
+cat > file.txt   or    cat file.txt    or    cat >> file.txt              -->   > --> override,  >> --> append/concat
 Ctrl + D   --> to exit
