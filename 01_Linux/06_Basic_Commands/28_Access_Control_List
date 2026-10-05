@@ -31,10 +31,13 @@ setfacl -x g:testers report.txt
 
 
 # Default ACL for directories
-setfacl -m d:u:alice:r /var/www/project    --> d: = default/inheritance ACL → existing objects are not directly modified; new objects can inherit it.
+setfacl -m d:u:alice:r /var/www/project    --> d: = default/inheritance ACL → existing objects are not directly modified. New objects (files and directories) created inside those directories can inherit the default ACL.
 setfacl -m d:g:testgroup:r /var/www/project
 
+-R → Starting directory + all existing subdirectories recursively; existing regular files inside starting directory and subdirectories are not given the default ACL.
 setfacl -Rm d:u:alice:r /var/www/project   --> The default ACL is applied recursively to the existing directories under /var/www/project, not to existing regular files. New objects (files and directories) created inside those directories can inherit the default ACL.
+setfacl -Rm d:g:testgroup:r /var/www/project
+
 getfacl /var/www/project
 
 
