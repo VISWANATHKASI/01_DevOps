@@ -13,6 +13,7 @@ more — Display file page by page
 ================================
 more filename
 more application.log
+more -N file.txt     --> Display with line numbers:
 
 
 | Key        | Action                   |
