@@ -10,24 +10,20 @@ sometimes you need to give specific permissions to a particular user or group wi
         ACL exists
 
 
-# to add permissions for a user
-setfacl -m u:alice:rw report.txt
-
-
-# Give permission to a group
-setfacl -m g:developers:rw report.txt
+# to add permissions 
+setfacl -m u:alice:rw report.txt        --> to add user normal acl
+setfacl -m g:developers:rw report.txt   --> to add group normal acl
 
 
 # View ACL
-getfacl report.txt
+getfacl report.txt         --> to list acl for file 
 
 
 # Remove ACL for user
-setfacl -x u:alice report.txt
+setfacl -x u:alice report.txt       --> to remove user normal acl
+setfacl -x g:testers report.txt     --> to remove group normal acl
 
 
-# Remove ACL for group
-setfacl -x g:testers report.txt
 
 
 # Default ACL for directories
@@ -38,13 +34,22 @@ setfacl -m d:g:testgroup:r /var/www/project
 setfacl -Rm d:u:alice:r /var/www/project   --> The default ACL is applied recursively to the existing directories under /var/www/project, not to existing regular files. New objects (files and directories) created inside those directories can inherit the default ACL.
 setfacl -Rm d:g:testgroup:r /var/www/project
 
+
+
+# to remove default ACL for directories
+setfacl -x d:u:alice /var/www/project      --> It removes: alice default acl for directory
+setfacl -x d:g:testgroup /var/www/project  --> it removes: testgroup default acl for directory
+
+setfacl -Rx d:u:alice /var/www/project      --> It removes: alice default acl for directory recursively
+setfacl -Rx d:g:testgroup /var/www/project  --> It removes: testgroup default acl for directory recursively
+
+
+
 getfacl /var/www/project
 
 
-# remove all extended ACL entries from a file.
+
+# remove all extended ACL entries 
 setfacl -b file          --> for file
-
-
-# remove all extended ACL entries from a directory.
 setfacl -b directory     --> for directory, it won't remove for inside folders
 setfacl -Rb directory    --> recursive, it will remove for inside folders also
