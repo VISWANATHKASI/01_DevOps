@@ -14,7 +14,6 @@ more — Display file page by page
 more filename
 more application.log
 
-Note: enter space for next page, enter q to quit
 
 | Key        | Action                   |
 | ---------- | ------------------------ |
