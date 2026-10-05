@@ -10,4 +10,7 @@ cat file1 > file2  --> it will create another copy of file1 if file2 doesn't exi
 cat file1 >> file2  --> to concat file1 data to file2 data
 
 
+cat file1.txt file2.txt > combined.txt   --> Concatenate content of file1 and file2 to combined file
+
+
 cp file1 file2 folder  --> to copy files to folder, folder should be present 
