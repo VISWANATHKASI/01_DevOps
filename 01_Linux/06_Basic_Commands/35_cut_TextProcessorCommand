@@ -4,6 +4,7 @@ cut:  cut is command line utility that allows your to cut parts of lines from sp
 Note: 
 1. if You might want to extract something from whitespace-separated output (ex: ls -ltr), awk is generally more appropriate
 2. cut works best with a known delimiter.
+3. cut is not a full CSV parser. cut doesn't understand CSV perfectly
 
 
 cut -c 1 cut_test.txt           --> Extract the first character from every line.
