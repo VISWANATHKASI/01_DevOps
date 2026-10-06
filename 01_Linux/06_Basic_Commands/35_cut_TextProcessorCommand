@@ -1,10 +1,59 @@
 cut:  cut is command line utility that allows your to cut parts of lines from specified files or piped data and print the result to standard output.
 === 
 
-cut -c1 filename                 --> list one character
-cut -c1,2,4 filename             --> pick and choose character
-cut -c1-3 filename               --> list range of characters
-cut -c1-5, 6-8 filename          --> list specific range of characters
-cut -d: -f 6 /etc/password       --> list 6th column separated by :
-cut -d: -f 6-7 /etc/password     --> list 6th & 7th column separated by :
-ls -l | cut -c2-4                --> lists owner permissions alone
+Note: 
+1. if You might want to extract something from whitespace-separated output (ex: ls -ltr), awk is generally more appropriate
+2. cut works best with a known delimiter.
+
+
+cut -c 1 cut_test.txt           --> Extract the first character from every line.
+
+
+cut -c 1,3,5 cut_test.txt       --> Extract multiple individual characters
+
+
+cut -c 1-3 cut_test.txt         --> Extract a range of characters
+
+
+cut -c 1-3,6-8 cut_test.txt     --> Extract multiple ranges
+
+
+cut -c 5- cut_test.txt           --> Start at character 5 and continue to the end.
+
+
+cut -c -5 cut_test.txt           --> Extract characters from the beginning through character 5.
+
+
+cut -f 2 cut_test.txt            --> f -> To extract field 2, By default, cut -f expects TAB as the delimiter. we need -d to specify delimiter
+
+
+cut -d ',' -f 2 cut_test.txt     -->  -d ','  -> Use comma as the field separator.
+
+
+cut -d ',' -f 1,3 cut_test.txt   --> Extract multiple fields
+
+
+cut -d ',' -f 2-4 cut_test.txt   --> Extract a range of fields
+
+
+cut -d ',' -f 2- cut_test.txt    --> Extract from a field to the end
+
+
+cut -d ',' -f -2 cut_test.txt    --> Extract from beginning to a field
+
+
+cut -d ',' -s -f 2 cut_test.txt  --> -s means: Suppress lines that don't contain the delimiter. So only lines containing , are processed.
+
+
+cut -d ',' -f 2 --complement cut_test.txt   --> You want everything except field 2.
+
+
+cut -d ':' -f 1 /etc/passwd      --> it will give usernames
+
+
+cut -d ':' -f 1,6 /etc/passwd    --> get usernames & home directories
+
+
+
+
+
