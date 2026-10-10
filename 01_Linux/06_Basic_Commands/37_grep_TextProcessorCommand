@@ -29,13 +29,15 @@ grep "ERROR" sample.txt  --> to serach word in file
 grep -n "ERROR" sample.txt  --> to print line numbers
 
 
-grep -i "error" sample.txt  --> to search word in file with case sensitive
+grep -i "error" sample.txt   --> to search word in file with case insensitive
 
 
 grep -in "error" sample.txt  --> Searches case-insensitively and displays line numbers.
+grep -in word file1 file2    --> to search in multiple files
 
 
 grep -c "ERROR" sample.txt  --> Count matching lines
+grep -ic word filename   --> count no of lines has word regardingless of case
 
 
 grep -o "ERROR" sample.txt | wc -l   --> To count every occurrence of the word ERROR rather than matching lines
@@ -45,15 +47,16 @@ grep -o '[0-9]\+' sample.txt         --> Find all numbers in a file
 grep -v "ERROR" sample.txt --> to print lines which don't have word
 
 
-grep -w "cat" sample.txt  --> Match whole words, This matches fail as a whole word, not as part of a larger word such as failure 
+grep -w "cat" sample.txt  --> Match whole words, This matches cat as a whole word, not catalog or concatenate 
 
 
 grep -x "cat" sample.txt   --> Match whole lines
 
 
-grep -E "ERROR|WARNING" filename              --> to search multiple words
-grep -in -e word1 -e word2 -e word3 filename  --> to search multiple words
-egrep -i "word1|word2" filename               --> to search multiple words
+grep 'ERROR\|WARNING' file                       --> to search multiple words
+grep -E "ERROR|WARNING" filename                 --> to search multiple words
+grep -in -e word1 -e word2 -e word3 filename     --> to search multiple words
+grep -in -e word1 -e word2 -e word3 file1 file2  --> to search multiple words in multiple files
 
 
 grep "^2026-10-10" filename         --> Search for text at the beginning of a line
@@ -74,7 +77,7 @@ grep '[A-Z]' file.txt
 
 
 grep -E '[0-9]{2}:[0-9]{2}:[0-9]{2}' filename        --> -E enables extended regular expression syntax. 
-grep -E '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' app.log     --> to find ip address in app.log
+grep -E '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' app.log     --> This matches IP-shaped text but does not validate IPv4 addresses
 
 
 grep -E '[0-9]+' filename               --> Match one or more digits:
@@ -124,22 +127,13 @@ else
 fi
 
 
-grep -H "error" "*.log"    -->  -H option always displays the filename along with matching lines.
+grep -H "error" ./*.log    -->  -H option always displays the filename along with matching lines.
 
 
 grep -l "ERROR" filename   --> show only file names, This option is especially useful when searching multiple files.
 
 
 grep -L "ERROR" filename   --> Show filenames without matches, 
-
-
-grep -ic word filename   --> to count no of times a word appeared
-
-
-grep -in word file1 file2  --> to search in multiple files
-
-
-grep -in -e word1 -e word2 -e word3 file1 file2  --> to search multiple words in multiple files
 
 
 find . -type f -exec grep -l "search_string" {} \;   --> Combine find with grep to search file contents , -l -> Only print the filename, not the matching line.
