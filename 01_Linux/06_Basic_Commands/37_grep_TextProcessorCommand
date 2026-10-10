@@ -1,6 +1,8 @@
 
 grep: grep stands for Global Regular Expression Print.
 ====
+grep → Basic regex; use \| for OR.
+grep -E → Extended regex; use | for OR.
 
 
 Option	    Meaning	                               Example
@@ -33,12 +35,11 @@ grep -i "error" sample.txt  --> to search word in file with case sensitive
 grep -in "error" sample.txt  --> Searches case-insensitively and displays line numbers.
 
 
-grep -c "ERROR" sample.txt  --> Count matching lines across multiple files
+grep -c "ERROR" sample.txt  --> Count matching lines
 
 
 grep -o "ERROR" sample.txt | wc -l   --> To count every occurrence of the word ERROR rather than matching lines
 grep -o '[0-9]\+' sample.txt         --> Find all numbers in a file
-
 
 
 grep -v "ERROR" sample.txt --> to print lines which don't have word
@@ -72,43 +73,43 @@ grep '[0-9]' file.txt
 grep '[A-Z]' file.txt
 
 
-grep -E '[0-9]{2}:[0-9]{2}:[0-9]{2}' filename    --> -E enables extended regular expression syntax. 
+grep -E '[0-9]{2}:[0-9]{2}:[0-9]{2}' filename        --> -E enables extended regular expression syntax. 
+grep -E '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' app.log     --> to find ip address in app.log
 
 
 grep -E '[0-9]+' filename               --> Match one or more digits:
 grep -E '[A-Z]+' filename
+grep -E "^[0-9]{3}$" file.txt           --> Match a three-digit code        
 
 
 grep -r "ERROR" /var/log     --> Searches recursively but generally does not follow symbolic links encountered inside directories. It can follow a symlink supplied as a command-line directory argument.
 grep -R "ERROR" /var/log     --> Searches recursively and follows symbolic links encountered during traversal, including directory symlinks.
 
 
-grep -r --include="*.log" "ERROR" ~/logs    --> Search only certain file types by filename
-grep -r --exclude="*.log" "ERROR" ~/logs    --> exclude certain type of files
-grep -r --exclude-dir="archive" "ERROR" ~/logs    --> exclude directory
+grep -r --include="*.log" "ERROR" logs    --> Search only certain file types by filename
+grep -r --exclude="*.log" "ERROR" logs    --> exclude certain type of files
+grep -r --exclude-dir="archive" "ERROR" logs    --> exclude directory
 
 
-grep -A 2 "ERROR" ~/grep_test.log   -->  -A: lines After the match
-grep -B 2 "ERROR" ~/grep_test.log   -->  -B: lines Before the match
-grep -C 2 "ERROR" ~/grep_test.log   -->  -C: lines before and after
+grep -A 2 "ERROR" grep_test.log   -->  -A: lines After the match
+grep -B 2 "ERROR" grep_test.log   -->  -B: lines Before the match
+grep -C 2 "ERROR" grep_test.log   -->  -C: lines before and after
 
 
 grep -F 'app[1].log' file.txt       -->  -F : Search for fixed text. Without -F, the square brackets have a special meaning in regular expressions.
+grep -F "192.168.1.10" app.log      -->  Without -F, the periods in an IP address are regex wildcards. With -F, they are literal periods.
 
 
-grep -f ~/patterns.txt ~/grep_test.log    --> -f : Search for a pattern from a file. 
+grep -f patterns.txt grep_test.log    --> -f : Search for a pattern from a file. 
                                           --> grep reads the patterns from patterns.txt and searches for any of them.
                                           --> This is useful when you need to search many keywords at once.
 
 
-grep -o "ERROR" ~/grep_test.log            --> Instead of printing the entire matching line, -o prints only the portion that matched.
-grep -o "ERROR" ~/grep_test.log | wc -l    --> Count each occurrence of a word , Unlike grep -c, this counts the number of matched occurrences. Here, each line contains ERROR only once.
+grep -o "ERROR" grep_test.log            --> Instead of printing the entire matching line, -o prints only the portion that matched.
+grep -o "ERROR" grep_test.log | wc -l    --> Count each occurrence of a word , Unlike grep -c, this counts the number of matched occurrences. Here, each line contains ERROR only once.
 
 
-grep -rn "ERROR" ~/logs     --> Print only matching filenames with line numbers
-
-
-grep -q "ERROR" ~/grep_test.log      -->  -q suppresses normal output. The exit status tells you whether a match was found:
+grep -q "ERROR" grep_test.log      -->  -q suppresses normal output. The exit status tells you whether a match was found:
 echo $?
 
 ExitStatus	Meaning
@@ -116,11 +117,14 @@ ExitStatus	Meaning
    1	      No match found
    2	      Error occurred (GNU grep)
 
-if grep -q "ERROR" ~/grep_test.log; then
+if grep -q "ERROR" grep_test.log; then
     echo "Errors found"
 else
     echo "No errors found"
 fi
+
+
+grep -H "error" "*.log"    -->  -H option always displays the filename along with matching lines.
 
 
 grep -l "ERROR" filename   --> show only file names, This option is especially useful when searching multiple files.
