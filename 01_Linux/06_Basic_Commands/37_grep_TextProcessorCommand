@@ -2,6 +2,25 @@
 grep: grep stands for Global Regular Expression Print.
 ====
 
+
+Option	    Meaning	                               Example
+-i	        Ignore uppercase/lowercase	           grep -i "error" app.log
+-v	        Show non-matching lines	               grep -v "INFO" app.log
+-n	        Show line numbers	                     grep -n "ERROR" app.log
+-c	        Count matching lines	                 grep -c "ERROR" app.log
+-l	        Show filenames with matches	           grep -l "ERROR" *.log
+-L	        Show filenames without matches	       grep -L "ERROR" *.log
+-w	        Match whole words only	               grep -w "error" app.log
+-x	        Match entire line	                     grep -x "INFO" app.log
+-o	        Print only matched text	               grep -o "ERROR" app.log
+-h	        Hide filenames	                       grep -h "ERROR" *.log
+-H	        Always show filenames	                 grep -H "ERROR" app.log
+-q	        Quiet mode; check exit status only	   grep -q "ERROR" app.log
+-e	        Specify a search pattern	             grep -e "ERROR" app.log
+-f	        Read patterns from a file	             grep -f patterns.txt app.log
+
+
+
 grep "ERROR" sample.txt  --> to serach word in file
 
 
