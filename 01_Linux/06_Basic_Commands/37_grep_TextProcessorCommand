@@ -1,6 +1,6 @@
 
 grep: grep stands for Global Regular Expression Print.
-
+====
 
 grep "ERROR" sample.txt  --> to serach word in file
 
