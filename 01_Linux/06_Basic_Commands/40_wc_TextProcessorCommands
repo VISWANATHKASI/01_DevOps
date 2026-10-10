@@ -1,4 +1,10 @@
 
+Note:
+=====
+wc -c counts the size of the encoded data in bytes
+wc -m counts characters according to the current locale
+
+
 wc filename  --> to know no of lines, words, bytes in file
 
 
@@ -24,4 +30,8 @@ ls -l | grep "drwx*" | wc -l   --> no of dirctores
 
 
 grep word filename | wc -l   --> no of lines contains word
+
+
+sort names.txt | uniq | wc -l     --> Count unique lines
+
 
