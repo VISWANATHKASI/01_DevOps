@@ -26,7 +26,7 @@ Option	    Meaning	                               Example
 grep "ERROR" sample.txt  --> to serach word in file
 
 
-grep -m 5 'ERROR' app.log  --> Stop after a 5 matches
+grep -m 5 'ERROR' app.log  --> -m counts matching lines, not individual occurrences
 
 
 grep -n "ERROR" sample.txt  --> to print line numbers
@@ -147,7 +147,7 @@ grep -H "error" ./*.log    -->  -H option always displays the filename along wit
 grep -l "ERROR" filename   --> Lists files containing matches. Usually more useful with multiple files or recursive searches.
 
 
-grep -L "ERROR" filename   --> Show filenames without matches, 
+grep -L "ERROR" filename   --> Show filenames without matches 
 
 
 tail -f app.log | grep --line-buffered -i 'error'    --> grep processes the output line by line
