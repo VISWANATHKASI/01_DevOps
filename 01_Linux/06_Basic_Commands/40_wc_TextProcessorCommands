@@ -1,5 +1,5 @@
 
-Note:
+Note:  The rupee symbol occupies three bytes in UTF-8, but it is one character.
 =====
 wc -c counts the size of the encoded data in bytes
 wc -m counts characters according to the current locale
