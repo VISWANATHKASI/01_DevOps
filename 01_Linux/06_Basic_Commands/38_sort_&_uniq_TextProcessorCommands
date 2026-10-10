@@ -5,7 +5,31 @@ sort filename  --> to sort in alphabetical order
 sort -r filename  --> sort in reverse alphabetical order
 
 
-sort -k2 filename   --> sort by field value
+sort names.txt -o sorted.txt    --> sort and save to another file
+
+
+sort -n numbers.txt         --> sort numeric numbers
+
+
+sort -nr numbers.txt        --> sort numeric numbers in reverse order
+
+
+sort -f fruits.txt          --> case insensitive
+
+
+sort -k2,2 filename         --> Sort by the second field (name)
+
+
+sort -k3,3n employees.txt    --> Sort by the third field numerically (salary)
+
+
+sort -k3,3nr employees.txt   --> Sort by salary from highest to lowest
+
+
+sort -t',' -k2,2 employees.csv    --> Sort by the second comma-separated field, The -t',' option sets the comma as the field separator.
+
+
+sort -t',' -k3,3nr employees.csv  --> Sort by salary in descending numeric order, The -t',' option sets the comma as the field separator.
 
 
 ===========================================================
