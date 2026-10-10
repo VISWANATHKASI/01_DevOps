@@ -32,6 +32,14 @@ sort -t',' -k2,2 employees.csv    --> Sort by the second comma-separated field, 
 sort -t',' -k3,3nr employees.csv  --> Sort by salary in descending numeric order, The -t',' option sets the comma as the field separator.
 
 
+sort -M months.txt    --> Month sorting
+
+
+sort -V versions.txt   --> Version sorting
+
+
+
+
 ===========================================================
 
 
@@ -45,6 +53,13 @@ sort filename | uniq -c   --> count
 
 
 sort filename | uniq -d   --> show only repeated/duplicate line
+
+
+sort filename | uniq -u   --> Display only non-repeated lines
+
+
+sort filename | uniq -i   --> Ignore case differences
+
 
 
 
