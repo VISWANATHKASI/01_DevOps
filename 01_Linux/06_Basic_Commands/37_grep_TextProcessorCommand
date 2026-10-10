@@ -26,6 +26,9 @@ Option	    Meaning	                               Example
 grep "ERROR" sample.txt  --> to serach word in file
 
 
+grep -m 5 'ERROR' app.log  --> Stop after a 5 matches
+
+
 grep -n "ERROR" sample.txt  --> to print line numbers
 
 
@@ -55,6 +58,7 @@ grep -x "cat" sample.txt   --> Match whole lines
 
 grep 'ERROR\|WARNING' file                       --> to search multiple words
 grep -E "ERROR|WARNING" filename                 --> to search multiple words
+grep -E '(ERROR|WARNING):' app.log               --> to search multiple words
 grep -in -e word1 -e word2 -e word3 filename     --> to search multiple words
 grep -in -e word1 -e word2 -e word3 file1 file2  --> to search multiple words in multiple files
 
@@ -63,6 +67,15 @@ grep "^2026-10-10" filename         --> Search for text at the beginning of a li
 
 
 grep "failed$" filename             --> Search for text at the end of a line
+
+
+grep '^$' file.txt                  --> to find Empty lines
+
+
+grep -v '^$' file.txt               --> to find non-empty lines
+
+
+grep -E '^[[:space:]]*$' file.txt    --> to find Lines containing only whitespace
 
 
 grep "D.tabase" filename            -->  . matches any single character other than a newline.
@@ -80,9 +93,10 @@ grep -E '[0-9]{2}:[0-9]{2}:[0-9]{2}' filename        --> -E enables extended reg
 grep -E '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' app.log     --> This matches IP-shaped text but does not validate IPv4 addresses
 
 
-grep -E '[0-9]+' filename               --> Match one or more digits:
-grep -E '[A-Z]+' filename
-grep -E "^[0-9]{3}$" file.txt           --> Match a three-digit code        
+grep -E '[0-9]+' filename               --> Match one or more digits
+grep -E '[A-Z]+' filename               --> Match one or more capital letters
+grep -E "^[0-9]{3}$" file.txt           --> Match a three-digit code
+grep -E '[0-9]{2,4}' file.txt           --> Two to four digits
 
 
 grep -r "ERROR" /var/log     --> Searches recursively but generally does not follow symbolic links encountered inside directories. It can follow a symlink supplied as a command-line directory argument.
@@ -134,6 +148,15 @@ grep -l "ERROR" filename   --> show only file names, This option is especially u
 
 
 grep -L "ERROR" filename   --> Show filenames without matches, 
+
+
+tail -f app.log | grep --line-buffered -i 'error'    --> grep processes the output line by line
+                                                     --> Each matching line is flushed immediately.
+                                                     --> You can see errors as they occur, making real-time monitoring more responsive.
+
+
+zgrep -i 'ERROR' app.log.gz         --> Search in compressed logs
+
 
 
 find . -type f -exec grep -l "search_string" {} \;   --> Combine find with grep to search file contents , -l -> Only print the filename, not the matching line.
