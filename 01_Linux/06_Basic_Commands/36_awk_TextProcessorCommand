@@ -1,23 +1,11 @@
 awk: awk is utility designed for data extraction. Most of the time, it is used to extract fields from a file or an output.
 ===
+awk  → field-based processing + calculations + conditions
 
 Note: 
 1. $0 means: The entire current line.
 2. By default, awk treats whitespace as the field separator.
    Whitespace includes: Space, Multiple spaces, Tabs
-
-
-
-ls -l | awk '{print $NF}'         --> to print last column
-awk '/word/ {print}' filename     --> to search specific word
-cat filename | awk '{$2="Replace_Word"; print $0}'  --> replace words 
-awk 'length($0) > 15' filename     --> to print lines which has more than 15 characters
-ls -l | awk '{print NF}'   --> to print no of coloumns
-ls -l | awk '{if($9 == "Viswa") print $0;}'  --> print entire row if column 9 maches with name viswa.
-
-
-# to remove duplicates in authorized_keys
-awk '!seen[$0]++' authorized_keys > authorized_keys.tmp && mv authorized_keys.tmp authorized_keys
 
 
 awk '{print $0}' awk_test.txt                      --> print entire line
@@ -66,6 +54,166 @@ awk '$4 > 60000 && $5 == "India" {print $2, $4}' awk_test.txt    -->  Multiple c
 
 
 awk '$3 == "Linux" || $3 == "AWS" {print $2, $3}' awk_test.txt   --> OR (||)
+
+
+awk '$2 ~ /viswa/ {print}' awk_test.txt         --> Search for text using ~
+
+
+awk 'tolower($3) == "linux" {print $2}' awk_test.txt    --> Case-insensitive matching, This converts field 3 to lowercase before comparing.
+
+
+awk '/Linux/ {print}' awk_test.txt       --> Print lines containing Linux, It's similar to: grep "Linux" ~/awk_test.txt
+
+
+awk 'BEGIN {print "Employee List"} {print $2}'  awk_test.txt          -->  BEGIN runs before reading the first line.
+
+
+awk '{print $2} END {print "Finished"}'  awk_test.txt    --> END runs after processing the last line.
+
+
+awk '{print NR, $0}'  awk_test.txt          -->  NR — current record/line number
+
+
+awk 'NR == 5 {print}' awk_test.txt          --> Print only line 5
+
+
+awk 'NR >= 3 && NR <= 6 {print}' awk_test.txt    --> Print lines 3 to 6
+
+
+awk '{print FNR, $0}' file     --> FNR is the record number within the current file.
+
+
+awk '{print NF}'  awk_test.txt   --> NF — number of fields in the current line
+
+
+awk '{print $NF}' awk_test.txt   --> Print last field
+
+
+awk '{print $(NF-1)}' awk_test.txt   --> Second-last field
+
+
+awk 'BEGIN {OFS=":"} {print $2, $3}'  awk_test.txt   --> OFS — Output Field Separator, ex: Viswa:Linux
+
+
+awk 'BEGIN {FS=":"} {print $1}' /etc/passwd   --> FS — Input Field Separator, Field Separator used when reading input. 
+                                                  Instead of -F, you can set FS.
+
+
+awk 'BEGIN {ORS=" | "} {print $2}' awk_test.txt   --> ORS — Output Record Separator, Normally each print ends with a newline.
+
+
+awk 'BEGIN {RS = "\n"} {print $2}' awk_test.txt   --> RS — Record Separator, By default, records are separated by newline. You can change it for special data formats.
+
+
+awk '{sum += $4} END {print sum}' awk_test.txt   -->  Add salaries
+
+
+awk '{sum += $4} END {print sum/NR}' awk_test.txt   --> Calculate average salary
+
+
+awk 'NR == 1 || $4 > max {max=$4} END {print max}' awk_test.txt   --> Find maximum salary
+
+
+awk 'NR == 1 || $4 < min {min=$4} END {print min}' awk_test.txt   --> Find minimum salary
+
+
+awk 'END {print NR}' awk_test.txt    --> Count lines, Similar to: wc -l awk_test.txt
+
+
+awk '$3 == "AWS" {count++} END {print count}' awk_test.txt   --> Count employees with AWS
+
+
+awk '{print "Employee:", $2, "Skill:", $3}' awk_test.txt    --> Add text to output
+
+
+awk '{printf "%-10s %-10s %d\n", $2, $3, $4}'  awk_test.txt   --> printf gives you more control over formatting.
+
+
+ps -ef | awk '{print $1, $2, $8}'    --> This extracts: USER PID COMMAND
+
+
+ls -l | awk '{print $1}'             --> This extracts the permissions
+ls -l | awk '{print $3}'             --> Owner
+ls -l | awk '{print $4}'             --> Group
+ls -l | awk '{print $9}'             --> files
+
+
+awk 'NR > 1 {print}' file            --> NR > 1  - This skips the header:
+
+
+awk 'BEGIN {print "NAME SKILL SALARY"} {print $2, $3, $4}' awk_test.txt    --> Print header + formatted data
+
+
+awk '
+$3 == "Linux" {print $2, "is using Linux"}
+$3 == "AWS"   {print $2, "is using AWS"}
+' awk_test.txt                                   --> Multiple patterns
+
+
+awk '{
+    if ($4 >= 70000)
+        print $2, "High salary"
+}' awk_test.txt                                  --> if statement
+
+
+awk '{
+    if ($4 >= 70000)
+        print $2, "High"
+    else
+        print $2, "Normal"
+}' awk_test.txt                                  --> if ... else
+
+
+awk '{
+    for (i=1; i<=NF; i++)
+        print $i
+}' awk_test.txt                                  --> for loop
+
+
+echo "Linux" | awk '{print substr($0,1,3)}'      --> Extract part of a string, substr(string, start, length)
+
+
+echo "Linux" | awk '{print length($0)}'          --> print length
+
+
+echo "linux" | awk '{print toupper($0)}'         --> to upper case
+
+
+echo "LINUX" | awk '{print tolower($0)}'         --> to lower case
+
+
+echo "Linux Linux Linux" | awk '{sub("Linux","AWS"); print}'    --> sub() replaces only the first occurrence.
+
+
+echo "Linux Linux Linux" | awk '{gsub("Linux","AWS"); print}'    --> gsub() replaces all matching occurrences.
+echo "Linux Linux Linux" | awk '{print gsub("Linux","")}'        --> Count occurrences, It tells you how many substitutions occurred.
+
+
+# to remove duplicates in authorized_keys
+awk '!seen[$0]++' authorized_keys > authorized_keys.tmp && mv authorized_keys.tmp authorized_keys
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
