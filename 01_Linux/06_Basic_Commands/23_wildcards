@@ -28,6 +28,7 @@ Regular Expressions (Regex)
 | ------- | --------------------------- | -------------------------------- | ---------------------------------- |
 | `^`     | Beginning of line           | `grep '^root' file`              | Lines starting with `root`         |
 | `$`     | End of line                 | `grep 'bash$' file`              | Lines ending with `bash`           |
+| '^$'    | Empty line                  | 'grep '^$' file.txt'             | Matches empty (blank) lines        |
 | `.`     | Any single character        | `grep 'c.t' file`                | `cat`, `cot`, `cut`                |
 | `+`     | One or more occurrences     | `grep -E 'ab+' file`             | `ab`, `abb`, `abbb`                |
 | `\|`    | OR                          | `grep -E 'error\|failed' file`   | `error` or `failed`                |
