@@ -6,4 +6,98 @@ cmp  --> byte by byte
 diff file1 file2   --> to know actual diff between 2 files
 
 
+diff -u file1.txt file2.txt   --> Unified format
+
+
+diff -qr dir1/ dir2/          -->  -q — Report only whether files differ, not their contents.  -r — Recursively compare subdirectories.
+                              -->  Compare two directory backups, This reports which corresponding files differ and which files are present only in one directory.
+
+
+diff -i file1.txt file2.txt   --> case insensitive
+
+
+diff -w file1.txt file2.txt   --> ignore whitespaces
+
+
+diff -y file1.txt file2.txt              --> Side-by-side comparison
+diff -y -W 120 file1.txt file2.txt       --> For wide files, specify a width
+ | — A line differs.
+ < — A line exists only in the first file.
+ > — A line exists only in the second file.
+
+
+diff -c file1.txt file2.txt       --> It shows the changed lines along with surrounding lines, making it easier to understand where the files differ.
+
+
+diff -r dir1 dir2   --> Compare directories recursively
+
+
+===========================================================================
+
+
 cmp file1 file2    --> it will give whether both files are same or not
+
+
+cmp -l a.txt b.txt   --> Report all differences
+
+
+cmp archive1.gz archive2.gz    --> 
+
+
+cmp -s a.txt b.txt    --> Quiet comparison
+echo $?
+
+Exit status:
+ 0 — Files are identical.
+ 1 — Files differ.
+ Greater than 1 — An error occurred, such as an inaccessible file.
+
+
+if cmp -s a.txt b.txt; then
+    echo "Files are identical"
+else
+    echo "Files differ or comparison failed"
+fi
+
+
+For production scripts
+======================
+
+cmp -s a.txt b.txt
+status=$?
+
+case "$status" in
+    0) echo "Files are identical" ;;
+    1) echo "Files differ" ;;
+    *) echo "Comparison failed" ;;
+esac
+
+
+
+Compare two files in a script
+=============================
+
+#!/bin/bash
+
+if cmp -s "$1" "$2"; then
+    echo "Files are identical"
+else
+    status=$?
+    if [ "$status" -eq 1 ]; then
+        echo "Files differ"
+    else
+        echo "Error comparing files"
+        exit "$status"
+    fi
+fi
+
+#save it as compare.sh
+bash compare.sh file1.txt file2.txt
+
+
+
+
+
+
+
+
