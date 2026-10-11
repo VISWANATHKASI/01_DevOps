@@ -8,4 +8,4 @@ touch jenkins docker terraform   --> to create multiple files
 touch flm{1..4}  --> to create multiple files with similar name
 
 
-
+touch env_{dev,sit,uat,prod}    --> it will create files env_dev, env_sit, env_uat, env_prod.
