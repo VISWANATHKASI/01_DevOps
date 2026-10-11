@@ -107,7 +107,7 @@ ssh  viswa@98.81.155.74
      (or) 
 
 # download  /home/viswa/.ssh/id_rsa to local
-scp viswa@172.31.15.153:/home/viswa/.ssh/id_rsa /c/Users/HP/Downloads
+scp  -i chandra-nv.pem ec2-user@172.31.15.153:/home/ec2-user/id_rsa /c/Users/HP/Downloads
 
 # to connect:
 ssh -i chandra-nv.pem viswa@98.81.155.74
