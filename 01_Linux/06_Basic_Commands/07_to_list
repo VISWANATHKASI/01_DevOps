@@ -39,19 +39,21 @@ ls -i   --> to know inode number
 ls -1  -->  Display one file per line.
 
 
+ls -lS   --> sort by size
+
+
+ls -ln   --> print UID/GID instead od owner and group
+
+
 ls -m  --> file1, file2, file3, Documents, Downloads
 
 
 ls -Q   --> "file1.txt" "my document.txt" "test.log"
 
 
-ls -lS   --> sort by size
-
-
 ls -lX   --> sort by extension
 
 
-ls -ln   --> print UID/GID instead od owner and group
 
 
 
