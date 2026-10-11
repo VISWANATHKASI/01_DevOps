@@ -13,6 +13,7 @@ cd ../../   --> to go 2 directories back
 
 
 cd     --> Go to your home directory.
+cd ~
 
 
 cd -    --> Go to the previous working directory.
