@@ -11,4 +11,7 @@ touch flm{1..4}  --> to create multiple files with similar name
 touch env_{dev,sit,uat,prod}    --> it will create files env_dev, env_sit, env_uat, env_prod.
 
 
+find . -maxdepth 1 -type f            --> to find all regular files in current directory
+
+
 find . -maxdepth 1 -type f -delete    --> to delete all regular files in current directory
