@@ -71,6 +71,13 @@ touch /home/viswa/.ssh/authorized_keys
 cat /home/viswa/.ssh/id_rsa.pub >> /home/viswa/.ssh/authorized_keys
 # grep -qxF "$(cat id_ed25519.pub)" authorized_keys || cat id_ed25519.pub >> authorized_keys
 
+$(command)  --> Execute the command inside $()
+            --> Capture its standard output.
+            --> Remove trailing newline characters.
+            --> Substitute the output into the surrounding command.
+
+
+
 chown -R viswa:viswa /home/viswa/.ssh
 
 chmod 700 /home/viswa/.ssh
