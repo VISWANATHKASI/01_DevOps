@@ -96,6 +96,7 @@ find . -type f -name '*.txt' -printf '.\n' | wc -l      -->   Count .txt files r
 find . -type f -name '*.sh' -printf '.\n' | wc -l       -->   Count shell scripts recursively
 
 
+find . -maxdepth 1 -type f -delete                      --> to delete all regular files in current directory
 
 
 find /home -type f -print0 | xargs -0 -r ls -l  --> This safely handles filenames such as: my file.txt, report 2026.txt
