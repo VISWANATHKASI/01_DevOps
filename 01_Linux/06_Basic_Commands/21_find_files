@@ -87,14 +87,18 @@ find /home/viswa -type f ! -name "*.log"      --> not condition
 find /home/viswa -type f -not -name "*.log"
 
 
-find . -maxdepth 1 -type f -printf '%f\n'               -->   %f prints each file's name without its directory path.
-find . -maxdepth 1 -type f -printf '%p\n'               -->   %p prints each file's name with its directory path.
+correct way to find no of files (using '.\n')
+===============================
 find . -maxdepth 1 -type f -printf '.\n'                -->   prints . instead of filename for each file
                                                         -->   -maxdepth 1	-- Does not descend into subdirectories
                                                         -->   -printf '.\n'	Prints one dot and a newline for every matching file
 find . -type f -name '*.txt' -printf '.\n' | wc -l      -->   Count .txt files recursively
 find . -type f -name '*.sh' -printf '.\n' | wc -l       -->   Count shell scripts recursively
 
+
+find . -maxdepth 1 -type f -printf '%f\n'               -->   %f prints each file's name without its directory path.
+find . -maxdepth 1 -type f -printf '%p\n'               -->   %p prints each file's name with its directory path.
+find . -maxdepth 1 -type f -print                       -->   to print files
 
 find . -maxdepth 1 -type f -delete                      --> to delete all regular files in current directory
 
