@@ -100,13 +100,14 @@ find . -maxdepth 1 -type f -printf '%f\n'               -->   %f prints each fil
 find . -maxdepth 1 -type f -printf '%p\n'               -->   %p prints each file's name with its directory path.
 find . -maxdepth 1 -type f -print                       -->   to print files
 
-find . -maxdepth 1 -type f -delete                      --> to delete all regular files in current directory
-
 
 find /home -type f -print0 |                            
 while IFS= read -r -d '' file; do
     printf '%q\n' "$file"
 done                                                    --> it will handle files with newline characters
+
+
+find . -maxdepth 1 -type f -delete                      --> to delete all regular files in current directory
 
 
 
