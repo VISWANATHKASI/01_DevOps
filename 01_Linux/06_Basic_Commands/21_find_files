@@ -103,6 +103,13 @@ find . -maxdepth 1 -type f -print                       -->   to print files
 find . -maxdepth 1 -type f -delete                      --> to delete all regular files in current directory
 
 
+find /home -type f -print0 |                            
+while IFS= read -r -d '' file; do
+    printf '%q\n' "$file"
+done                                                    --> it will handle files with newline characters
+
+
+
 find /home -type f -print0 | xargs -0 -r ls -l  --> This safely handles filenames such as: my file.txt, report 2026.txt
 xargs ls -l  --> effectively builds something like: ls -l /home/viswa/a.txt /home/viswa/b.txt /home/viswa/c.txt
 -print0 , xargs -0     --> Read NULL-separated filenames safely.
