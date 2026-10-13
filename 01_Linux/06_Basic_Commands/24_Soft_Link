@@ -36,12 +36,12 @@ ls -ld /tmp/link_folder            --> Displays information about the link itsel
 ls -lLd /tmp/link_folder           --> Follows the link but displays the target directory's own details, not its contents.
 
 
-Command	     Link to a file	        Link to a directory
-==========     ==================     =======================
-ls -l link	Link details	        Link details
-ls -lL link	Target file details	   Target directory contents
-ls -ld link	Link details	        Link details
-ls -lLd link	Target file details	   Target directory details
+Command	        Link to a file	        Link to a directory
+==========        ==================       =======================
+ls -l link	   Link details	        Link details
+ls -lL link	   Target file details	   Target directory contents
+ls -ld link	   Link details	        Link details
+ls -lLd link	   Target file details	   Target directory details
 
 
 
