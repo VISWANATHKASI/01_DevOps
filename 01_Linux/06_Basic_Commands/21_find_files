@@ -103,7 +103,7 @@ find . -maxdepth 1 -type f -print                       -->   to print files
 
 find /home -type f -print0 |                            
 while IFS= read -r -d '' file; do
-    printf '%q\n' "$file"
+    printf '%q\n' "$file";
 done                                                    --> it will handle files with newline characters
                                                         --> -print0 is an option in the Linux find command that prints each result followed by a NULL character (\0) instead of a newline (\n)
                                                             \0 is added by the find -print0 command automatically, not added to the actual file or filename.
