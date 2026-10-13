@@ -30,9 +30,9 @@ readlink -f symlink_file    --> to know physical path of file
 
 
 ln -s /home/viswa/file1.txt(target file)  /tmp/file2.txt(link)
-ls -l /tmp/file2.txt   --> You should see something like:  lrwxrwxrwx. 1 viswa viswa 21 Oct 4 16:52 /tmp/file2.txt -> /home/viswa/file1.txt  --> it is link details
-ls -lL /tmp/file2.txt  --> You should get something like:  -rw-r--r--. 1 viswa viswa 8 Oct 4 16:53 /tmp/file2.txt                            --> it is target details
-
+ls -l /tmp/file2.txt(or)folder     --> You should see something like:  lrwxrwxrwx. 1 viswa viswa 21 Oct 4 16:52 /tmp/file2.txt -> /home/viswa/file1.txt  --> it is link details
+ls -lL /tmp/file2.txt(or)folder    --> You should get something like:  -rw-r--r--. 1 viswa viswa 8 Oct 4 16:53 /tmp/file2.txt                            --> it is target details
+ls -ld /tmp/link_folder            --> Displays information about the link itself without listing a directory's contents.
 
 # You might see:
 -rw-r--r-- 1 user user 100 Aug 16 original.txt
