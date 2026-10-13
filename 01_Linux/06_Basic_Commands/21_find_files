@@ -79,8 +79,8 @@ find /home -type f -ctime +7    --> more than 7 days
 find /home -type f -cmin -30  --> within 30 min
 find /home -type f -cmin -30  --> more than 30 min ago
 
-find /home/viswa -type f -a -name "*.log" -a -name "*.txt"      -->  -a  -> AND conditin
-find /home/viswa -type f \( -name "*.log" -o -name "*.txt" \)   -->  -o  -> OR  condition
+find /home/viswa -type f \( -name "*.log" -a -size +1M \)        -->  -a  -> AND conditin
+find /home/viswa -type f \( -name "*.log" -o -name "*.txt" \)    -->  -o  -> OR  condition
 
 
 find /home/viswa -type f ! -name "*.log"      --> not condition
