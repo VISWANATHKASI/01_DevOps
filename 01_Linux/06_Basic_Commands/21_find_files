@@ -105,6 +105,15 @@ find /home -type f -print0 |
 while IFS= read -r -d '' file; do
     printf '%q\n' "$file"
 done                                                    --> it will handle files with newline characters
+                                                        --> -print0 is an option in the Linux find command that prints each result followed by a NULL character (\0) instead of a newline (\n)
+                                                            \0 is added by the find -print0 command automatically, not added to the actual file or filename.
+                                                        --> IFS=  Prevents whitespace trimming.
+                                                        --> read  -> Reads input into a variable.
+                                                        --> -r -> Treats backslashes literally. Without -r, read may interpret backslashes as escape characters.
+                                                        --> -d '' -> Reads until a NUL (\0) byte is found.
+                                                        --> file -> The variable that stores the filename.
+                                                        --> %q — prints the value in a form that Bash can interpret safely as a single word.
+                                                        --> \n — prints a newline, so the next output starts on a new line
 
 
 find . -maxdepth 1 -type f -delete                      --> to delete all regular files in current directory
