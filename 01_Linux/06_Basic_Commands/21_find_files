@@ -110,6 +110,10 @@ done                                                    --> it will handle files
 find . -maxdepth 1 -type f -delete                      --> to delete all regular files in current directory
 
 
+find . -type f -not -path '*/.*'                        -->  -not -path  -> don't enter the path 
+find /home/ec2-user -type d -name ".*" -prune -o -type f ! -name ".*" -print   --> -prune --> Skip those directories with .* (hidden folders)
+
+
 
 find /home -type f -print0 | xargs -0 -r ls -l  --> This safely handles filenames such as: my file.txt, report 2026.txt
 xargs ls -l  --> effectively builds something like: ls -l /home/viswa/a.txt /home/viswa/b.txt /home/viswa/c.txt
