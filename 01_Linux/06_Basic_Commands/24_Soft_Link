@@ -2,6 +2,10 @@
 Soft Link (Symbolic Link) : A soft link is like a shortcut to another file.
 =========================
 
+
+df -h path   --> to know file system of provided path.
+
+
 # Create symlink for file
 ln -s original.txt softlink.txt
 
