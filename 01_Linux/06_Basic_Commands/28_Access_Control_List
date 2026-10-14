@@ -53,3 +53,8 @@ getfacl /var/www/project
 setfacl -b file          --> for file
 setfacl -b directory     --> for directory, it won't remove for inside folders
 setfacl -Rb directory    --> recursive, it will remove for inside folders also
+
+
+
+# to find all files & directories which has acl
+find / -exec getfacl -s {} + 2>/dev/null | grep '^# file:'     -->  -s — skips files that have only the base ACL entries (no extended ACL entries).
