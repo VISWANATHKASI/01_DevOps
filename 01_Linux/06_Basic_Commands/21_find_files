@@ -124,7 +124,7 @@ find /home/ec2-user -type d -name ".*" -prune -o -type f ! -name ".*" -print   -
 
 
 
-# to find all files & directories which has acl
+# to find all files & directories which have acl
 find / -exec getfacl -s {} + 2>/dev/null | grep '^# file:'     -->  -s — skips files that have only the base ACL entries (no extended ACL entries).
 
 
