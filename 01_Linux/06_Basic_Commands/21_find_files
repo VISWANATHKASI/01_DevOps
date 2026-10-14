@@ -124,6 +124,11 @@ find /home/ec2-user -type d -name ".*" -prune -o -type f ! -name ".*" -print   -
 
 
 
+# to find all files & directories which has acl
+find / -exec getfacl -s {} + 2>/dev/null | grep '^# file:'     -->  -s — skips files that have only the base ACL entries (no extended ACL entries).
+
+
+
 find /home -type f -print0 | xargs -0 -r ls -l  --> This safely handles filenames such as: my file.txt, report 2026.txt
 xargs ls -l  --> effectively builds something like: ls -l /home/viswa/a.txt /home/viswa/b.txt /home/viswa/c.txt
 -print0 , xargs -0     --> Read NULL-separated filenames safely.
