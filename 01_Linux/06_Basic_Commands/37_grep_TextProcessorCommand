@@ -158,6 +158,9 @@ tail -f app.log | grep --line-buffered -i 'error'    --> grep processes the outp
 zgrep -i 'ERROR' app.log.gz         --> Search in compressed logs
 
 
+# to copy pub key to authorized keys if it is not added already
+grep -qxF "$(cat id_ed25519.pub)" authorized_keys || cat id_ed25519.pub >> authorized_keys
+
 
 find . -type f -exec grep -l "search_string" {} +   --> Combine find with grep to search file contents , -l -> Only print the filename, not the matching line.
                           -Hn                        --> -H    → print filename , -n    → print line number
