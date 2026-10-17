@@ -9,6 +9,16 @@ sometimes you need to give specific permissions to a particular user or group wi
           ↑
         ACL exists
 
+Note:
+====
+Think of the mask as a filter:
+1. If the mask allows more than the ACL entry, the ACL entry determines the effective permissions.
+2. If the mask allows less than the ACL entry, the mask restricts the effective permissions.
+
+Mathematically: Effective permissions= ACL entry "intersection"  Mask .  Here, intersection means the permissions both entries allow.
+
+
+
 
 # to add permissions 
 setfacl -m u:alice:rw report.txt        --> to add user normal acl
