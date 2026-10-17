@@ -151,7 +151,7 @@ find directory -type d -exec setfacl -k {} +
 setfacl -bk directory    --> Removes extended access ACL entries and the default ACL from the specified directory only.
 setfacl -Rbk directory    --> Removes extended access ACL entries and default ACLs recursively throughout the directory tree.
          or
-find directory -type d -exec setfacl -bk {} +
+find directory -exec setfacl -bk {} +
 
 
 # to find all files & directories which have acl
