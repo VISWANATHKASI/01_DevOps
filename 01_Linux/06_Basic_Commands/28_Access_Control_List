@@ -133,11 +133,15 @@ setfacl -Rb directory    --> Removes extended access ACL entries recursively fro
 # remove default ACL entries
 setfacl -k directory    --> Removes the default ACL from the specified directory only.
 setfacl -Rk directory    --> Removes default ACLs recursively from the starting directory and its subdirectories.
+        or
+find directory -type d -exec setfacl -k {} +
 
 
 # remove both extended ACL entries & default ACL entries
 setfacl -bk directory    --> Removes extended access ACL entries and the default ACL from the specified directory only.
 setfacl -Rbk directory    --> Removes extended access ACL entries and default ACLs recursively throughout the directory tree.
+         or
+find directory -type d -exec setfacl -bk {} +
 
 
 # to find all files & directories which have acl
