@@ -55,6 +55,15 @@ setfacl -b directory     --> for directory, it won't remove for inside folders
 setfacl -Rb directory    --> recursive, it will remove for inside folders also
 
 
+# remove default ACL entries
+setfacl -k directory    --> to remove default ACL for directory
+setfacl -Rk directory    --> to remove default ACL for directory recursively, it will remove inside folders also
+
+
+# remove both extended ACL entries & default ACL entries
+setfacl -bk directory    --> to remove default ACL & extended ACL for directory
+setfacl -Rbk directory    --> to remove default ACL & extended ACL for directory recursively
+
 
 # to find all files & directories which have acl
 find / -exec getfacl -s {} + 2>/dev/null | grep '^# file:'     -->  -s — skips files that have only the base ACL entries (no extended ACL entries).
