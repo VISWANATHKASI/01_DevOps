@@ -14,8 +14,8 @@ Note:
 Think of the mask as a filter:
 1. If the mask allows more than the ACL entry, the ACL entry determines the effective permissions.
 2. If the mask allows less than the ACL entry, the mask restricts the effective permissions.
-3. The mask limits the effective permissions of named users, the owning group, and named groups.
-4. It does not limit the file owner's permissions or the permissions for other.
+3. The mask limits the effective permissions of named users, the owning group, and named groups. ex: Named user entries, such as user:alice:rw- . The owning group entry, group::rwx. Named group entries, such as group:developers:rwx
+4. It does not limit the file owner's permissions or the permissions for other. ex: user:: (the file owner) or other::.
 5. The effective permissions are the intersection of the relevant ACL entry and the mask.
 
 Mathematically: Effective permissions= ACL entry "intersection"  Mask .  Here, intersection means the permissions both entries allow.
@@ -36,8 +36,8 @@ setfacl -Rm m::r-- /var/www/project    --> Sets the access ACL mask on the start
 Set 1: Add and remove access ACLs on files
 ==========================================
 # Add access ACL entries
-setfacl -m u:alice:rw report.txt        --> Alice's ACL entry will be added to the file
-setfacl -m g:developers:rw report.txt   --> The developers group's ACL entry will be added to the file.
+setfacl -m u:alice:rw- report.txt        --> Alice's ACL entry will be added to the file
+setfacl -m g:developers:rw- report.txt   --> The developers group's ACL entry will be added to the file.
 
 # View ACL
 getfacl report.txt                      --> Displays the ACL entries for the file.
