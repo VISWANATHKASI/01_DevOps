@@ -18,50 +18,81 @@ Think of the mask as a filter:
 Mathematically: Effective permissions= ACL entry "intersection"  Mask .  Here, intersection means the permissions both entries allow.
 
 
+-m modifies or adds an ACL entry.
+-x removes the specified ACL entry.
 
-
-# to add permissions 
+==========================================
+Set 1: Add and remove access ACLs on files
+==========================================
+# Add access ACL entries
 setfacl -m u:alice:rw report.txt        --> alice acl will be to added to file
 setfacl -m g:developers:rw report.txt   --> developers group acl will be to added to file
 
-setfacl -Rm u:alice:rw folder      --> alice acl will be applied to folder and all existing files & subdirectories
-setfacl -Rm g:developers:rw folder   --> developers group acl will be applied to folder and all existing files & subdirectories
-
 
 # View ACL
-getfacl report.txt/folder         --> to list acl for file 
+getfacl report.txt
 
 
-# Remove ACL for user
+# Remove access ACL entries
 setfacl -x u:alice report.txt       --> alice acl will be to removed to file
 setfacl -x g:developers report.txt     --> developers group acl will be to removed to file
 
+
+=================================================
+set 2:  Apply and remove access ACLs recursively
+=================================================
+
+# Apply access ACLs recursively
+setfacl -Rm u:alice:rwX folder      --> alice acl will be applied to folder and all existing files & subdirectories
+setfacl -Rm g:developers:rwX folder   --> developers group acl will be applied to folder and all existing files & subdirectories
+
+
+# View ACL
+getfacl folder         --> to list acl for file 
+
+
+# Remove access ACL entries recursively
 setfacl -Rx u:alice folder       --> alice acl will be removed to folder and all existing files & subdirectories
 setfacl -Rx g:developers folder    --> developers group acl will be removed to folder and all existing files & subdirectories
 
 
+===================================================
+Set 3: Add and remove default ACLs on one directory
+===================================================
 
-
-# Default ACL for directories
+# Add default ACL entries
 setfacl -m d:u:alice:r /var/www/project    --> d: = default/inheritance ACL → existing objects (files and directories) are not directly modified. New objects (files and directories) created inside those directories can inherit the default ACL.
 setfacl -m d:g:testgroup:r /var/www/project
 
+
+# View ACL
+getfacl /var/www/project
+
+
+# Remove default ACL entries from this directory only
+setfacl -x d:u:alice /var/www/project      --> It removes: alice default acl for starting directory, but not for alredy inherited children
+setfacl -x d:g:testgroup /var/www/project  --> it removes: testgroup default acl for starting directory, but not for alredy inherited children
+
+================================================
+set 4: Apply and remove default ACLs recursively
+================================================
+
 -R → Starting directory + all existing subdirectories recursively; existing regular files inside starting directory and subdirectories are not given the default ACL.
+
+# Apply default ACL entries recursively
 setfacl -Rm d:u:alice:r /var/www/project   --> The default ACL is applied recursively to the existing directories under /var/www/project, not to existing regular files. New objects (files and directories) created inside those directories can inherit the default ACL.
 setfacl -Rm d:g:testgroup:r /var/www/project
 
-
-
-# to remove default ACL for directories
-setfacl -x d:u:alice /var/www/project      --> It removes: alice default acl for directory
-setfacl -x d:g:testgroup /var/www/project  --> it removes: testgroup default acl for directory
-
-setfacl -Rx d:u:alice /var/www/project      --> It removes: alice default acl for directory recursively
-setfacl -Rx d:g:testgroup /var/www/project  --> It removes: testgroup default acl for directory recursively
-
-
-
+# View ACL
 getfacl /var/www/project
+
+# Remove default ACL entries recursively
+setfacl -Rx d:u:alice /var/www/project      --> It removes: alice default acl for startiing directory, and also for inherited children
+setfacl -Rx d:g:testgroup /var/www/project  --> It removes: testgroup default acl for starting directory recursively, and also for inherited children
+
+================================================================================
+
+
 
 
 
