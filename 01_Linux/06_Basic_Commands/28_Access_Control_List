@@ -20,7 +20,6 @@ Think of the mask as a filter:
   | `group::`          | `r--`             | `r--` | `r--`                 |
   | `group:developers` | `rwx`             | `r--` | `r--`                 |
 3. It does not limit the file owner's permissions or the permissions for other. ex: user:: (the file owner) or other::.
-4. The effective permissions are the intersection of the relevant ACL entry and the mask.
 
 Mathematically: Effective permissions= ACL entry "intersection"  Mask .  Here, intersection means the permissions both entries allow.
 ex: user:alice:rw-
