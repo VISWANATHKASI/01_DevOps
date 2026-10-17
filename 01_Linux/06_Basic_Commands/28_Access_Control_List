@@ -21,17 +21,23 @@ Mathematically: Effective permissions= ACL entry "intersection"  Mask .  Here, i
 
 
 # to add permissions 
-setfacl -m u:alice:rw report.txt        --> to add user normal acl
-setfacl -m g:developers:rw report.txt   --> to add group normal acl
+setfacl -m u:alice:rw report.txt        --> alice acl will be to added to file
+setfacl -m g:developers:rw report.txt   --> developers group acl will be to added to file
+
+setfacl -Rm u:alice:rw folder      --> alice acl will be applied to folder and all existing files & subdirectories
+setfacl -Rm g:developers:rw folder   --> developers group acl will be applied to folder and all existing files & subdirectories
 
 
 # View ACL
-getfacl report.txt         --> to list acl for file 
+getfacl report.txt/folder         --> to list acl for file 
 
 
 # Remove ACL for user
-setfacl -x u:alice report.txt       --> to remove user normal acl
-setfacl -x g:testers report.txt     --> to remove group normal acl
+setfacl -x u:alice report.txt       --> alice acl will be to removed to file
+setfacl -x g:developers report.txt     --> developers group acl will be to removed to file
+
+setfacl -Rx u:alice folder       --> alice acl will be removed to folder and all existing files & subdirectories
+setfacl -Rx g:developers folder    --> developers group acl will be removed to folder and all existing files & subdirectories
 
 
 
