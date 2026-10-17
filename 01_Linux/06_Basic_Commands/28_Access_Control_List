@@ -111,6 +111,11 @@ setfacl -Rm d:u:alice:rwX /var/www/project     --> Alice's default ACL entry wil
 setfacl -Rm d:g:developers:rwX /var/www/project  --> The developers group's default ACL entry will be added to the starting directory and existing subdirectories, but not to regular files.
                                                --> New subdirectories and files created inside directories with this default ACL may inherit the developers group's ACL permissions.
 
+best:
+====
+find /var/www/project -type d -exec setfacl -m d:u:alice:rwX {} +
+find /var/www/project -type d -exec setfacl -m d:g:developers:rwX {} +
+
 
 # View ACL
 getfacl /var/www/project                --> Displays the access ACL and default ACL entries for the specified directory.
@@ -121,6 +126,11 @@ getfacl -R /var/www/project             --> Displays the ACL entries recursively
 setfacl -Rx d:u:alice /var/www/project      -->  Alice's default ACL entry will be removed from the starting directory and existing subdirectories, but not from existing regular files.
 setfacl -Rx d:g:developers /var/www/project  -->  The developers group's default ACL entry will be removed from the starting directory and existing subdirectories, but not from existing regular files.
 
+
+best:
+====
+find /var/www/project -type d -exec setfacl -x d:u:alice {} +
+find /var/www/project -type d -exec setfacl -x d:g:developers {} +
 ================================================================================
 
 
