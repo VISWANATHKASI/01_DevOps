@@ -23,6 +23,11 @@ ex: user:alice:rw-
     mask::r--
     Alice's effective permissions are r--, not rw-.
 
+setfacl -m m::r-- report.txt           --> Sets the access ACL mask on the file to read-only.
+setfacl -m m::r-- folder               --> Sets the access ACL mask on the specified directory only, not on its existing contents.
+setfacl -m m::r-- /var/www/project     --> Sets the access ACL mask on /var/www/project only, not on its existing subdirectories and files.
+setfacl -Rm m::r-- /var/www/project    --> Sets the access ACL mask on the starting directory and all existing subdirectories and files recursively.
+
 
 -m modifies or adds an ACL entry.
 -x removes the specified ACL entry.
