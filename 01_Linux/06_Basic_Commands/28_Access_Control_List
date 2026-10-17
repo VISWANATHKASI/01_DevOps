@@ -14,6 +14,8 @@ Note:
 Think of the mask as a filter:
 1. If the mask allows more than the ACL entry, the ACL entry determines the effective permissions.
 2. If the mask allows less than the ACL entry, the mask restricts the effective permissions.
+3. The mask limits the effective permissions of named users, the owning group, and named groups.
+4. It does not limit the file owner's permissions or the permissions for other.
 
 Mathematically: Effective permissions= ACL entry "intersection"  Mask .  Here, intersection means the permissions both entries allow.
 
@@ -50,7 +52,7 @@ setfacl -Rm g:developers:rwX folder   --> The developers group's ACL entry will 
 
 # View ACL
 getfacl folder            --> Displays the ACL entries for the starting folder.
-getfacl -R folder         --> Displays the ACL entries throughout a directory tree
+getfacl -R folder         --> Displays the ACL entries recursively throughout a directory tree
 
 
 # Remove access ACL entries recursively
@@ -73,7 +75,7 @@ setfacl -m d:g:developers:rwX /var/www/project  --> The developers group's defau
 
 # View ACL
 getfacl /var/www/project          --> Displays the access ACL and default ACL entries for the specified directory.
-getfacl -R folder                 --> Displays the ACL entries throughout a directory tree
+getfacl -R folder                 --> Displays the ACL entries recursively throughout a directory tree
 
 
 # Remove default ACL entries from this directory only
@@ -98,7 +100,7 @@ setfacl -Rm d:g:developers:rwX /var/www/project  --> The developers group's defa
 
 # View ACL
 getfacl /var/www/project                    --> Displays the access ACL and default ACL entries for the specified directory.
-getfacl -R folder                           --> Displays the ACL entries throughout a directory tree
+getfacl -R folder                           --> Displays the ACL entries recursively throughout a directory tree
 
 
 # Remove default ACL entries recursively
