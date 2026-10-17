@@ -42,6 +42,9 @@ setfacl -x g:developers report.txt     --> developers group acl will be to remov
 set 2:  Apply and remove access ACLs recursively
 =================================================
 
+-R processes the starting directory, existing subdirectories, and existing regular files. 
+Uppercase X adds execute permission to directories and to files that already have at least one execute bit.
+
 # Apply access ACLs recursively
 setfacl -Rm u:alice:rwX folder      --> alice acl will be applied to folder and all existing files & subdirectories
 setfacl -Rm g:developers:rwX folder   --> developers group acl will be applied to folder and all existing files & subdirectories
