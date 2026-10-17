@@ -75,7 +75,7 @@ setfacl -m d:g:developers:rwX /var/www/project  --> The developers group's defau
 
 # View ACL
 getfacl /var/www/project          --> Displays the access ACL and default ACL entries for the specified directory.
-getfacl -R folder                 --> Displays the ACL entries recursively throughout a directory tree
+getfacl -R /var/www/project       --> Displays the ACL entries recursively throughout a directory tree
 
 
 # Remove default ACL entries from this directory only
@@ -99,8 +99,8 @@ setfacl -Rm d:g:developers:rwX /var/www/project  --> The developers group's defa
 
 
 # View ACL
-getfacl /var/www/project                    --> Displays the access ACL and default ACL entries for the specified directory.
-getfacl -R folder                           --> Displays the ACL entries recursively throughout a directory tree
+getfacl /var/www/project                --> Displays the access ACL and default ACL entries for the specified directory.
+getfacl -R /var/www/project             --> Displays the ACL entries recursively throughout a directory tree
 
 
 # Remove default ACL entries recursively
