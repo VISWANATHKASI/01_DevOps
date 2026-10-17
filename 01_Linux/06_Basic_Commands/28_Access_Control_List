@@ -16,8 +16,12 @@ Think of the mask as a filter:
 2. If the mask allows less than the ACL entry, the mask restricts the effective permissions.
 3. The mask limits the effective permissions of named users, the owning group, and named groups.
 4. It does not limit the file owner's permissions or the permissions for other.
+5. The effective permissions are the intersection of the relevant ACL entry and the mask.
 
 Mathematically: Effective permissions= ACL entry "intersection"  Mask .  Here, intersection means the permissions both entries allow.
+ex: user:alice:rw-
+    mask::r--
+    Alice's effective permissions are r--, not rw-.
 
 
 -m modifies or adds an ACL entry.
@@ -43,7 +47,7 @@ setfacl -x g:developers report.txt     --> The developers group's ACL entry will
 set 2:  Apply and remove access ACLs recursively
 =================================================
 
-Uppercase X adds execute permission to directories and to files that already have at least one execute bit.
+Uppercase X grants execute permission to directories and to regular files that already have at least one execute bit set.
 
 # Apply access ACLs recursively
 setfacl -Rm u:alice:rwX folder      --> Alice's ACL entry will be added to the starting folder, its existing subdirectories, and existing files.
@@ -64,7 +68,7 @@ Set 3: Add and remove default ACLs on one directory
 ===================================================
 
 d: = default/inheritance ACL
-Uppercase X adds execute permission to directories and to files that already have at least one execute bit.
+Uppercase X grants execute permission to directories and to regular files that already have at least one execute bit set.
 
 # Add default ACL entries
 setfacl -m d:u:alice:rwX /var/www/project    --> Alice's default ACL entry will be added to the starting directory only, not directly to existing subdirectories and files.
@@ -88,7 +92,7 @@ set 4: Apply and remove default ACLs recursively
 ================================================
 
 d: = default/inheritance ACL
-Uppercase X adds execute permission to directories and to files that already have at least one execute bit.
+Uppercase X grants execute permission to directories and to regular files that already have at least one execute bit set.
 
 
 # Apply default ACL entries recursively
