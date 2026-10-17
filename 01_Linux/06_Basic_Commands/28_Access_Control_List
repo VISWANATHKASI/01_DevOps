@@ -114,9 +114,6 @@ setfacl -Rx d:g:developers /var/www/project  -->  The developers group's default
 ================================================================================
 
 
-
-
-
 # remove all extended ACL entries 
 setfacl -b file          --> for file
 setfacl -b directory     --> for directory, it won't remove for inside folders
