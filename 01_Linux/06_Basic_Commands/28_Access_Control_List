@@ -115,19 +115,19 @@ setfacl -Rx d:g:developers /var/www/project  -->  The developers group's default
 
 
 # remove all extended ACL entries 
-setfacl -b file          --> for file
-setfacl -b directory     --> for directory, it won't remove for inside folders
-setfacl -Rb directory    --> recursive, it will remove for inside folders also
+setfacl -b file          --> Removes all extended access ACL entries from the specified file, leaving its base ACL entries.
+setfacl -b directory     --> Removes extended access ACL entries from the specified directory only. It does not affect files or subdirectories inside it.
+setfacl -Rb directory    --> Removes extended access ACL entries recursively from the directory and its contents.
 
 
 # remove default ACL entries
-setfacl -k directory    --> to remove default ACL for directory
-setfacl -Rk directory    --> to remove default ACL for directory recursively, it will remove inside folders also
+setfacl -k directory    --> Removes the default ACL from the specified directory only.
+setfacl -Rk directory    --> Removes default ACLs recursively from the starting directory and its subdirectories.
 
 
 # remove both extended ACL entries & default ACL entries
-setfacl -bk directory    --> to remove default ACL & extended ACL for directory
-setfacl -Rbk directory    --> to remove default ACL & extended ACL for directory recursively
+setfacl -bk directory    --> Removes extended access ACL entries and the default ACL from the specified directory only.
+setfacl -Rbk directory    --> Removes extended access ACL entries and default ACLs recursively throughout the directory tree.
 
 
 # to find all files & directories which have acl
