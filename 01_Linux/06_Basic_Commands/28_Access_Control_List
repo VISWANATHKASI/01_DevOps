@@ -41,7 +41,6 @@ setfacl -x g:developers report.txt     --> The developers group's ACL entry will
 set 2:  Apply and remove access ACLs recursively
 =================================================
 
--R processes the starting directory, existing subdirectories, and existing regular files. 
 Uppercase X adds execute permission to directories and to files that already have at least one execute bit.
 
 # Apply access ACLs recursively
@@ -61,18 +60,24 @@ setfacl -Rx g:developers folder    --> The developers group's ACL entry will be 
 Set 3: Add and remove default ACLs on one directory
 ===================================================
 
+d: = default/inheritance ACL
+Uppercase X adds execute permission to directories and to files that already have at least one execute bit.
+
 # Add default ACL entries
-setfacl -m d:u:alice:r /var/www/project    --> d: = default/inheritance ACL → existing objects (files and directories) are not directly modified. New objects (files and directories) created inside those directories can inherit the default ACL.
-setfacl -m d:g:testgroup:r /var/www/project
+setfacl -m d:u:alice:rwX /var/www/project    --> Alice's default ACL entry will be added to the starting directory only, not directly to existing subdirectories and files.
+                                             --> New subdirectories and files created inside the directory may inherit Alice's ACL permissions.
+setfacl -m d:g:developers:rwX /var/www/project  --> The developers group's default ACL entry will be added to the starting directory only, not directly to existing subdirectories and files.
+                                                --> New subdirectories and files created inside the directory may inherit the developers group's ACL permissions.
 
 
 # View ACL
-getfacl /var/www/project
+getfacl /var/www/project          --> Displays the access ACL and default ACL entries for the specified directory.
 
 
 # Remove default ACL entries from this directory only
-setfacl -x d:u:alice /var/www/project      --> It removes: alice default acl for starting directory, but not for alredy inherited children
-setfacl -x d:g:testgroup /var/www/project  --> it removes: testgroup default acl for starting directory, but not for alredy inherited children
+setfacl -x d:u:alice /var/www/project      --> Alice's default ACL entry will be removed from the starting directory, but not from existing subdirectories that already have that entry.
+setfacl -x d:g:developers /var/www/project  --> The developers group's default ACL entry will be removed from the starting directory, but not from existing subdirectories that already have that entry.
+
 
 ================================================
 set 4: Apply and remove default ACLs recursively
