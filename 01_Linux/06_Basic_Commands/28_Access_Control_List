@@ -25,17 +25,16 @@ Mathematically: Effective permissions= ACL entry "intersection"  Mask .  Here, i
 Set 1: Add and remove access ACLs on files
 ==========================================
 # Add access ACL entries
-setfacl -m u:alice:rw report.txt        --> alice acl will be to added to file
-setfacl -m g:developers:rw report.txt   --> developers group acl will be to added to file
-
+setfacl -m u:alice:rw report.txt        --> Alice's ACL entry will be added to the file
+setfacl -m g:developers:rw report.txt   --> The developers group's ACL entry will be added to the file.
 
 # View ACL
-getfacl report.txt
+getfacl report.txt                      --> Displays the ACL entries for the file.
 
 
 # Remove access ACL entries
-setfacl -x u:alice report.txt       --> alice acl will be to removed to file
-setfacl -x g:developers report.txt     --> developers group acl will be to removed to file
+setfacl -x u:alice report.txt       --> Alice's ACL entry will be removed from the file.
+setfacl -x g:developers report.txt     --> The developers group's ACL entry will be removed from the file.
 
 
 =================================================
@@ -46,18 +45,17 @@ set 2:  Apply and remove access ACLs recursively
 Uppercase X adds execute permission to directories and to files that already have at least one execute bit.
 
 # Apply access ACLs recursively
-setfacl -Rm u:alice:rwX folder      --> alice acl will be applied to folder and all existing files & subdirectories
-setfacl -Rm g:developers:rwX folder   --> developers group acl will be applied to folder and all existing files & subdirectories
+setfacl -Rm u:alice:rwX folder      --> Alice's ACL entry will be added to the starting folder, its existing subdirectories, and existing files.
+setfacl -Rm g:developers:rwX folder   --> The developers group's ACL entry will be added to the starting folder, its existing subdirectories, and existing files.
 
 
 # View ACL
-getfacl folder         --> to list acl for file 
+getfacl folder         --> Displays the ACL entries for the starting folder.
 
 
 # Remove access ACL entries recursively
-setfacl -Rx u:alice folder       --> alice acl will be removed to folder and all existing files & subdirectories
-setfacl -Rx g:developers folder    --> developers group acl will be removed to folder and all existing files & subdirectories
-
+setfacl -Rx u:alice folder       --> Alice's ACL entry will be removed from the starting folder, its existing subdirectories, and existing files.
+setfacl -Rx g:developers folder    --> The developers group's ACL entry will be removed from the starting folder, its existing subdirectories, and existing files.
 
 ===================================================
 Set 3: Add and remove default ACLs on one directory
