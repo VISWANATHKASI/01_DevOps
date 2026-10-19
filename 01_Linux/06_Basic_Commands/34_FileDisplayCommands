@@ -19,9 +19,9 @@ more -N file.txt     --> Display with line numbers:
 | Key        | Action                   |
 | ---------- | ------------------------ |
 | `Space`    | Next page                |
+| `b`        | Previous page*           |
 | `Enter`    | Next line                |
 | `q`        | Quit                     |
-| `b`        | Previous page*           |
 | `/pattern` | Search for pattern       |
 | `n`        | Next search result       |
 | `=`        | Show current line number |
@@ -41,9 +41,9 @@ less filename
 | Key      | Meaning                |
 | -------- | ---------------------- |
 | `Space`  | Page down              |
+| `b`      | Page up                |
 | `Enter`  | One line down          |
 | `q`      | Quit                   |
-| `b`      | Page up                |
 | `↑`or `k`| One line up            |
 | `↓`or `j`| One line down          |
 | `g`      | Beginning              |
