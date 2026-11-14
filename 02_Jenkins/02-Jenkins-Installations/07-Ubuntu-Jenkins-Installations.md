@@ -8,7 +8,7 @@ export DEBIAN_FRONTEND=noninteractive
 sudo apt update
 
 # Step 2: Install required utilities
-sudo apt install -y wget git fontconfig
+sudo apt install -y wget git fontconfig openjdk-21-jre -y
 
 # Step 3: Verify Java installation
 java -version
