@@ -5,15 +5,10 @@ Instead of performing the above activities manually, we configure Jenkins to exe
 For example, whenever a developer pushes code to GitHub, Jenkins can automatically:
 
 Detect the code changes.
-
 Download the latest source code.
-
 Build the application.
-
 Execute automated test cases.
-
 Generate build artifacts.
-
 Deploy the application to the required environment.
 
 
