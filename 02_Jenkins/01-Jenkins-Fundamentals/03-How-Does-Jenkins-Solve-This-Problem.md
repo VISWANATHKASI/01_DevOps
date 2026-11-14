@@ -18,35 +18,9 @@ Deploy the application to the required environment.
 
 Workflow Without Jenkins
 
-flowchart TD
-    A[Developer Writes Code] --> B[Developer Uploads Code]
-    B --> C[Manually Download Source Code]
-    C --> D[Compile Application]
-    D --> E[Execute Test Cases]
-    E --> F[Generate Build Files]
-    F --> G[Deploy Application]
+<img width="526" height="1364" alt="mermaid-diagram" src="https://github.com/user-attachments/assets/5a0f412e-5779-4246-9ec5-a9f6bddf83dd" />
 
 Workflow With Jenkins
 
-Developer Writes Code
-        |
-        v
-Push Code to GitHub
-        |
-        v
-Jenkins Detects Code Changes
-        |
-        v
-Checkout Latest Source Code
-        |
-        v
-Build Application
-        |
-        v
-Execute Automated Tests
-        |
-        v
-Generate Build Artifacts
-        |
-        v
-Deploy Application
+
+<img width="564" height="1552" alt="mermaid-diagram (1)" src="https://github.com/user-attachments/assets/52e0a2db-7369-4861-a6a2-5c4bd80a784e" />
