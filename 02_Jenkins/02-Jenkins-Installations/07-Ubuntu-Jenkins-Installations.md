@@ -1,3 +1,4 @@
+
 #!/bin/bash
 
 # ============================================================
@@ -5,6 +6,7 @@
 # Operating System : Ubuntu 24.04 LTS
 # Java Version     : OpenJDK 21
 # Jenkins Release  : LTS
+# Installation    : Official Jenkins APT Repository
 # ============================================================
 
 
@@ -24,6 +26,10 @@
 # Use this in automation scripts to identify failures early.
 # Especially useful in DevOps scripts, CI/CD pipelines and
 # server provisioning.
+#
+# IMPORTANT:
+# This helps prevent a script from continuing after an
+# unexpected command failure.
 
 set -euxo pipefail
 
@@ -70,7 +76,8 @@ sudo apt update
 # STEP 4: INSTALL REQUIRED UTILITIES AND JAVA
 # ------------------------------------------------------------
 
-# Command: sudo apt install -y wget git fontconfig openjdk-21-jre
+# Command:
+# sudo apt install -y wget git fontconfig openjdk-21-jre
 #
 # WHY:
 #
@@ -98,7 +105,8 @@ sudo apt update
 #
 # NOTE:
 # Java 21 is already installed on this EC2 instance.
-# APT will keep the installed version if it is already current.
+# APT will retain the installed version if it is already
+# the latest available version.
 
 sudo apt install -y wget git fontconfig openjdk-21-jre
 
@@ -119,6 +127,9 @@ sudo apt install -y wget git fontconfig openjdk-21-jre
 # WHEN TO USE:
 # Use this command when installing or troubleshooting
 # Java-based applications such as Jenkins.
+#
+# EXPECTED:
+# Java version should show OpenJDK 21.
 
 java -version
 
@@ -146,6 +157,10 @@ java -version
 # WHEN TO USE:
 # Use this when adding third-party APT repositories
 # that require their own signing keys.
+#
+# IMPORTANT:
+# This command is safe to execute again if the directory
+# already exists.
 
 sudo mkdir -p /etc/apt/keyrings
 
@@ -154,7 +169,8 @@ sudo mkdir -p /etc/apt/keyrings
 # STEP 7: DOWNLOAD JENKINS REPOSITORY SIGNING KEY
 # ------------------------------------------------------------
 
-# Command: sudo wget -O /etc/apt/keyrings/jenkins-keyring.asc URL
+# Command:
+# sudo wget -O /etc/apt/keyrings/jenkins-keyring.asc URL
 #
 # WHY:
 # Downloads the official Jenkins repository signing key.
@@ -165,12 +181,17 @@ sudo mkdir -p /etc/apt/keyrings
 # -O:
 # Saves the downloaded file using the specified filename.
 #
-# The signing key allows APT to verify packages downloaded
-# from the Jenkins repository.
+# SIGNING KEY:
+# Allows APT to verify that packages downloaded from
+# the Jenkins repository have valid digital signatures.
 #
 # WHEN TO USE:
 # Whenever adding a third-party repository that uses
 # package signature verification.
+#
+# IMPORTANT:
+# Never disable package signature verification to bypass
+# repository authentication errors.
 
 sudo wget -O /etc/apt/keyrings/jenkins-keyring.asc \
   https://pkg.jenkins.io/debian-stable/jenkins.io-2026.key
@@ -180,7 +201,8 @@ sudo wget -O /etc/apt/keyrings/jenkins-keyring.asc \
 # STEP 8: ADD JENKINS LTS APT REPOSITORY
 # ------------------------------------------------------------
 
-# Command: echo "deb [signed-by=...]" URL binary/ | sudo tee FILE
+# Command:
+# echo "deb [signed-by=...]" URL binary/ | sudo tee FILE
 #
 # WHY:
 # Adds the official Jenkins LTS repository to Ubuntu.
@@ -193,7 +215,7 @@ sudo wget -O /etc/apt/keyrings/jenkins-keyring.asc \
 #
 # signed-by:
 # Specifies the signing key APT should use to verify
-# packages from this repository.
+# packages from this particular repository.
 #
 # tee:
 # Writes the repository configuration into a file.
@@ -204,10 +226,18 @@ sudo wget -O /etc/apt/keyrings/jenkins-keyring.asc \
 # > /dev/null:
 # Suppresses the normal output from tee.
 #
+# PIPE (|):
+# Sends the output of echo to the tee command.
+#
+# WHY USE SUDO WITH TEE?
+# Normal output redirection does not automatically run
+# with sudo privileges.
+# Using sudo tee allows us to write into protected
+# system directories.
+#
 # WHEN TO USE:
 # Use this when installing software from an official
-# third-party APT repository instead of Ubuntu's default
-# package repositories.
+# third-party APT repository.
 
 echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc]" \
   https://pkg.jenkins.io/debian-stable binary/ | \
@@ -249,8 +279,10 @@ sudo apt update
 # WHEN TO USE:
 # Use this command when installing Jenkins on Ubuntu.
 #
-# After installation, Jenkins is registered as a systemd
-# service and can be managed using systemctl.
+# AFTER INSTALLATION:
+# Jenkins is registered as a systemd service.
+# A dedicated jenkins Linux user is created to run the service.
+# Jenkins listens on port 8080 by default.
 
 sudo apt install -y jenkins
 
@@ -277,6 +309,9 @@ sudo apt install -y jenkins
 #
 # Examples:
 # Jenkins, Docker, Nginx and other system services.
+#
+# IMPORTANT:
+# enable does not mean Jenkins starts immediately.
 
 sudo systemctl enable jenkins
 
@@ -330,7 +365,52 @@ sudo systemctl status jenkins --no-pager
 
 
 # ------------------------------------------------------------
-# STEP 14: DISPLAY INSTALLED JENKINS VERSION
+# STEP 14: VERIFY JENKINS IS RUNNING
+# ------------------------------------------------------------
+
+# Command: sudo systemctl is-active jenkins
+#
+# WHY:
+# Checks whether the Jenkins service is currently running.
+#
+# EXPECTED OUTPUT:
+# active
+#
+# IMPORTANT:
+# Unlike systemctl status, this command provides a simple
+# service state that is useful in automation scripts.
+#
+# If Jenkins is not running, this command returns a
+# non-zero exit status.
+#
+# Because strict mode is enabled, the script stops
+# automatically if this verification fails.
+
+sudo systemctl is-active jenkins
+
+
+# ------------------------------------------------------------
+# STEP 15: VERIFY JENKINS IS ENABLED AT BOOT
+# ------------------------------------------------------------
+
+# Command: sudo systemctl is-enabled jenkins
+#
+# WHY:
+# Verifies that Jenkins is configured to start automatically
+# whenever the Ubuntu server boots.
+#
+# EXPECTED OUTPUT:
+# enabled
+#
+# WHEN TO USE:
+# Use this when verifying automatic startup configuration
+# for system services.
+
+sudo systemctl is-enabled jenkins
+
+
+# ------------------------------------------------------------
+# STEP 16: DISPLAY INSTALLED JENKINS VERSION
 # ------------------------------------------------------------
 
 # Command: dpkg-query -W -f='${Version}\n' jenkins
@@ -358,9 +438,13 @@ dpkg-query -W -f='${Version}\n' jenkins
 
 
 # ============================================================
-# JENKINS INSTALLATION SCRIPT COMPLETED
+# JENKINS INSTALLATION COMPLETED SUCCESSFULLY
 # ============================================================
 
 echo "============================================================"
-echo "Jenkins installation script completed successfully."
+echo "Jenkins installation completed successfully."
+echo "Jenkins service status : $(systemctl is-active jenkins)"
+echo "Jenkins startup status : $(systemctl is-enabled jenkins)"
+echo "Jenkins version        : $(dpkg-query -W -f='${Version}' jenkins)"
+echo "Jenkins default port   : 8080"
 echo "============================================================"
