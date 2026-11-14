@@ -1,7 +1,5 @@
 What is Jenkins?
 
-Introduction
-
 Jenkins is an open-source automation server used to automate software development activities such as building, testing, and deploying applications.
 
 Jenkins is widely used in DevOps to implement Continuous Integration (CI) and Continuous Delivery/Deployment (CD).
