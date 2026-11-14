@@ -1,4 +1,4 @@
-# 1.11 Lesson 1 Conclusion
+# 1.11 Conclusion
 
 Jenkins is an automation server that helps development teams automate repetitive software development and delivery activities.
 
