@@ -11,11 +11,13 @@ Execute automated test cases.
 Generate build artifacts.
 Deploy the application to the required environment.
 
+===============================================================================================================================
 
 Workflow Without Jenkins
 
 <img width="526" height="1364" alt="mermaid-diagram" src="https://github.com/user-attachments/assets/5a0f412e-5779-4246-9ec5-a9f6bddf83dd" />
 
+================================================================================================================================
 
 Workflow With Jenkins
 
