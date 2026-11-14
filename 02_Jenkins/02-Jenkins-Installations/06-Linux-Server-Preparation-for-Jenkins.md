@@ -1,281 +1,396 @@
-# 06. Linux Server Preparation for Jenkins
+
+# 06. Linux Server Preparation for Jenkins (Ubuntu)
 
 ## 6.1 Introduction
 
-Before installing Jenkins, we need to prepare our Linux server.
+Before installing Jenkins, we need to prepare a Linux server.
 
-In the previous lesson, we created an AWS EC2 instance and connected to it using SSH from Windows 11.
+We will use an Ubuntu Server running on AWS EC2 to install and configure Jenkins.
 
-Our server configuration:
+Jenkins is a Java-based application. Therefore, we need to prepare the server with the required packages, Java runtime, network connectivity, storage, and permissions.
 
-| Component | Configuration |
-|---|---|
-| Cloud Provider | AWS |
-| Service | EC2 |
-| Region | ap-south-1 (Mumbai) |
-| Operating System | Ubuntu 24.04.5 LTS |
-| Login User | ubuntu |
-| Memory | 4 GiB |
-| Root Storage | 20 GiB |
+### Learning Objectives
 
-In this lesson, we will prepare Ubuntu for Jenkins installation.
+By the end of this lesson, you will understand:
 
-### What We Will Learn
-
-1. Understand Linux package management.
-2. Update Ubuntu package information.
-3. Upgrade installed packages.
-4. Understand Java requirements for Jenkins.
-5. Install Java.
-6. Verify Java installation.
-7. Understand Linux environment variables.
-8. Check server resources.
-9. Verify that the server is ready for Jenkins installation.
+- How to connect to an Ubuntu EC2 instance using SSH.
+- How to identify the Ubuntu version.
+- How to check CPU, memory, and disk space.
+- How to update Ubuntu packages.
+- How to install Java 21.
+- How to verify Java installation.
+- How to understand Jenkins network requirements.
+- How to check Ubuntu firewall configuration.
+- How to understand Linux services using systemd.
+- How to verify whether the server is ready for Jenkins installation.
 
 ---
 
-## 6.2 Understand Linux Package Management
+## 6.2 Step 1 - Connect to the Ubuntu Server
 
-### What Is a Package?
+We will connect to our Ubuntu EC2 instance using SSH.
 
-A package is a collection of files required to install and run software.
+### What is SSH?
 
-For example, Java, Git, Nginx, and other Linux applications can be installed using packages.
+SSH stands for Secure Shell.
 
-Instead of manually downloading and configuring every application, Linux provides package management tools.
+It is a network protocol used to securely connect to remote Linux servers.
 
-### What Is APT?
+Using SSH, we can execute commands on a remote server from our local machine.
 
-APT stands for Advanced Package Tool.
+### Connect from Windows PowerShell
 
-It is the package management system used by Ubuntu and Debian-based Linux distributions.
+Open Windows PowerShell and execute:
 
-We use APT to:
+```bash
+ssh -i "your-key.pem" ubuntu@YOUR_PUBLIC_IP
+```
 
-- Install software.
-- Remove software.
-- Update package information.
-- Upgrade installed packages.
-- Manage software dependencies.
+Replace:
 
-### Important APT Commands
+- `your-key.pem` with your EC2 private key file.
+- `YOUR_PUBLIC_IP` with your EC2 public IP address.
 
-| Command | Purpose |
+### Example
+
+```bash
+ssh -i "jenkins-key.pem" ubuntu@YOUR_PUBLIC_IP
+```
+
+### Command Explanation
+
+| Component | Purpose |
 |---|---|
-| `sudo apt update` | Refresh package information |
-| `sudo apt upgrade` | Upgrade installed packages |
-| `sudo apt install` | Install software |
-| `sudo apt remove` | Remove installed software |
-| `sudo apt list --installed` | List installed packages |
+| `ssh` | Establishes a secure remote connection. |
+| `-i` | Specifies the private key file. |
+| `jenkins-key.pem` | EC2 private key file. |
+| `ubuntu` | Default Ubuntu EC2 username. |
+| Public IP | Address of the EC2 instance. |
 
-### What Is sudo?
+After successful authentication, you should see the Ubuntu terminal.
 
-`sudo` stands for Superuser Do.
+Example:
 
-It allows an authorized user to execute commands with elevated privileges.
+```text
+ubuntu@ip-172-31-xx-xx:~$
+```
+
+Now we can execute Linux commands directly on the EC2 instance.
+
+---
+
+## 6.3 Step 2 - Identify the Ubuntu Version
+
+Before installing any software, we should identify the operating system and its version.
+
+Execute:
+
+```bash
+cat /etc/os-release
+```
+
+### Why do we use this command?
+
+Different Linux distributions use different package managers and installation procedures.
 
 For example:
 
-```bash
-sudo apt update
+- Ubuntu uses APT.
+- Red Hat Enterprise Linux uses DNF.
+- Amazon Linux 2023 uses DNF.
+
+Therefore, we should identify the operating system before executing installation commands.
+
+### Example Output
+
+```text
+PRETTY_NAME="Ubuntu 24.04 LTS"
+NAME="Ubuntu"
+VERSION_ID="24.04"
+VERSION="24.04 LTS"
+ID=ubuntu
+ID_LIKE=debian
 ```
 
-Updating system package information requires administrative privileges, so we use `sudo`.
+Your actual Ubuntu version may differ.
 
-### When Do We Use sudo?
+### Additional Commands
 
-We commonly use `sudo` when:
+Check the Linux kernel version:
 
-- Installing applications.
-- Updating the operating system.
-- Modifying system configuration files.
-- Managing system services.
-- Changing system-level permissions.
+```bash
+uname -r
+```
+
+Check the system architecture:
+
+```bash
+uname -m
+```
+
+Check the hostname:
+
+```bash
+hostname
+```
+
+### Command Explanation
+
+| Command | Purpose |
+|---|---|
+| `cat /etc/os-release` | Displays operating system details. |
+| `uname -r` | Displays Linux kernel version. |
+| `uname -m` | Displays CPU architecture. |
+| `hostname` | Displays server hostname. |
+
+For our Jenkins practice environment, we will use a 64-bit Ubuntu server.
 
 ---
 
-## 6.3 Update Ubuntu Package Information
+## 6.4 Step 3 - Check Server Resources
 
-### Command
+Before installing Jenkins, we need to understand the available server resources.
+
+Jenkins requires CPU, memory, and disk space to execute jobs and manage builds.
+
+### 6.4.1 Check CPU Information
+
+Execute:
+
+```bash
+lscpu
+```
+
+### Why do we use this command?
+
+`lscpu` displays information about the processor.
+
+It provides details such as:
+
+- CPU architecture.
+- Number of CPUs.
+- CPU cores.
+- CPU model.
+- Virtualization information.
+
+This helps us understand the processing capacity of our EC2 instance.
+
+### 6.4.2 Check Memory
+
+Execute:
+
+```bash
+free -h
+```
+
+### Why do we use this command?
+
+It displays the available system memory.
+
+The `-h` option means human-readable.
+
+Instead of displaying memory in raw bytes, it displays values in KB, MB, or GB.
+
+### 6.4.3 Check Disk Space
+
+Execute:
+
+```bash
+df -h
+```
+
+### Why do we use this command?
+
+It displays available disk space for mounted filesystems.
+
+Jenkins stores:
+
+- Build history.
+- Console logs.
+- Workspace files.
+- Plugins.
+- Job configurations.
+- Build artifacts.
+
+If disk space becomes full, Jenkins builds may fail.
+
+### 6.4.4 Check Current Directory
+
+Execute:
+
+```bash
+pwd
+```
+
+### Why do we use this command?
+
+`pwd` stands for Print Working Directory.
+
+It displays the current directory in which we are executing commands.
+
+Example:
+
+```text
+/home/ubuntu
+```
+
+### Recommended Learning Environment
+
+For our Jenkins practice environment, we will target:
+
+| Resource | Recommended Configuration |
+|---|---|
+| CPU | 2 vCPUs |
+| RAM | 4 GB |
+| Storage | 20 GB or more |
+| Architecture | 64-bit |
+| Java | Java 21 |
+| Jenkins | LTS |
+
+These are practical learning targets, not mandatory minimum requirements.
+
+---
+
+## 6.5 Step 4 - Update Ubuntu Packages
+
+Before installing Jenkins and Java, we should update the operating system packages.
+
+### Why should we update Ubuntu?
+
+An operating system may contain older package information and outdated installed packages.
+
+Updating package information and available software helps prepare the server with current packages and security fixes.
+
+### Step 1 - Update Package Information
+
+Execute:
 
 ```bash
 sudo apt update
 ```
 
-### Why Do We Use This Command?
+### Why do we use this command?
 
-Ubuntu maintains information about available software packages in configured repositories.
-
-This information includes:
-
-- Package names.
-- Available versions.
-- Package dependencies.
-- Repository information.
+Ubuntu uses APT as its package management tool.
 
 The `apt update` command downloads the latest package information from configured repositories.
 
+It does not upgrade installed packages.
+
+### Command Explanation
+
+| Component | Purpose |
+|---|---|
+| `sudo` | Executes the command with administrator privileges. |
+| `apt` | Ubuntu package management tool. |
+| `update` | Refreshes package information. |
+
+### Step 2 - Upgrade Installed Packages
+
+Execute:
+
+```bash
+sudo apt upgrade -y
+```
+
+### Why do we use this command?
+
+It upgrades installed packages where possible.
+
+Command explanation:
+
+- `sudo` - Executes with administrator privileges.
+- `apt` - Package management tool.
+- `upgrade` - Upgrades installed packages.
+- `-y` - Automatically answers yes to confirmation prompts.
+
 ### Important Difference
 
-`apt update` does not upgrade the installed software.
-
-It only refreshes the information about available software versions.
-
-### Real-Time Example
-
-Imagine that Ubuntu has Java version 17 available in its package repository.
-
-A newer compatible version becomes available.
-
-Running:
-
 ```bash
 sudo apt update
 ```
 
-refreshes the package information so APT knows about the available versions.
-
-### Execute
+Refreshes package information.
 
 ```bash
-sudo apt update
+sudo apt upgrade -y
 ```
 
-Wait until the command completes.
+Upgrades installed packages.
+
+Both commands perform different tasks.
 
 ---
 
-## 6.4 Upgrade Installed Packages
+## 6.6 Step 5 - Understand Java Requirements
 
-### Command
+### What is Java?
 
-```bash
-sudo apt upgrade
-```
+Java is a programming language and runtime platform.
 
-### Why Do We Use This Command?
-
-This command upgrades installed packages to newer versions available through the configured repositories.
-
-It helps keep the operating system updated with available bug fixes and security updates.
-
-### Difference Between apt update and apt upgrade
-
-| Command | What It Does |
-|---|---|
-| `sudo apt update` | Refreshes package information |
-| `sudo apt upgrade` | Upgrades installed packages |
-
-### When Do We Use These Commands?
-
-In real-world environments, DevOps engineers use package management commands when:
-
-- Preparing new Linux servers.
-- Applying security updates.
-- Installing application dependencies.
-- Maintaining server operating systems.
-
-### Execute
-
-```bash
-sudo apt upgrade
-```
-
-If prompted for confirmation, review the changes and proceed.
-
-**Important:** In production environments, operating system upgrades should follow the organization's change-management and maintenance procedures.
-
----
-
-## 6.5 Understand Java Requirements for Jenkins
-
-### Why Does Jenkins Require Java?
-
-Jenkins is primarily developed using Java.
-
-The Jenkins application runs on the Java runtime environment.
+Jenkins is a Java-based application and requires a supported Java runtime to execute.
 
 Without a compatible Java runtime, Jenkins cannot start.
 
-### Jenkins Execution Architecture
-
-```text
-             AWS EC2
-                |
-                |
-           Ubuntu Linux
-                |
-                |
-          Java Runtime
-                |
-                |
-             Jenkins
-                |
-                |
-         Jenkins Pipelines
-```
-
 ### Which Java Version Should We Install?
 
-The supported Java versions depend on the Jenkins release.
+For this training, we will use:
 
-For this training, we will use Java 21 if it is supported by the Jenkins LTS release we install.
+```text
+Java 21
+```
 
-Before installing Jenkins, we will verify the official Jenkins Java compatibility requirements.
+Java 21 is a supported Jenkins runtime version.
 
-### Why Java 21?
+Modern Jenkins releases also support Java 25. However, we will standardize on Java 21 for our learning environment.
 
-Java 21 is a Long-Term Support (LTS) release.
+### Important Difference Between JDK and JRE
 
-It provides a stable Java runtime suitable for many enterprise applications.
+**JDK - Java Development Kit**
+
+JDK includes development tools such as:
+
+- Java compiler.
+- Java debugger.
+- Java development utilities.
+- Java runtime components.
+
+**JRE - Java Runtime Environment**
+
+The runtime environment provides the components required to execute Java applications.
+
+For Jenkins installation, we need a compatible Java runtime.
+
+### Important DevOps Concept
+
+Java used to run Jenkins is not necessarily the same Java version used to build Java applications.
+
+For example:
+
+- Jenkins controller can run using Java 21.
+- Jenkins pipeline can build an application using another compatible JDK configured separately.
+
+We will learn how to configure build tools in upcoming Jenkins lessons.
 
 ---
 
-## 6.6 Check Whether Java Is Already Installed
+## 6.7 Step 6 - Install Java 21 on Ubuntu
 
-Before installing Java, check whether it is available.
+Now we will install Java 21 on our Ubuntu server.
 
-### Command
+### Step 1 - Refresh Package Information
+
+Execute:
 
 ```bash
-java -version
+sudo apt update
 ```
 
-### Why Do We Use This Command?
+### Why do we use this command?
 
-It displays the installed Java runtime version.
+It refreshes package information so Ubuntu can identify the latest available package versions.
 
-### Possible Output 1: Java Is Installed
-
-Example:
-
-```text
-openjdk version "21.0.x"
-```
-
-This indicates that Java is installed.
-
-We still need to confirm that the version is supported by our selected Jenkins release.
-
-### Possible Output 2: Java Is Not Installed
-
-Example:
-
-```text
-Command 'java' not found
-```
-
-This indicates that Java is not available through the current command path.
-
-In that case, we need to install Java.
-
----
-
-## 6.7 Install Java 21
-
-Only perform this section if Java 21 is not already installed and the selected Jenkins release supports it.
-
-### Step 1: Install Java Runtime
+### Step 2 - Install Java 21 and Fontconfig
 
 Execute:
 
@@ -283,30 +398,21 @@ Execute:
 sudo apt install fontconfig openjdk-21-jre -y
 ```
 
-### Why Do We Use This Command?
+### Why do we install these packages?
 
-This command installs two packages:
+**fontconfig**
 
-| Package | Purpose |
-|---|---|
-| `fontconfig` | Provides font configuration support |
-| `openjdk-21-jre` | Provides the Java 21 runtime environment |
+Provides font configuration and management libraries required by Jenkins on Linux.
 
-### What Is JRE?
+**openjdk-21-jre**
 
-JRE stands for Java Runtime Environment.
+Installs the Java 21 Runtime Environment.
 
-It provides the components required to execute Java applications.
+**-y**
 
-Jenkins needs a Java runtime to execute.
+Automatically confirms the installation.
 
-### What Does -y Mean?
-
-The `-y` option automatically answers yes to package installation confirmation prompts.
-
-Without `-y`, APT may ask you to confirm the installation.
-
-### Step 2: Verify Java Installation
+### Step 3 - Verify Java Installation
 
 Execute:
 
@@ -314,50 +420,19 @@ Execute:
 java -version
 ```
 
-Example output:
+Expected output should indicate Java 21.
+
+Example:
 
 ```text
-openjdk version "21.0.x"
+openjdk version "21.x.x"
 OpenJDK Runtime Environment
 OpenJDK 64-Bit Server VM
 ```
 
-The exact version and additional output will depend on the installed package update.
+The exact version and build information will vary.
 
-### Step 3: Verify Java Package Installation
-
-Execute:
-
-```bash
-dpkg -l | grep openjdk
-```
-
-### Why Do We Use This Command?
-
-- `dpkg -l` lists installed Debian packages.
-- `|` sends the output of the first command to the next command.
-- `grep openjdk` filters the output and displays matching package names.
-
-This helps us verify whether OpenJDK packages are installed.
-
----
-
-## 6.8 Understand Java Environment Variables
-
-### What Is JAVA_HOME?
-
-`JAVA_HOME` is an environment variable that points to the Java installation directory.
-
-Some applications and build tools use this variable to locate Java.
-
-Examples include:
-
-- Jenkins-related tools.
-- Maven.
-- Gradle.
-- Java application build scripts.
-
-### Check Java Executable Location
+### Step 4 - Check Java Executable Location
 
 Execute:
 
@@ -365,167 +440,607 @@ Execute:
 which java
 ```
 
-Example output:
+### Why do we use this command?
+
+It displays the location of the Java executable.
+
+Example:
 
 ```text
 /usr/bin/java
 ```
 
-### Why Do We Use This Command?
-
-It identifies the location of the Java executable found through the system PATH.
-
-### Find the Actual Java Installation Path
+### Step 5 - Check Java Runtime Directory
 
 Execute:
 
 ```bash
-readlink -f $(which java)
+java -XshowSettings:properties -version 2>&1 | grep 'java.home'
 ```
 
-Example output:
+### Why do we use this command?
 
-```text
-/usr/lib/jvm/java-21-openjdk-amd64/bin/java
+It displays Java runtime properties.
+
+The `java.home` property identifies the Java runtime directory.
+
+### Step 6 - Check JAVA_HOME
+
+Execute:
+
+```bash
+echo $JAVA_HOME
 ```
 
-### Why Do We Use readlink -f?
+This displays the `JAVA_HOME` environment variable if it is configured in the current shell.
 
-- `which java` identifies the Java executable available in PATH.
-- `readlink -f` resolves symbolic links and displays the final path.
-- `$(...)` executes the command inside the parentheses and substitutes its output.
+It may be empty. That does not automatically mean Java is incorrectly installed.
 
-### Identify JAVA_HOME
-
-For a typical Ubuntu OpenJDK 21 installation, the Java home directory may be:
-
-```text
-/usr/lib/jvm/java-21-openjdk-amd64
-```
-
-The exact path can vary depending on the installed Java package.
-
-We will configure `JAVA_HOME` only if required by our tools or environment.
+We will configure environment variables when required by our tools and build environments.
 
 ---
 
-## 6.9 Understand Linux Services
+## 6.8 Step 7 - Understand Ubuntu Package Management
 
-Before installing Jenkins, we should understand how Linux manages background services.
+Before proceeding, we should understand a few important Ubuntu package management commands.
 
-### What Is a Service?
+### Check Whether a Package Is Installed
 
-A service is a program that runs in the background and provides functionality to the system or other applications.
+```bash
+dpkg -l | grep openjdk
+```
+
+### Explanation
+
+- `dpkg` - Debian package management tool.
+- `-l` - Lists installed packages.
+- `grep` - Searches for matching text.
+- `openjdk` - Package name pattern.
+
+### Search for Available Java Packages
+
+```bash
+apt search openjdk-21
+```
+
+### Why do we use this command?
+
+It searches configured repositories for packages matching the specified name.
+
+### Check Package Details
+
+```bash
+apt show openjdk-21-jre
+```
+
+### Why do we use this command?
+
+It displays package information, such as:
+
+- Package version.
+- Dependencies.
+- Description.
+- Package size.
+
+These commands help us understand package management in Ubuntu.
+
+---
+
+## 6.9 Step 8 - Understand Jenkins Network Requirements
+
+Jenkins uses port `8080` by default for its web interface.
+
+After installing Jenkins, we will access it through a web browser.
+
+Example:
+
+```text
+http://YOUR_SERVER_PUBLIC_IP:8080
+```
+
+### What is a Port?
+
+A port is a logical communication endpoint used by applications to receive network traffic.
+
+For example:
+
+| Port | Purpose |
+|---|---|
+| 22 | SSH |
+| 8080 | Jenkins web interface |
+| 80 | HTTP |
+| 443 | HTTPS |
+
+### AWS Security Group Configuration
+
+Because we are practising Jenkins on AWS EC2, we need to understand Security Groups.
+
+A Security Group acts as a virtual firewall for an EC2 instance.
+
+It controls incoming and outgoing network traffic.
+
+For our Jenkins practice environment, configure these inbound rules:
+
+| Type | Protocol | Port | Source |
+|---|---|---|---|
+| SSH | TCP | 22 | Your public IP |
+| Custom TCP | TCP | 8080 | Your public IP |
+
+### Why Should We Restrict Port 8080?
+
+Jenkins is an administration and automation platform.
+
+Exposing it to the entire internet unnecessarily can create security risks.
+
+For learning purposes, allow access only from your own public IP address.
+
+In production, Jenkins should normally be protected through HTTPS, suitable access controls, and an appropriate reverse proxy or load balancer.
+
+### Important
+
+Opening port 8080 in an AWS Security Group does not automatically configure the Ubuntu firewall.
+
+AWS Security Groups and operating system firewalls are separate security layers.
+
+Both must allow the required traffic.
+
+---
+
+## 6.10 Step 9 - Understand Ubuntu Firewall (UFW)
+
+Ubuntu commonly uses UFW as its firewall management tool.
+
+UFW stands for Uncomplicated Firewall.
+
+### Step 1 - Check Firewall Status
+
+Execute:
+
+```bash
+sudo ufw status
+```
+
+Possible output:
+
+```text
+Status: inactive
+```
+
+Or:
+
+```text
+Status: active
+```
+
+### Step 2 - Allow Jenkins Port
+
+If UFW is active and Jenkins access is required, execute:
+
+```bash
+sudo ufw allow 8080/tcp
+```
+
+### Why do we use this command?
+
+It allows incoming TCP traffic on port 8080 through UFW.
+
+### Step 3 - Verify Firewall Rules
+
+Execute:
+
+```bash
+sudo ufw status
+```
+
+Expected output should include:
+
+```text
+8080/tcp ALLOW
+```
+
+### Important Security Note
+
+Do not enable UFW remotely without first allowing SSH traffic.
+
+Otherwise, you may lose your SSH connection.
+
+If you need to enable UFW, first configure SSH access:
+
+```bash
+sudo ufw allow 22/tcp
+```
+
+Then:
+
+```bash
+sudo ufw enable
+```
+
+For our current practice environment, do not change the firewall state unnecessarily.
+
+---
+
+## 6.11 Step 10 - Understand Linux Services Using systemd
+
+Jenkins runs as a background service on Linux.
+
+Ubuntu uses systemd to manage system services.
+
+### What is systemd?
+
+systemd is a system and service manager used to initialize Linux systems and manage background services.
+
+After installing Jenkins, we will use systemd to:
+
+- Start Jenkins.
+- Stop Jenkins.
+- Restart Jenkins.
+- Enable Jenkins at system startup.
+- Check Jenkins service status.
+- Troubleshoot Jenkins service failures.
+
+### Step 1 - Check systemd Version
+
+Execute:
+
+```bash
+systemctl --version
+```
+
+### Why do we use this command?
+
+It displays the installed systemd version.
+
+### Step 2 - Check Running Services
+
+Execute:
+
+```bash
+systemctl list-units --type=service --state=running
+```
+
+### Why do we use this command?
+
+It displays currently running system services.
+
+### Step 3 - Understand Service Status
+
+Execute:
+
+```bash
+systemctl status ssh
+```
+
+This checks the status of the SSH service.
+
+### Important
+
+We will learn Jenkins-specific service management commands after installing Jenkins.
+
+---
+
+## 6.12 Step 11 - Check Network Connectivity
+
+Before installing Jenkins, we should verify that our server can access the internet and resolve domain names.
+
+### Step 1 - Check IP Information
+
+Execute:
+
+```bash
+hostname -I
+```
+
+### Why do we use this command?
+
+It displays IP addresses assigned to the server.
+
+### Step 2 - Check Routing Information
+
+Execute:
+
+```bash
+ip route
+```
+
+### Why do we use this command?
+
+It displays the system's network routing table.
+
+It helps us understand how the server sends network traffic to other destinations.
+
+### Step 3 - Check Internet Connectivity
+
+Execute:
+
+```bash
+ping -c 4 8.8.8.8
+```
+
+### Why do we use this command?
+
+It checks whether the server can communicate with an external IP address using ICMP.
+
+### Step 4 - Check DNS Resolution
+
+Execute:
+
+```bash
+getent hosts google.com
+```
+
+### Why do we use this command?
+
+It checks whether the server can resolve a domain name into an IP address.
+
+### Important
+
+A failed ping does not always mean internet connectivity is unavailable because some networks block ICMP traffic.
+
+---
+
+## 6.13 Step 12 - Understand Important Jenkins Directories
+
+After Jenkins installation, we will work with several important directories.
+
+| Directory | Purpose |
+|---|---|
+| `/var/lib/jenkins` | Jenkins home directory and persistent data |
+| `/var/log/jenkins` | Jenkins log directory on standard package installations |
+| `/usr/share/java` | Common location for Java-related files |
+| `/etc/default` | Default environment configuration directory used by some Ubuntu services |
+| `/etc/systemd/system` | Location for systemd unit configuration files |
+
+### What is Jenkins Home Directory?
+
+Jenkins stores important information in its home directory.
 
 Examples:
 
-- Jenkins.
-- SSH.
-- Nginx.
-- Docker.
+- Jenkins job configurations.
+- Build history.
+- Plugins.
+- Credentials configuration.
+- Workspace data.
+- System configuration.
 
-### What Is systemd?
+The default package installation uses:
 
-`systemd` is the service and system manager used by Ubuntu.
+```text
+/var/lib/jenkins
+```
 
-It helps us start, stop, restart, and monitor services.
-
-### Important systemctl Commands
-
-| Command | Purpose |
-|---|---|
-| `systemctl status service-name` | Check service status |
-| `sudo systemctl start service-name` | Start a service |
-| `sudo systemctl stop service-name` | Stop a service |
-| `sudo systemctl restart service-name` | Restart a service |
-| `sudo systemctl enable service-name` | Enable automatic startup |
-| `sudo systemctl disable service-name` | Disable automatic startup |
-
-We will use these commands to manage Jenkins after installation.
+We will understand Jenkins home directory in detail during the installation and configuration lessons.
 
 ---
 
-## 6.10 Check Server Resources
+## 6.14 Step 13 - Final Ubuntu Server Readiness Check
 
-Jenkins consumes server resources while executing builds and pipelines.
+Before proceeding to Jenkins installation, execute the following commands.
 
-We should understand how to monitor memory, disk space, and CPU usage.
-
-### Check Memory
+### Operating System
 
 ```bash
-free -h
+cat /etc/os-release
 ```
 
-Purpose:
-
-Displays total, used, free, and available memory.
-
-### Check Disk Space
+### Kernel Version
 
 ```bash
-df -h
+uname -r
 ```
 
-Purpose:
-
-Displays disk usage for mounted filesystems.
-
-### Check CPU Information
+### CPU Information
 
 ```bash
 lscpu
 ```
 
-Purpose:
-
-Displays CPU architecture, processor count, and other CPU information.
-
-### Check Current Processes
+### Memory Information
 
 ```bash
-top
+free -h
 ```
 
-Purpose:
+### Disk Space
 
-Displays running processes and resource consumption.
+```bash
+df -h
+```
 
-Press `q` to exit the `top` interface.
+### Java Version
 
-### Why Do We Monitor These Resources?
+```bash
+java -version
+```
 
-Consider a Jenkins pipeline that builds a Java application.
+### Java Executable
 
-During execution, Jenkins may consume:
+```bash
+which java
+```
 
-- CPU for compilation.
-- RAM for Java processes.
-- Disk space for downloaded dependencies.
-- Disk space for build artifacts and logs.
+### Java Runtime Directory
 
-Resource monitoring helps us identify performance problems.
+```bash
+java -XshowSettings:properties -version 2>&1 | grep 'java.home'
+```
+
+### Network Information
+
+```bash
+hostname -I
+```
+
+### Firewall Status
+
+```bash
+sudo ufw status
+```
+
+### systemd Version
+
+```bash
+systemctl --version
+```
+
+### Expected Readiness
+
+| Check | Expected Result |
+|---|---|
+| Ubuntu | Operating system identified |
+| Architecture | 64-bit |
+| CPU | Resources available |
+| Memory | Sufficient for learning workload |
+| Disk | Sufficient free space |
+| Java | Java 21 installed |
+| Network | Repository access available |
+| SSH | Remote connection working |
+| systemd | Available |
+
+If these checks are successful, our Ubuntu server is prepared for Jenkins installation.
 
 ---
 
-## 6.11 Verify Linux Server Preparation
+## 6.15 Troubleshooting Common Problems
 
-Execute the following commands:
+### Problem 1 - Java Command Not Found
+
+Error:
+
+```text
+java: command not found
+```
+
+Possible reason:
+
+Java is not installed or the Java executable is not available in the system PATH.
+
+Solution:
 
 ```bash
-whoami
+sudo apt update
+sudo apt install openjdk-21-jre -y
 ```
+
+Verify:
+
+```bash
+java -version
+```
+
+### Problem 2 - Unable to Download Packages
+
+Possible reasons:
+
+- Internet connectivity issues.
+- DNS resolution problems.
+- Incorrect repository configuration.
+- Network restrictions.
+
+Check connectivity:
+
+```bash
+ping -c 4 8.8.8.8
+```
+
+Check DNS:
+
+```bash
+getent hosts google.com
+```
+
+### Problem 3 - Permission Denied
+
+Example:
+
+```text
+Permission denied
+```
+
+Possible reason:
+
+The current user does not have sufficient permissions to execute the command.
+
+Solution:
+
+Use `sudo` for commands that require administrator privileges.
+
+Example:
+
+```bash
+sudo apt update
+```
+
+### Problem 4 - Insufficient Disk Space
+
+Check disk space:
+
+```bash
+df -h
+```
+
+Check directory sizes:
+
+```bash
+sudo du -sh /var/*
+```
+
+Jenkins requires disk space for plugins, workspaces, build history, logs, and artifacts.
+
+### Problem 5 - Unable to Connect to EC2
+
+Possible reasons:
+
+- Incorrect public IP address.
+- Incorrect private key.
+- Incorrect SSH username.
+- SSH port 22 is not allowed in the Security Group.
+- Incorrect key file permissions.
+
+Verify the EC2 Security Group and SSH configuration.
+
+---
+
+## 6.16 Practical Assignment
+
+Perform the following activities on your Ubuntu EC2 instance.
+
+### Server Preparation
+
+- [ ] Connect to Ubuntu using SSH.
+- [ ] Identify the Ubuntu version.
+- [ ] Check Linux kernel version.
+- [ ] Check CPU information.
+- [ ] Check memory.
+- [ ] Check disk space.
+- [ ] Update Ubuntu packages.
+- [ ] Install Java 21.
+- [ ] Verify Java installation.
+- [ ] Identify the Java executable location.
+- [ ] Check network connectivity.
+- [ ] Check DNS resolution.
+- [ ] Check UFW firewall status.
+- [ ] Verify systemd availability.
+
+### Command Practice
+
+Execute the following commands independently and understand their outputs.
 
 ```bash
 cat /etc/os-release
 ```
 
 ```bash
-java -version
+uname -r
 ```
 
 ```bash
-which java
+uname -m
+```
+
+```bash
+lscpu
 ```
 
 ```bash
@@ -537,89 +1052,144 @@ df -h
 ```
 
 ```bash
-lscpu
+sudo apt update
 ```
 
-### Expected Results
+```bash
+sudo apt upgrade -y
+```
 
-| Verification | Expected Result |
-|---|---|
-| Current user | ubuntu |
-| Operating system | Ubuntu 24.04 LTS |
-| Java | Compatible Java version installed |
-| Java location | Java executable path displayed |
-| Memory | Sufficient available memory |
-| Disk | Sufficient available storage |
-| CPU | CPU information displayed |
+```bash
+sudo apt install fontconfig openjdk-21-jre -y
+```
 
----
+```bash
+java -version
+```
 
-## 6.12 Practical Exercise
+```bash
+which java
+```
 
-Complete the following tasks:
+```bash
+sudo ufw status
+```
 
-- [ ] Connect to the EC2 instance using SSH.
-- [ ] Update Ubuntu package information.
-- [ ] Upgrade installed packages.
-- [ ] Check whether Java is installed.
-- [ ] Verify Java version compatibility.
-- [ ] Install Java 21 if required.
-- [ ] Verify Java installation.
-- [ ] Find the Java executable location.
-- [ ] Check memory.
-- [ ] Check disk space.
-- [ ] Check CPU information.
-- [ ] Understand Linux service management commands.
+```bash
+systemctl --version
+```
 
 ---
 
-## 6.13 Important Commands Summary
+## 6.17 Interview Questions
 
-| Command | Purpose |
-|---|---|
-| `sudo apt update` | Refresh package information |
-| `sudo apt upgrade` | Upgrade installed packages |
-| `sudo apt install package-name` | Install a package |
-| `java -version` | Check Java version |
-| `dpkg -l` | List installed packages |
-| `which java` | Find Java executable |
-| `readlink -f` | Resolve symbolic links |
-| `free -h` | Check memory |
-| `df -h` | Check disk space |
-| `lscpu` | Check CPU information |
-| `top` | Monitor running processes |
-| `systemctl status` | Check service status |
+**1. What is SSH?**
+
+SSH stands for Secure Shell. It is used to securely connect to remote Linux servers.
+
+**2. What is the difference between Ubuntu and Red Hat?**
+
+Ubuntu belongs to the Debian family and uses APT package management. Red Hat belongs to the Red Hat family and uses DNF/YUM package management.
+
+**3. What is APT?**
+
+APT stands for Advanced Package Tool. It manages software packages on Debian-based distributions such as Ubuntu.
+
+**4. What is the difference between `apt update` and `apt upgrade`?**
+
+`apt update` refreshes package information, whereas `apt upgrade` upgrades installed packages.
+
+**5. Why does Jenkins require Java?**
+
+Jenkins is a Java-based application and requires a supported Java runtime to execute.
+
+**6. What is the difference between JDK and JRE?**
+
+JDK includes Java development tools, whereas the runtime environment provides the components needed to execute Java applications.
+
+**7. What is the purpose of `free -h`?**
+
+It displays system memory information in human-readable format.
+
+**8. What is the purpose of `df -h`?**
+
+It displays filesystem disk usage and available storage.
+
+**9. What is systemd?**
+
+systemd is a system and service manager used to initialize Linux systems and manage background services.
+
+**10. What is the default Jenkins port?**
+
+8080.
+
+**11. What is UFW?**
+
+UFW stands for Uncomplicated Firewall. It provides a simple interface for managing firewall rules on Ubuntu.
+
+**12. What is the purpose of `/var/lib/jenkins`?**
+
+It is the default Jenkins home directory used to store persistent Jenkins data.
+
+**13. Why should we check disk space before installing Jenkins?**
+
+Jenkins stores plugins, build logs, workspaces, job configurations, and artifacts. Insufficient disk space can cause build failures.
+
+**14. What is the difference between an AWS Security Group and UFW?**
+
+An AWS Security Group controls traffic at the EC2 network interface level, whereas UFW controls traffic within the Ubuntu operating system.
 
 ---
 
-## 6.14 What We Learned
+## 6.18 Lesson Summary
 
-In this lesson, we learned:
+In this lesson, we prepared an Ubuntu server for Jenkins installation.
 
-1. Linux package management using APT.
-2. Difference between `apt update` and `apt upgrade`.
-3. Why Jenkins requires Java.
-4. How to verify Java installation.
-5. How to install Java 21 when required.
-6. How to identify the Java installation path.
-7. What JAVA_HOME means.
-8. How Linux manages background services.
-9. How to monitor server resources.
+We learned:
+
+1. How to connect to an Ubuntu EC2 instance using SSH.
+2. How to identify the Ubuntu version.
+3. How to check CPU, memory, and disk space.
+4. How to update Ubuntu packages.
+5. Why Jenkins requires Java.
+6. How to install Java 21.
+7. How to verify Java installation.
+8. How to understand Jenkins network requirements.
+9. How to check UFW firewall configuration.
+10. How to understand systemd.
+11. How to verify network connectivity.
+12. How to troubleshoot common Linux server preparation issues.
+
+### What Comes Next?
+
+**Document 07 - Jenkins Installation on Ubuntu Server**
+
+In the next lesson, we will install Jenkins LTS on our Ubuntu EC2 instance.
+
+We will cover:
+
+1. Understanding the official Jenkins repository.
+2. Adding the Jenkins repository signing key.
+3. Configuring the Jenkins package repository.
+4. Installing Jenkins.
+5. Starting the Jenkins service.
+6. Enabling Jenkins at system startup.
+7. Checking Jenkins service status.
+8. Understanding Jenkins logs.
+9. Accessing Jenkins through a web browser.
+10. Retrieving the initial administrator password.
+11. Completing the Jenkins initial setup wizard.
+
+We will understand every command, why we use it, and when it is used in real-world DevOps environments.
 
 ---
 
-## 6.15 Next Lesson
+## 6.19 Official References
 
-**Document:** `07-Jenkins-Installation.md`
+1. Jenkins Linux Installation Guide: https://www.jenkins.io/doc/book/installing/linux/
+2. Jenkins Java Support Policy: https://www.jenkins.io/doc/book/platform-information/support-policy-java/
+3. Ubuntu Server Documentation: https://documentation.ubuntu.com/server/
+4. OpenJDK Documentation: https://openjdk.org/
+5. AWS EC2 Documentation: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html
+</WritingBlock>
 
-In the next lesson, we will learn:
-
-1. What the Jenkins LTS release is.
-2. Why we use the official Jenkins repository.
-3. How to add the Jenkins repository to Ubuntu.
-4. How to install Jenkins.
-5. How to start the Jenkins service.
-6. How to enable Jenkins at system startup.
-7. How to verify Jenkins installation.
-
-We will install Jenkins on our existing AWS EC2 Ubuntu server.
