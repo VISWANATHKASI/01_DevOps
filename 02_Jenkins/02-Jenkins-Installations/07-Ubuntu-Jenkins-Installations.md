@@ -6,7 +6,7 @@
 # Operating System : Ubuntu 24.04 LTS
 # Java Version     : OpenJDK 21
 # Jenkins Release  : LTS
-# Installation    : Official Jenkins APT Repository
+# Installation     : Official Jenkins APT Repository
 # ============================================================
 
 
@@ -26,10 +26,6 @@
 # Use this in automation scripts to identify failures early.
 # Especially useful in DevOps scripts, CI/CD pipelines and
 # server provisioning.
-#
-# IMPORTANT:
-# This helps prevent a script from continuing after an
-# unexpected command failure.
 
 set -euxo pipefail
 
@@ -102,11 +98,6 @@ sudo apt update
 # WHEN TO USE:
 # Install these dependencies when preparing an Ubuntu server
 # for Jenkins installation.
-#
-# NOTE:
-# Java 21 is already installed on this EC2 instance.
-# APT will retain the installed version if it is already
-# the latest available version.
 
 sudo apt install -y wget git fontconfig openjdk-21-jre
 
@@ -157,10 +148,6 @@ java -version
 # WHEN TO USE:
 # Use this when adding third-party APT repositories
 # that require their own signing keys.
-#
-# IMPORTANT:
-# This command is safe to execute again if the directory
-# already exists.
 
 sudo mkdir -p /etc/apt/keyrings
 
@@ -377,9 +364,6 @@ sudo systemctl status jenkins --no-pager
 # active
 #
 # IMPORTANT:
-# Unlike systemctl status, this command provides a simple
-# service state that is useful in automation scripts.
-#
 # If Jenkins is not running, this command returns a
 # non-zero exit status.
 #
