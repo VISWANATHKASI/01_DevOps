@@ -18,25 +18,13 @@ Deploy the application to the required environment.
 
 Workflow Without Jenkins
 
-Developer Writes Code
-        |
-        v
-Developer Uploads Code
-        |
-        v
-Manually Download Source Code
-        |
-        v
-Compile Application
-        |
-        v
-Execute Test Cases
-        |
-        v
-Generate Build Files
-        |
-        v
-Deploy Application
+flowchart TD
+    A[Developer Writes Code] --> B[Developer Uploads Code]
+    B --> C[Manually Download Source Code]
+    C --> D[Compile Application]
+    D --> E[Execute Test Cases]
+    E --> F[Generate Build Files]
+    F --> G[Deploy Application]
 
 Workflow With Jenkins
 
