@@ -33,7 +33,7 @@ export DEBIAN_FRONTEND=noninteractive
 # STEP 3: DEFINE VARIABLES
 # ------------------------------------------------------------
 
-EBS_DEVICE="/dev/xvdf"
+EBS_DEVICE="/dev/nvme1n1"
 
 JENKINS_HOME_DIR="/var/lib/jenkins"
 
