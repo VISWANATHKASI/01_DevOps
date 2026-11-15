@@ -26,6 +26,7 @@ sudo -u jenkins sudo /usr/bin/systemctl status jenkins --no-pager
 --------------------------------------------------------------------------------------------------
 
 
+
 #!/bin/bash
 set -euxo pipefail
 
@@ -293,6 +294,7 @@ sudo -u jenkins sudo /usr/bin/systemctl status jenkins --no-pager
 echo "=========================================="
 echo "JENKINS INSTALLATION COMPLETED SUCCESSFULLY"
 echo "=========================================="
+
 
 
 --------------------------------------------------------------------------------------------------
