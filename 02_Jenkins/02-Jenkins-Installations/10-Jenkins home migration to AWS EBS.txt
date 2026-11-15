@@ -54,7 +54,8 @@ sudo mkdir -p /var/lib/jenkins
 sudo mount UUID=4dff3227-e926-4d4b-8d77-523e12fcd65a /var/lib/jenkins
 
 # Configure automatic mounting using fstab
-cp /etc/fstab /etc/fstab.backup && grep -qxF "UUID=4dff3227-e926-4d4b-8d77-523e12fcd65a /var/lib/jenkins ext4 defaults,nofail 0 2" /etc/fstab || echo "UUID=4dff3227-e926-4d4b-8d77-523e12fcd65a /var/lib/jenkins ext4 defaults,nofail 0 2" /etc/fstab
+cp -a /etc/fstab /etc/fstab.backup 
+grep -qxF "UUID=4dff3227-e926-4d4b-8d77-523e12fcd65a /var/lib/jenkins ext4 defaults,nofail 0 2" /etc/fstab || echo "UUID=4dff3227-e926-4d4b-8d77-523e12fcd65a /var/lib/jenkins ext4 defaults,nofail 0 2" >> /etc/fstab
 
 # Configure Jenkins startup dependency
 sudo systemctl edit jenkins
@@ -91,6 +92,8 @@ systemctl is-active jenkins
 sudo reboot
 
 # After reconnecting through SSH
+sudo mount -a
+mountpoint /var/lib/jenkins
 findmnt /var/lib/jenkins
 systemctl is-active jenkins
 
