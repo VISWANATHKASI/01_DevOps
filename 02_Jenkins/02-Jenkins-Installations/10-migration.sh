@@ -22,9 +22,16 @@ findmnt /mnt/jenkins-ebs
 
 
 # 4. Copy existing Jenkins data
+rsync -aHAX --numeric-ids \
+  /var/lib/jenkins/ \
+  /mnt/jenkins-ebs/
+
+
+# Verify. Expected: No output.
 rsync -aHAXn --numeric-ids \
   /var/lib/jenkins/ \
   /mnt/jenkins-ebs/
+  
 
 # 5. Verify copied data
 du -sh /var/lib/jenkins
