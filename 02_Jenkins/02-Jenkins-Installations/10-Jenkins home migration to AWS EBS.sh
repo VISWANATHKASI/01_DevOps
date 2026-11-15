@@ -69,7 +69,7 @@ sudo mount UUID=4dff3227-e926-4d4b-8d77-523e12fcd65a /var/lib/jenkins
 
 # Configure automatic mounting using fstab
 sudo cp -a /etc/fstab /etc/fstab.backup 
-sudo grep -qxF "UUID=4dff3227-e926-4d4b-8d77-523e12fcd65a /var/lib/jenkins ext4 defaults,nofail 0 2" /etc/fstab || echo "UUID=4dff3227-e926-4d4b-8d77-523e12fcd65a /var/lib/jenkins ext4 defaults,nofail 0 2" || sudo tee -a /etc/fstab
+sudo grep -qxF "UUID=4dff3227-e926-4d4b-8d77-523e12fcd65a /var/lib/jenkins ext4 defaults,nofail 0 2" /etc/fstab || echo "UUID=4dff3227-e926-4d4b-8d77-523e12fcd65a /var/lib/jenkins ext4 defaults,nofail 0 2" | sudo tee -a /etc/fstab
 
 # Configure Jenkins startup dependency
 sudo systemctl edit jenkins
