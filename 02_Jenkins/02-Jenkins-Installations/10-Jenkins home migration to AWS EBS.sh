@@ -105,6 +105,7 @@ findmnt /var/lib/jenkins
 # Expected: EBS UUID, ext4 filesystem, and /var/lib/jenkins mount point.
 systemctl is-active jenkins
 # Expected: active
+df -hT /var/lib/jenkins
 
 # Start Jenkins:
 sudo systemctl start jenkins
