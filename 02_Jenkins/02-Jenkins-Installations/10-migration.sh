@@ -16,8 +16,13 @@ sudo blkid /dev/nvme1n1
 # 3. Mount the verified EBS filesystem temporarily
 mount /dev/nvme1n1 /mnt/jenkins-ebs
 
+
+# Verify the mount
+findmnt /mnt/jenkins-ebs
+
+
 # 4. Copy existing Jenkins data
-rsync -aHAX --numeric-ids \
+rsync -aHAXn --numeric-ids \
   /var/lib/jenkins/ \
   /mnt/jenkins-ebs/
 
@@ -25,5 +30,8 @@ rsync -aHAX --numeric-ids \
 du -sh /var/lib/jenkins
 du -sh /mnt/jenkins-ebs
 
-# 6. Unmount temporary mount
+# 6. Flush data and unmount
+sync
 umount /mnt/jenkins-ebs
+
+
