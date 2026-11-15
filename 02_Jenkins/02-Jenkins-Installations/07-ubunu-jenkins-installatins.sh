@@ -30,7 +30,7 @@ set -euxo pipefail
 export DEBIAN_FRONTEND=noninteractive
 
 # Use 'lsblk' to find the device if /dev/xvdb doesn't exist (Nitro support)
-EBS_DEVICE="/dev/xvdf"
+EBS_DEVICE="/dev/nvme1n1"
 JENKINS_HOME_DIR="/var/lib/jenkins"
 
 apt update -y && apt upgrade -y
@@ -107,7 +107,7 @@ JENKINS_AGENT_CIDR="172.31.0.0/16"
 
 # --- EBS CONFIGURATION VARIABLES ---
 # Set the device name for your attached EBS volume
-EBS_DEVICE="/dev/xvdf"
+EBS_DEVICE="/dev/nvme1n1"
 JENKINS_HOME_DIR="/var/lib/jenkins"
 JENKINS_LOG_FILE="/var/log/jenkins/jenkins.log"
 
