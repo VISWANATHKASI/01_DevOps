@@ -1,3 +1,4 @@
+
 #!/bin/bash
 set -euxo pipefail
 export DEBIAN_FRONTEND=noninteractive
@@ -24,55 +25,275 @@ sudo -u jenkins sudo /usr/bin/systemctl status jenkins --no-pager
 
 --------------------------------------------------------------------------------------------------
 
+
 #!/bin/bash
 set -euxo pipefail
+
 export DEBIAN_FRONTEND=noninteractive
 
-# Use 'lsblk' to find the device if /dev/xvdb doesn't exist (Nitro support)
+# ==========================================
+# STEP 0: CONFIGURATION
+# ==========================================
+
 EBS_DEVICE="/dev/nvme1n1"
 JENKINS_HOME_DIR="/var/lib/jenkins"
 
-apt update -y 
-apt install wget git fontconfig openjdk-21-jre -y
+# Formatting disabled by default
+FORMAT_EBS="false"
 
-# Setup Jenkins Repo
-sudo mkdir -p /etc/apt/keyrings
-sudo wget -O /etc/apt/keyrings/jenkins-keyring.asc \
-  https://pkg.jenkins.io/debian-stable/jenkins.io-2026.key
-echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc]" \
-  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
-  /etc/apt/sources.list.d/jenkins.list > /dev/null
-
-# Prepare the Volume BEFORE Installation
-FE_TYPE=$(sudo blkid -o value -s TYPE ${EBS_DEVICE}) || true
-if [ -z "$FE_TYPE" ]; then
-    echo "Formatting EBS volume ${EBS_DEVICE}..."
-    sudo mkfs -t ext4 ${EBS_DEVICE}
+# Ensure script runs as root
+if [ "$EUID" -ne 0 ]; then
+    echo "ERROR: Run this script as root."
+    exit 1
 fi
 
-sudo mkdir -p ${JENKINS_HOME_DIR}
-sudo mount ${EBS_DEVICE} ${JENKINS_HOME_DIR}
+# ==========================================
+# STEP 1: INSTALL DEPENDENCIES
+# ==========================================
 
-# Add to fstab
-EBS_UUID=$(sudo blkid -s UUID -o value ${EBS_DEVICE})
-if ! grep -q "${EBS_UUID}" /etc/fstab; then
-    echo "UUID=${EBS_UUID} ${JENKINS_HOME_DIR} ext4 defaults,nofail 0 2" | sudo tee -a /etc/fstab
+apt-get update
+
+apt-get install -y \
+    wget \
+    git \
+    fontconfig \
+    openjdk-21-jre
+
+java -version
+
+# ==========================================
+# STEP 2: CONFIGURE JENKINS REPOSITORY
+# ==========================================
+
+mkdir -p /etc/apt/keyrings
+
+wget -O /etc/apt/keyrings/jenkins-keyring.asc \
+    https://pkg.jenkins.io/debian-stable/jenkins.io-2026.key
+
+echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/" \
+    > /etc/apt/sources.list.d/jenkins.list
+
+# ==========================================
+# STEP 3: VERIFY EBS DEVICE
+# ==========================================
+
+if [ ! -b "$EBS_DEVICE" ]; then
+    echo "ERROR: EBS device not found: $EBS_DEVICE"
+    lsblk -f
+    exit 1
 fi
 
-# Now Install Jenkins (It will install directly onto the mounted EBS volume)
-apt update -y
-apt install -y jenkins
+echo "EBS device detected:"
+lsblk -f "$EBS_DEVICE"
 
-# Ensure permissions are correct for the mount point
-sudo chown -R jenkins:jenkins ${JENKINS_HOME_DIR}
+# ==========================================
+# STEP 4: CHECK EBS FILESYSTEM
+# ==========================================
+
+FE_TYPE=$(blkid -o value -s TYPE "$EBS_DEVICE" || true)
+
+if [ -n "$FE_TYPE" ]; then
+
+    echo "Existing filesystem detected: $FE_TYPE"
+
+    if [ "$FE_TYPE" != "ext4" ]; then
+        echo "ERROR: Expected ext4 filesystem."
+        exit 1
+    fi
+
+    echo "Skipping formatting."
+
+else
+
+    echo "No filesystem detected."
+
+    # Do not format if partitions exist
+    DEVICE_COUNT=$(lsblk -nrpo NAME "$EBS_DEVICE" | wc -l)
+
+    if [ "$DEVICE_COUNT" -ne 1 ]; then
+        echo "ERROR: Device contains partitions."
+        lsblk -f "$EBS_DEVICE"
+        exit 1
+    fi
+
+    # Check for existing disk signatures
+    SIGNATURES=$(wipefs -n "$EBS_DEVICE")
+
+    if [ -n "$SIGNATURES" ]; then
+        echo "ERROR: Existing disk signatures detected."
+        echo "$SIGNATURES"
+        exit 1
+    fi
+
+    if [ "$FORMAT_EBS" = "true" ]; then
+        echo "Formatting verified new EBS volume..."
+        mkfs.ext4 "$EBS_DEVICE"
+    else
+        echo "ERROR: Formatting is disabled."
+        echo "Verify the volume before enabling formatting."
+        exit 1
+    fi
+
+fi
+
+# ==========================================
+# STEP 5: CREATE JENKINS HOME
+# ==========================================
+
+mkdir -p "$JENKINS_HOME_DIR"
+
+# Do not hide existing data on root filesystem
+if ! mountpoint -q "$JENKINS_HOME_DIR"; then
+
+    if [ -n "$(ls -A "$JENKINS_HOME_DIR")" ]; then
+        echo "ERROR: Jenkins home contains existing data."
+        echo "Migration is required before mounting EBS."
+        exit 1
+    fi
+
+fi
+
+# ==========================================
+# STEP 6: MOUNT EBS VOLUME
+# ==========================================
+
+if mountpoint -q "$JENKINS_HOME_DIR"; then
+
+    echo "Jenkins home is already mounted."
+
+    MOUNTED_DEVICE=$(findmnt -n -o SOURCE --target "$JENKINS_HOME_DIR")
+
+    if [ "$(readlink -f "$MOUNTED_DEVICE")" != "$(readlink -f "$EBS_DEVICE")" ]; then
+        echo "ERROR: Incorrect device mounted."
+        echo "Mounted: $MOUNTED_DEVICE"
+        echo "Expected: $EBS_DEVICE"
+        exit 1
+    fi
+
+    echo "Correct EBS volume already mounted."
+
+else
+
+    # Check whether EBS is mounted elsewhere
+    OTHER_MOUNT=$(findmnt -rn -S "$EBS_DEVICE" -o TARGET || true)
+
+    if [ -n "$OTHER_MOUNT" ]; then
+        echo "ERROR: EBS mounted elsewhere: $OTHER_MOUNT"
+        exit 1
+    fi
+
+    echo "Mounting EBS volume..."
+
+    mount "$EBS_DEVICE" "$JENKINS_HOME_DIR"
+
+fi
+
+# Verify mount
+findmnt --target "$JENKINS_HOME_DIR"
+
+if ! mountpoint -q "$JENKINS_HOME_DIR"; then
+    echo "ERROR: EBS mount verification failed."
+    exit 1
+fi
+
+# ==========================================
+# STEP 7: CONFIGURE FSTAB
+# ==========================================
+
+EBS_UUID=$(blkid -s UUID -o value "$EBS_DEVICE")
+
+if [ -z "$EBS_UUID" ]; then
+    echo "ERROR: EBS UUID not found."
+    exit 1
+fi
+
+# Check existing fstab entry for Jenkins home
+FSTAB_ENTRY=$(awk -v target="$JENKINS_HOME_DIR" \
+    '$1 !~ /^#/ && $2 == target {print; exit}' /etc/fstab)
+
+if [ -n "$FSTAB_ENTRY" ]; then
+
+    FSTAB_SOURCE=$(echo "$FSTAB_ENTRY" | awk '{print $1}')
+    FSTAB_TYPE=$(echo "$FSTAB_ENTRY" | awk '{print $3}')
+
+    if [ "$FSTAB_SOURCE" != "UUID=$EBS_UUID" ] || [ "$FSTAB_TYPE" != "ext4" ]; then
+        echo "ERROR: Conflicting fstab entry detected."
+        echo "$FSTAB_ENTRY"
+        exit 1
+    fi
+
+    echo "Correct fstab entry already exists."
+
+else
+
+    echo "Adding EBS entry to fstab."
+
+    echo "UUID=$EBS_UUID $JENKINS_HOME_DIR ext4 defaults,nofail 0 2" \
+        >> /etc/fstab
+
+fi
+
+# ==========================================
+# STEP 8: CONFIGURE SYSTEMD DEPENDENCY
+# ==========================================
+
+JENKINS_OVERRIDE_DIR="/etc/systemd/system/jenkins.service.d"
+
+mkdir -p "$JENKINS_OVERRIDE_DIR"
+
+cat > "$JENKINS_OVERRIDE_DIR/override.conf" <<EOF
+[Unit]
+RequiresMountsFor=$JENKINS_HOME_DIR
+EOF
+
+# Reload systemd configuration
+systemctl daemon-reload
+
+# ==========================================
+# STEP 9: VERIFY FSTAB AND MOUNT
+# ==========================================
+
+findmnt --verify --verbose
+
+mount -a
+
+if ! mountpoint -q "$JENKINS_HOME_DIR"; then
+    echo "ERROR: Jenkins EBS volume is not mounted."
+    exit 1
+fi
+
+# ==========================================
+# STEP 10: INSTALL JENKINS
+# ==========================================
+
+apt-get update
+
+apt-get install -y jenkins
+
+# ==========================================
+# STEP 11: SET JENKINS PERMISSIONS
+# ==========================================
+
+chown -R jenkins:jenkins "$JENKINS_HOME_DIR"
 
 echo "jenkins ALL=(root) NOPASSWD: /usr/bin/systemctl start jenkins, /usr/bin/systemctl stop jenkins, /usr/bin/systemctl restart jenkins, /usr/bin/systemctl status jenkins, /usr/bin/systemctl status jenkins --no-pager, /usr/bin/systemctl enable jenkins, /usr/bin/systemctl disable jenkins" > /etc/sudoers.d/jenkins-service
+
 chmod 440 /etc/sudoers.d/jenkins-service
+
 visudo -cf /etc/sudoers.d/jenkins-service
+
 systemctl daemon-reload
+
 sudo -u jenkins sudo /usr/bin/systemctl start jenkins
+
 sudo -u jenkins sudo /usr/bin/systemctl enable jenkins
+
 sudo -u jenkins sudo /usr/bin/systemctl status jenkins --no-pager
+
+echo "=========================================="
+echo "JENKINS INSTALLATION COMPLETED SUCCESSFULLY"
+echo "=========================================="
+
 
 --------------------------------------------------------------------------------------------------
 
