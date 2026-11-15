@@ -6,6 +6,13 @@ systemctl stop jenkins
 # 2. Create temporary mount directory
 mkdir -p /mnt/jenkins-ebs
 
+# Format the new EBS volume
+# sudo mkfs.ext4 /dev/nvme1n1
+
+# Verify filesystem
+sudo blkid /dev/nvme1n1
+
+
 # 3. Mount the verified EBS filesystem temporarily
 mount /dev/nvme1n1 /mnt/jenkins-ebs
 
