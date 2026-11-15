@@ -4,9 +4,11 @@ sudo systemctl stop jenkins
 
 # Confirm it stopped:
 systemctl is-active jenkins
+# Expected: inactive
 
 # Identify and prepare EBS
 lsblk -f
+# Expected example: nvme1n1     ext4         4dff3227-e926-4d4b-8d77-523e12fcd65a
 
 # Check its UUID:
 sudo blkid /dev/nvme1n1
@@ -23,7 +25,9 @@ sudo mount UUID=4dff3227-e926-4d4b-8d77-523e12fcd65a /mnt/jenkins-ebs
 
 # Verify:
 findmnt /mnt/jenkins-ebs
+# Expected example: /mnt/jenkins-ebs   /dev/nvme1n1   ext4   rw,relatime
 df -hT /mnt/jenkins-ebs
+# Expected example: /dev/nvme1n1   ext4   50G   2G    48G   5%  /mnt/jenkins-ebs
 
 # Copy Jenkins data to EBS
 sudo rsync -aHAX --numeric-ids \
@@ -38,7 +42,9 @@ sudo rsync -aHAXnci --dry-run \
 
 # Compare directory sizes:
 sudo du -sh /var/lib/jenkins
+# Expected : 2.1G    /var/lib/jenkins
 sudo du -sh /mnt/jenkins-ebs
+# Expected : 2.1G    /var/lib/jenkins
 
 # Flush data and unmount temporary location
 sudo sync
@@ -68,7 +74,7 @@ sudo systemctl daemon-reload
 
 # Verify permissions
 ls -ld /var/lib/jenkins
-# Expected ownership: jenkins jenkins
+# Expected ownership: drwxr-xr-x ... jenkins jenkins ... /var/lib/jenkins
 # sudo chown -R jenkins:jenkins /var/lib/jenkins
 
 # Validate and start Jenkins
@@ -76,6 +82,7 @@ ls -ld /var/lib/jenkins
 sudo mount -a
 # Check EBS:
 findmnt /var/lib/jenkins
+# Expected : /var/lib/jenkins   /dev/nvme1n1   ext4   rw,relatime
 # Check available space:
 df -hT /var/lib/jenkins
 
@@ -94,8 +101,11 @@ sudo reboot
 # After reconnecting through SSH
 sudo mount -a
 mountpoint /var/lib/jenkins
+# Expected: /var/lib/jenkins is a mountpoint
 findmnt /var/lib/jenkins
+# Expected: EBS UUID, ext4 filesystem, and /var/lib/jenkins mount point.
 systemctl is-active jenkins
+# Expected: active
 
 # Remove backup after successful validation
 # sudo rm -rf /var/lib/jenkins.backup
