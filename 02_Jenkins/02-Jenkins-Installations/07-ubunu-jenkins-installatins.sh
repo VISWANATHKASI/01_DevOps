@@ -3,7 +3,6 @@ set -euxo pipefail
 export DEBIAN_FRONTEND=noninteractive
 
 apt update -y
-apt upgrade -y
 apt install wget git -y
 apt install fontconfig openjdk-21-jre -y
 mkdir -p /etc/apt/keyrings
@@ -33,7 +32,7 @@ export DEBIAN_FRONTEND=noninteractive
 EBS_DEVICE="/dev/nvme1n1"
 JENKINS_HOME_DIR="/var/lib/jenkins"
 
-apt update -y && apt upgrade -y
+apt update -y 
 apt install wget git fontconfig openjdk-21-jre -y
 
 # Setup Jenkins Repo
