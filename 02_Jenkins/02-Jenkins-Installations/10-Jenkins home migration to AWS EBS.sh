@@ -103,8 +103,7 @@ mountpoint /var/lib/jenkins
 # Expected: /var/lib/jenkins is a mountpoint
 findmnt /var/lib/jenkins
 # Expected: EBS UUID, ext4 filesystem, and /var/lib/jenkins mount point.
-systemctl is-active jenkins
-# Expected: active
+
 df -hT /var/lib/jenkins
 
 # Start Jenkins:
@@ -115,6 +114,7 @@ sudo systemctl status jenkins --no-pager -l
 
 # Check active state:
 systemctl is-active jenkins
+# Expected: active
 
 # Remove backup after successful validation
 # sudo rm -rf /var/lib/jenkins.backup
