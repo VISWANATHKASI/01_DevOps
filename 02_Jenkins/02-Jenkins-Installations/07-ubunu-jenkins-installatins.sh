@@ -5,7 +5,7 @@ export DEBIAN_FRONTEND=noninteractive
 apt update -y
 apt upgrade -y
 apt install wget git -y
-apt install -y openjdk-21-jdk
+apt install fontconfig openjdk-21-jre -y
 sudo wget -O /etc/apt/keyrings/jenkins-keyring.asc \
   https://pkg.jenkins.io/debian-stable/jenkins.io-2026.key
 echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc]" \
@@ -30,7 +30,7 @@ EBS_DEVICE="/dev/xvdf"
 JENKINS_HOME_DIR="/var/lib/jenkins"
 
 apt update -y && apt upgrade -y
-apt install wget git openjdk-21-jdk -y
+apt install wget git fontconfig openjdk-21-jre -y
 
 # Setup Jenkins Repo
 sudo mkdir -p /etc/apt/keyrings
@@ -129,7 +129,7 @@ apt update -y
 apt install -y wget git firewalld logrotate
 
 # Install a specific, production-approved LTS Java version (Corretto 17)
-apt install -y openjdk-21-jdk
+apt install -y fontconfig openjdk-21-jre
 
 ## ----------------------------------------------------
 ## 3.5. EBS VOLUME CONFIGURATION (Persistence and Backup) 🌟 UPDATED: USING UUID 🌟
