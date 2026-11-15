@@ -14,7 +14,7 @@ echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc]" \
   /etc/apt/sources.list.d/jenkins.list > /dev/null
 apt update -y
 apt install -y jenkins
-echo "jenkins ALL=(root) NOPASSWD: /usr/bin/systemctl start jenkins, /usr/bin/systemctl stop jenkins, /usr/bin/systemctl restart jenkins, /usr/bin/systemctl status jenkins, /usr/bin/systemctl enable jenkins, /usr/bin/systemctl disable jenkins" > /etc/sudoers.d/jenkins-service
+echo "jenkins ALL=(root) NOPASSWD: /usr/bin/systemctl start jenkins, /usr/bin/systemctl stop jenkins, /usr/bin/systemctl restart jenkins, /usr/bin/systemctl status jenkins, /usr/bin/systemctl status jenkins --no-pager, /usr/bin/systemctl enable jenkins, /usr/bin/systemctl disable jenkins" > /etc/sudoers.d/jenkins-service
 chmod 440 /etc/sudoers.d/jenkins-service
 visudo -cf /etc/sudoers.d/jenkins-service
 systemctl daemon-reload
@@ -67,7 +67,7 @@ apt install -y jenkins
 # Ensure permissions are correct for the mount point
 sudo chown -R jenkins:jenkins ${JENKINS_HOME_DIR}
 
-echo "jenkins ALL=(root) NOPASSWD: /usr/bin/systemctl start jenkins, /usr/bin/systemctl stop jenkins, /usr/bin/systemctl restart jenkins, /usr/bin/systemctl status jenkins, /usr/bin/systemctl enable jenkins, /usr/bin/systemctl disable jenkins" > /etc/sudoers.d/jenkins-service
+echo "jenkins ALL=(root) NOPASSWD: /usr/bin/systemctl start jenkins, /usr/bin/systemctl stop jenkins, /usr/bin/systemctl restart jenkins, /usr/bin/systemctl status jenkins, /usr/bin/systemctl status jenkins --no-pager, /usr/bin/systemctl enable jenkins, /usr/bin/systemctl disable jenkins" > /etc/sudoers.d/jenkins-service
 chmod 440 /etc/sudoers.d/jenkins-service
 visudo -cf /etc/sudoers.d/jenkins-service
 systemctl daemon-reload
