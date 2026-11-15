@@ -17,11 +17,10 @@ FORMAT_EBS="false"
 
 
 
-
 #!/bin/bash
 
 # ============================================================
-# JENKINS INSTALLATION WITH SEPARATE EBS + FIREWALL
+# JENKINS INSTALLATION WITH SEPARATE AWS EBS + FIREWALLD
 # ============================================================
 #
 # Operating System : Ubuntu 24.04 LTS
@@ -30,891 +29,1112 @@ FORMAT_EBS="false"
 # Storage          : Separate AWS EBS Volume
 # Filesystem       : ext4
 # Jenkins Home     : /var/lib/jenkins
+# Jenkins Port     : 8080
 # Firewall         : firewalld
-# Jenkins UI       : TCP 8080
-# Jenkins Agent    : TCP 50000 (only when inbound TCP agents are enabled)
 #
-# LEARNING FORMAT:
-# WHAT  : What does the command do?
-# WHY   : Why are we using this command?
-# WHEN  : When do we use this command in real-world projects?
+# SUPPORTED SCENARIOS
 #
-# IMPORTANT:
-# 1. Review EBS_DEVICE and the CIDR values before running.
-# 2. FORMAT_EBS=false is the safe default. Change it to true only
-#    for a verified new/empty EBS volume that has no filesystem.
-# 3. Port 50000 is opened in firewalld, but the Jenkins inbound
-#    agent listener must also be enabled in Manage Jenkins > Security.
-# 4. Configure matching inbound rules in the EC2 Security Group.
+# 1. EXISTING JENKINS SERVER
+#    - Jenkins is already installed.
+#    - Existing Jenkins data is in /var/lib/jenkins.
+#    - Script stops Jenkins.
+#    - Copies existing data to the empty EBS volume.
+#    - Mounts EBS at /var/lib/jenkins.
+#    - Starts Jenkins again.
+#
+# 2. NEW UBUNTU SERVER
+#    - Jenkins is not installed.
+#    - EBS volume is empty.
+#    - Script mounts EBS at /var/lib/jenkins first.
+#    - Installs Jenkins afterwards.
+#    - Jenkins creates its data directly on EBS.
+#
+# FIREWALL CONFIGURATION
+#
+# - Installs firewalld.
+# - Detects the configured SSH port.
+# - Allows SSH traffic.
+# - Allows Jenkins TCP port 8080.
+# - Applies permanent firewall rules.
+# - Enables firewalld at boot.
+#
+# SAFETY
+#
+# - Existing EBS data is never automatically overwritten.
+# - Existing EBS data causes the script to stop for verification.
+# - The script does not automatically format an EBS volume.
+# - The EBS volume is identified using its stable by-id path.
+# - SSH access is allowed before firewalld is started.
+#
 # ============================================================
 
 
-# ------------------------------------------------------------
-# STEP 1: ENABLE BASH STRICT MODE
-# ------------------------------------------------------------
+# ============================================================
+# 01. CONFIGURATION
+# ============================================================
 
-# WHAT: Specifies Bash as the interpreter and enables strict mode.
-# WHY : Stops on command failures, undefined variables and pipeline errors.
-# WHEN: Use this in reliable installation and deployment scripts.
+# Replace this placeholder with your actual EBS by-id path.
+EBS_DEVICE_ID="/dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_vol085b9b1beb6857153"
+
+# Keep false for an existing volume.
+# Set true ONLY when you intentionally want to format a new,
+# empty EBS volume.
+FORMAT_EBS="false"
+
+# Jenkins home directory.
+JENKINS_HOME_DIR="/var/lib/jenkins"
+
+# Temporary mount directory used during migration.
+TEMP_MOUNT_DIR="/mnt/jenkins-ebs"
+
+# Jenkins web interface port.
+JENKINS_PORT="8080"
+
+
+# ============================================================
+# 02. SCRIPT SAFETY SETTINGS
+# ============================================================
+
+# -e  : Stop when a command fails.
+# -u  : Stop when an undefined variable is used.
+# -o pipefail : Detect failures inside command pipelines.
 
 set -Eeuo pipefail
 
-# WHAT: Prints each command before execution.
-# WHY : Helps identify the command that failed during troubleshooting.
-# WHEN: Useful while learning and debugging automation scripts.
-# Note: -x is enabled separately so the script can be run quietly
-#       later by removing the x option.
-set -x
+# Track whether this script mounted the EBS volume temporarily.
+TEMP_MOUNTED_BY_SCRIPT="false"
 
-# WHAT: Makes package installation non-interactive.
-# WHY : Prevents package prompts from stopping automation.
-# WHEN: When installing packages through automated scripts.
-export DEBIAN_FRONTEND=noninteractive
+# Print a message with a timestamp.
+log() {
+    echo
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1"
+}
 
-
-# ------------------------------------------------------------
-# STEP 2: DEFINE CONFIGURATION VARIABLES
-# ------------------------------------------------------------
-
-# WHAT: Defines the EBS device attached to the EC2 instance.
-# WHY : Jenkins data will be stored on a separate EBS volume.
-# WHEN: When configuring dedicated application storage.
-EBS_DEVICE="/dev/nvme1n1"
-
-# WHAT: Defines Jenkins home.
-# WHY : Jenkins stores jobs, plugins, credentials, configuration
-#       and build history here.
-# WHEN: When configuring or migrating Jenkins storage.
-JENKINS_HOME_DIR="/var/lib/jenkins"
-
-# WHAT: Defines a temporary mount directory for migration.
-# WHY : Allows the EBS filesystem to be inspected before final mounting.
-# WHEN: When copying data between filesystems.
-TEMP_MOUNT_DIR="/mnt/jenkins-ebs"
-
-# WHAT: Controls whether the script may format EBS.
-# WHY : Formatting destroys existing filesystem data.
-# WHEN: Set true only for a verified new and empty EBS volume.
-FORMAT_EBS="false"
-
-# Jenkins network configuration.
-JENKINS_PORT=8080
-JENKINS_LISTEN_ADDRESS="0.0.0.0"
-JENKINS_ACCESS_CIDR="172.31.0.0/16"
-
-# Jenkins inbound agent configuration.
-JENKINS_AGENT_PORT=50000
-JENKINS_AGENT_CIDR="172.31.0.0/16"
-
-
-# ------------------------------------------------------------
-# STEP 3: VERIFY EBS DEVICE
-# ------------------------------------------------------------
-
-# WHAT: Lists block devices, filesystem types, UUIDs and mount points.
-# WHY : Helps identify the correct EBS device before storage operations.
-# WHEN: When attaching, formatting or mounting additional disks.
-lsblk -f
-
-# WHAT: Checks whether the selected path is a block device.
-# WHY : Prevents operations on a nonexistent device.
-# WHEN: Before formatting or mounting a disk.
-if [[ ! -b "$EBS_DEVICE" ]]; then
-    echo "ERROR: EBS device $EBS_DEVICE does not exist."
+# Stop the script with an error message.
+die() {
+    echo
+    echo "ERROR: $1"
     exit 1
+}
+
+# Remove only the temporary mount created by this script.
+# The final Jenkins EBS mount must remain mounted.
+
+cleanup() {
+
+    if [[ "$TEMP_MOUNTED_BY_SCRIPT" == "true" ]] &&
+       mountpoint -q "$TEMP_MOUNT_DIR"; then
+
+        log "Cleaning up temporary EBS mount."
+
+        umount "$TEMP_MOUNT_DIR" || true
+
+    fi
+}
+
+trap cleanup EXIT
+
+
+# ============================================================
+# 03. CHECK ROOT PRIVILEGES
+# ============================================================
+
+# WHY:
+# The script modifies system directories, installs packages,
+# mounts disks and changes file ownership.
+#
+# WHEN:
+# Run this script with root privileges.
+
+if [[ "$EUID" -ne 0 ]]; then
+    die "Run this script as root: sudo bash jenkins-ebs-install.sh"
 fi
 
-# WHAT: Resolves the canonical device path.
-# WHY : Makes device comparisons more reliable.
-# WHEN: When comparing device paths or symbolic links.
-EBS_DEVICE=$(readlink -f "$EBS_DEVICE")
-echo "Selected EBS device: $EBS_DEVICE"
+
+# ============================================================
+# 04. CHECK OPERATING SYSTEM
+# ============================================================
+
+# WHY:
+# This script uses Ubuntu APT package management and the
+# Jenkins Debian repository.
+
+source /etc/os-release
+
+if [[ "$ID" != "ubuntu" || "$VERSION_ID" != "24.04" ]]; then
+    die "This script is designed for Ubuntu 24.04 LTS."
+fi
+
+log "Ubuntu 24.04 LTS detected."
 
 
-# ------------------------------------------------------------
-# STEP 4: VERIFY EBS IS NOT THE ROOT DISK
-# ------------------------------------------------------------
+# ============================================================
+# 05. VERIFY EBS DEVICE PATH
+# ============================================================
 
-# WHAT: Identifies the device backing the root filesystem.
-# WHY : Prevents selecting the operating system disk.
-# WHEN: Before performing destructive disk operations.
+# WHY:
+# AWS Nitro instances can expose EBS volumes using NVMe names.
+# Names such as /dev/nvme1n1 can change after a reboot.
+#
+# The /dev/disk/by-id path provides a stable device identifier.
+
+if [[ ! -e "$EBS_DEVICE_ID" ]]; then
+    die "EBS device path not found: $EBS_DEVICE_ID"
+fi
+
+EBS_DEVICE=$(readlink -f "$EBS_DEVICE_ID")
+
+if [[ ! -b "$EBS_DEVICE" ]]; then
+    die "The selected EBS path is not a block device."
+fi
+
+log "EBS device resolved to: $EBS_DEVICE"
+
+
+# ============================================================
+# 06. PROTECT THE ROOT DISK
+# ============================================================
+
+# WHY:
+# We must never format or use the operating system's root disk
+# as the Jenkins EBS volume.
+
 ROOT_SOURCE=$(findmnt -n -o SOURCE /)
 ROOT_DEVICE=$(readlink -f "$ROOT_SOURCE")
 
 if [[ ! -b "$ROOT_DEVICE" ]]; then
-    echo "ERROR: Unable to identify the root block device."
-    exit 1
+    die "Unable to identify the root block device safely."
 fi
 
-# WHAT: Lists the root device and its parent-device hierarchy.
-# WHY : Detects whether the selected EBS device belongs to the root disk.
-# WHEN: When validating storage-device identities.
-ROOT_DEVICES=$(lsblk -s -nrpo NAME "$ROOT_DEVICE")
+ROOT_ANCESTORS=$(lsblk -s -nrpo MAJ:MIN "$ROOT_DEVICE")
+EBS_MAJ_MIN=$(lsblk -dnro MAJ:MIN "$EBS_DEVICE")
 
-while IFS= read -r DEVICE; do
-    [[ -z "$DEVICE" ]] && continue
-    DEVICE=$(readlink -f "$DEVICE")
+if grep -Fxq "$EBS_MAJ_MIN" <<< "$ROOT_ANCESTORS"; then
+    die "The selected EBS device belongs to the root disk. Stopping."
+fi
 
-    if [[ "$DEVICE" == "$EBS_DEVICE" ]]; then
-        echo "ERROR: Selected EBS device is part of the root disk."
-        exit 1
+log "Root disk protection check passed."
+
+
+# ============================================================
+# 07. CHECK EBS DEVICE STRUCTURE
+# ============================================================
+
+# WHY:
+# This script expects an ext4 filesystem directly on the EBS
+# volume. It does not automatically handle partitioned volumes.
+
+EBS_TYPE=$(lsblk -dnro TYPE "$EBS_DEVICE")
+
+if [[ "$EBS_TYPE" != "disk" ]]; then
+    die "Expected a whole disk device. Found: $EBS_TYPE"
+fi
+
+mapfile -t EBS_TREE < <(lsblk -nrpo NAME "$EBS_DEVICE")
+
+if [[ "${#EBS_TREE[@]}" -ne 1 ]]; then
+    die "EBS contains partitions or child devices. This script expects a whole-volume filesystem."
+fi
+
+
+# ============================================================
+# 08. CHECK EXISTING EBS MOUNTS
+# ============================================================
+
+# WHY:
+# The EBS volume must not be mounted at an unrelated location.
+
+while IFS= read -r CURRENT_MOUNT; do
+
+    [[ -z "$CURRENT_MOUNT" ]] && continue
+
+    if [[ "$CURRENT_MOUNT" != "$JENKINS_HOME_DIR" ]]; then
+        die "EBS is already mounted at $CURRENT_MOUNT"
     fi
-done <<< "$ROOT_DEVICES"
+
+done < <(lsblk -nrpo MOUNTPOINT "$EBS_DEVICE")
 
 
-# ------------------------------------------------------------
-# STEP 5: CHECK WHETHER EBS IS ALREADY MOUNTED
-# ------------------------------------------------------------
+# ============================================================
+# 09. CHECK EBS FILESYSTEM
+# ============================================================
 
-# WHAT: Retrieves mount points for the selected device and its children.
-# WHY : Prevents mounting a filesystem that is already mounted elsewhere.
-# WHEN: Before mounting an additional disk.
-EBS_MOUNT_INFO=$(lsblk -nrpo MOUNTPOINTS "$EBS_DEVICE")
+# WHY:
+# Jenkins data will be stored on an ext4 filesystem.
 
-if [[ -n "$(echo "$EBS_MOUNT_INFO" | grep -v '^[[:space:]]*$' || true)" ]]; then
-    echo "EBS mount information:"
-    echo "$EBS_MOUNT_INFO"
+FS_TYPE=$(blkid -o value -s TYPE "$EBS_DEVICE" || true)
 
-    # WHAT: Checks whether Jenkins home is already a mount point.
-    # WHY : Allows the intended EBS volume to remain mounted there.
-    # WHEN: When rerunning an installation script.
-    if mountpoint -q "$JENKINS_HOME_DIR"; then
-        CURRENT_UUID=$(findmnt -n -o UUID --target "$JENKINS_HOME_DIR")
-        EXISTING_UUID=$(sudo blkid -s UUID -o value "$EBS_DEVICE")
+if [[ -z "$FS_TYPE" ]]; then
 
-        if [[ "$CURRENT_UUID" != "$EXISTING_UUID" ]]; then
-            echo "ERROR: Jenkins home is mounted from another volume."
-            exit 1
-        fi
+    log "No filesystem detected on EBS."
+
+    if [[ "$FORMAT_EBS" != "true" ]]; then
+        die "EBS has no filesystem. Verify the volume before enabling FORMAT_EBS=true."
+    fi
+
+    # WHY:
+    # wipefs checks for existing filesystem or partition signatures.
+    # Formatting is permitted only when no signatures are detected.
+
+    WIPEFS_OUTPUT=$(wipefs -n "$EBS_DEVICE" || true)
+
+    if [[ -n "$WIPEFS_OUTPUT" ]]; then
+        die "Existing disk signatures detected. Refusing to format EBS."
+    fi
+
+    log "Creating ext4 filesystem on the confirmed empty EBS volume."
+
+    mkfs.ext4 "$EBS_DEVICE"
+
+    FS_TYPE=$(blkid -o value -s TYPE "$EBS_DEVICE" || true)
+
+fi
+
+if [[ "$FS_TYPE" != "ext4" ]]; then
+    die "Expected ext4 filesystem. Found: $FS_TYPE"
+fi
+
+EBS_UUID=$(blkid -s UUID -o value "$EBS_DEVICE")
+
+if [[ -z "$EBS_UUID" ]]; then
+    die "Unable to retrieve EBS filesystem UUID."
+fi
+
+log "EBS filesystem: $FS_TYPE"
+log "EBS UUID: $EBS_UUID"
+
+
+# ============================================================
+# 10. DETECT EXISTING JENKINS INSTALLATION
+# ============================================================
+
+# WHY:
+# We need to know whether Jenkins is already installed so that
+# we can stop it before copying its data.
+
+JENKINS_INSTALLED="false"
+
+if dpkg-query -W -f='${Status}' jenkins 2>/dev/null |
+   grep -q "install ok installed"; then
+
+    JENKINS_INSTALLED="true"
+
+fi
+
+log "Jenkins already installed: $JENKINS_INSTALLED"
+
+
+# ============================================================
+# 11. STOP EXISTING JENKINS
+# ============================================================
+
+# WHY:
+# Copying Jenkins data while Jenkins is running can result in
+# inconsistent or incomplete application data.
+#
+# WHEN:
+# This is required when Jenkins is already installed.
+
+if [[ "$JENKINS_INSTALLED" == "true" ]]; then
+
+    log "Stopping existing Jenkins service."
+
+    systemctl stop jenkins
+
+    if systemctl is-active --quiet jenkins; then
+        die "Jenkins is still running. Cannot safely migrate its data."
+    fi
+
+fi
+
+
+# ============================================================
+# 12. CREATE JENKINS HOME DIRECTORY
+# ============================================================
+
+# WHY:
+# On a fresh server, the Jenkins home directory may not exist.
+# Create the mountpoint before mounting EBS.
+
+mkdir -p "$JENKINS_HOME_DIR"
+
+
+# ============================================================
+# 13. CHECK WHETHER EBS IS ALREADY MOUNTED AT JENKINS HOME
+# ============================================================
+
+EBS_ALREADY_AT_HOME="false"
+
+if mountpoint -q "$JENKINS_HOME_DIR"; then
+
+    CURRENT_UUID=$(findmnt -n -o UUID --target "$JENKINS_HOME_DIR")
+
+    if [[ "$CURRENT_UUID" != "$EBS_UUID" ]]; then
+        die "$JENKINS_HOME_DIR is mounted from a different filesystem."
+    fi
+
+    EBS_ALREADY_AT_HOME="true"
+
+    log "Correct EBS volume is already mounted at Jenkins home."
+
+fi
+
+
+# ============================================================
+# 14. CHECK TEMPORARY MOUNT DIRECTORY
+# ============================================================
+
+# WHY:
+# We temporarily mount EBS to inspect its contents and migrate
+# existing Jenkins data before mounting it at Jenkins home.
+
+mkdir -p "$TEMP_MOUNT_DIR"
+
+if mountpoint -q "$TEMP_MOUNT_DIR"; then
+    die "Temporary mount directory is already in use."
+fi
+
+
+# ============================================================
+# 15. DEFINE DATA CHECK FUNCTION
+# ============================================================
+
+# WHY:
+# An ext4 filesystem normally contains lost+found.
+# We ignore that directory when checking whether EBS has data.
+
+has_data() {
+
+    find "$1" \
+        -mindepth 1 \
+        -maxdepth 1 \
+        ! -name "lost+found" \
+        -print -quit |
+        grep -q .
+
+}
+
+
+# ============================================================
+# 16. INSPECT AND MIGRATE DATA
+# ============================================================
+
+# If EBS is already mounted at Jenkins home, do not migrate
+# anything. It is already the active Jenkins storage location.
+
+if [[ "$EBS_ALREADY_AT_HOME" == "false" ]]; then
+
+    log "Temporarily mounting EBS for inspection."
+
+    mount "$EBS_DEVICE" "$TEMP_MOUNT_DIR"
+
+    TEMP_MOUNTED_BY_SCRIPT="true"
+
+    # Check whether Jenkins home currently contains data.
+    SOURCE_HAS_DATA="false"
+
+    if has_data "$JENKINS_HOME_DIR"; then
+        SOURCE_HAS_DATA="true"
+    fi
+
+    # Check whether EBS already contains data.
+    DESTINATION_HAS_DATA="false"
+
+    if has_data "$TEMP_MOUNT_DIR"; then
+        DESTINATION_HAS_DATA="true"
+    fi
+
+
+    # --------------------------------------------------------
+    # 16.1 REFUSE AUTOMATIC MERGE OF EXISTING EBS DATA
+    # --------------------------------------------------------
+
+    # WHY:
+    # Existing EBS data could belong to another Jenkins server.
+    # Automatically merging two Jenkins homes is unsafe.
+
+    if [[ "$DESTINATION_HAS_DATA" == "true" ]]; then
+
+        die "EBS already contains data. Verify its contents and ownership before using this script."
+
+    fi
+
+
+    # --------------------------------------------------------
+    # 16.2 MIGRATE EXISTING JENKINS DATA
+    # --------------------------------------------------------
+
+    if [[ "$SOURCE_HAS_DATA" == "true" ]]; then
+
+        log "Existing Jenkins data detected. Starting migration to EBS."
+
+        # WHY:
+        # rsync -a preserves permissions, timestamps and symbolic links.
+        # -H preserves hard links.
+        # -A preserves ACLs.
+        # -X preserves extended attributes.
+        # --numeric-ids preserves numeric user and group IDs.
+
+        rsync -aHAX --numeric-ids --info=progress2 \
+            "$JENKINS_HOME_DIR/" \
+            "$TEMP_MOUNT_DIR/"
+
+        log "Existing Jenkins data copied to EBS."
+
     else
-        echo "ERROR: EBS device is already mounted elsewhere."
-        echo "Manual verification is required."
-        exit 1
+
+        log "No existing Jenkins data found. Fresh installation path selected."
+
     fi
+
+
+    # --------------------------------------------------------
+    # 16.3 UNMOUNT TEMPORARY EBS MOUNT
+    # --------------------------------------------------------
+
+    # WHY:
+    # EBS must be unmounted from the temporary directory before
+    # it can be mounted at /var/lib/jenkins.
+
+    umount "$TEMP_MOUNT_DIR"
+
+    TEMP_MOUNTED_BY_SCRIPT="false"
+
 fi
 
 
-# ------------------------------------------------------------
-# STEP 6: UPDATE UBUNTU PACKAGE INFORMATION
-# ------------------------------------------------------------
+# ============================================================
+# 17. CONFIGURE /ETC/FSTAB
+# ============================================================
 
-# WHAT: Downloads the latest package information from repositories.
-# WHY : Ensures Ubuntu knows the latest available package versions.
-# WHEN: Before installing software or after adding repositories.
-sudo apt update
+# WHY:
+# /etc/fstab makes the EBS volume mount automatically after
+# an EC2 reboot.
+#
+# UUID is used instead of /dev/nvme1n1 because device names
+# can change after reboot.
+
+FSTAB_ENTRY="UUID=$EBS_UUID $JENKINS_HOME_DIR ext4 defaults,nofail,x-systemd.device-timeout=30 0 2"
+
+# Check whether the correct entry already exists.
+# Refuse duplicate or conflicting entries.
+
+set +e
+
+awk -v device="UUID=$EBS_UUID" -v target="$JENKINS_HOME_DIR" '
+BEGIN {
+    good=0
+    conflict=0
+}
+
+$1 ~ /^#/ || NF < 3 {
+    next
+}
+
+{
+    if ($1 == device && $2 == target && $3 == "ext4") {
+        good++
+    }
+    else if ($1 == device || $2 == target) {
+        conflict++
+    }
+}
+
+END {
+    if (good == 1 && conflict == 0) {
+        exit 0
+    }
+    else if (good == 0 && conflict == 0) {
+        exit 1
+    }
+    else {
+        exit 2
+    }
+}
+' /etc/fstab
+
+FSTAB_STATUS=$?
+
+set -e
+
+if [[ "$FSTAB_STATUS" -eq 0 ]]; then
+
+    log "Correct EBS entry already exists in /etc/fstab."
+
+elif [[ "$FSTAB_STATUS" -eq 1 ]]; then
+
+    log "Adding EBS entry to /etc/fstab."
+
+    echo "$FSTAB_ENTRY" >> /etc/fstab
+
+else
+
+    die "Conflicting or duplicate EBS entries found in /etc/fstab."
+
+fi
 
 
-# ------------------------------------------------------------
-# STEP 7: INSTALL REQUIRED UTILITIES, JAVA AND FIREWALL
-# ------------------------------------------------------------
+# ============================================================
+# 18. VALIDATE FSTAB CONFIGURATION
+# ============================================================
 
-# WHAT: Installs packages required for Jenkins and EBS configuration.
-# WHY :
-# wget       - downloads files
-# git        - supports source-code checkout
-# fontconfig - Java font configuration support
-# openjdk-21-jre - runs Jenkins using Java 21
-# rsync      - migrates Jenkins data
-# e2fsprogs  - provides ext4 filesystem utilities
-# firewalld  - manages Linux firewall rules
-# WHEN: During initial Linux server and Jenkins preparation.
-sudo apt install -y \
+# WHY:
+# Invalid /etc/fstab entries can cause mount failures during boot.
+# Validate the configuration before proceeding.
+
+findmnt --verify --tab-file /etc/fstab
+
+log "/etc/fstab validation completed."
+
+
+# ============================================================
+# 19. MOUNT EBS AT JENKINS HOME
+# ============================================================
+
+# WHY:
+# This makes the EBS filesystem available at the standard
+# Jenkins home directory.
+
+if [[ "$EBS_ALREADY_AT_HOME" == "false" ]]; then
+
+    log "Mounting EBS at $JENKINS_HOME_DIR."
+
+    mount "$JENKINS_HOME_DIR"
+
+fi
+
+MOUNTED_UUID=$(findmnt -n -o UUID --target "$JENKINS_HOME_DIR")
+
+if [[ "$MOUNTED_UUID" != "$EBS_UUID" ]]; then
+    die "EBS mount verification failed."
+fi
+
+log "EBS successfully mounted at Jenkins home."
+
+
+# ============================================================
+# 20. INSTALL REQUIRED LINUX PACKAGES
+# ============================================================
+
+# WHY:
+# wget and curl download repository files.
+# git is commonly required by Jenkins jobs.
+# fontconfig and Java support Jenkins runtime requirements.
+# rsync is used for data migration.
+# e2fsprogs provides filesystem utilities.
+# util-linux provides mount and disk utilities.
+# firewalld manages network firewall rules.
+
+log "Updating Ubuntu package information."
+
+export DEBIAN_FRONTEND=noninteractive
+
+apt-get update
+
+apt-get install -y \
     wget \
+    curl \
     git \
     fontconfig \
     openjdk-21-jre \
     rsync \
     e2fsprogs \
-    firewalld \
-    util-linux
-
-
-# ------------------------------------------------------------
-# STEP 8: VERIFY JAVA
-# ------------------------------------------------------------
-
-# WHAT: Displays the installed Java version.
-# WHY : Confirms the Java runtime installed for Jenkins.
-# WHEN: After installing Java or troubleshooting Jenkins startup.
-java -version
-
-
-# ------------------------------------------------------------
-# STEP 9: CREATE APT KEYRINGS DIRECTORY
-# ------------------------------------------------------------
-
-# WHAT: Creates the APT keyrings directory.
-# WHY : Stores repository signing keys separately from application files.
-# WHEN: When configuring signed third-party APT repositories.
-sudo mkdir -p /etc/apt/keyrings
-
-
-# ------------------------------------------------------------
-# STEP 10: DOWNLOAD JENKINS REPOSITORY SIGNING KEY
-# ------------------------------------------------------------
-
-# WHAT: Downloads the official Jenkins LTS repository signing key.
-# WHY : Allows APT to verify packages using the repository signing key.
-# WHEN: Before adding and using the Jenkins package repository.
-sudo wget -O /etc/apt/keyrings/jenkins-keyring.asc \
-    https://pkg.jenkins.io/debian-stable/jenkins.io-2026.key
-
-
-# ------------------------------------------------------------
-# STEP 11: ADD JENKINS LTS REPOSITORY
-# ------------------------------------------------------------
-
-# WHAT: Creates the Jenkins LTS repository configuration file.
-# WHY : Allows APT to download Jenkins from the official repository.
-# WHEN: When installing Jenkins using its official package repository.
-echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc]" \
-    https://pkg.jenkins.io/debian-stable binary/ | \
-    sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
-
-
-# ------------------------------------------------------------
-# STEP 12: DETECT EBS FILESYSTEM
-# ------------------------------------------------------------
-
-# WHAT: Detects the filesystem type on the EBS device.
-# WHY : Determines whether the volume is already formatted.
-# WHEN: Before deciding whether formatting is necessary.
-FS_TYPE=$(sudo blkid -o value -s TYPE "$EBS_DEVICE" || true)
-echo "Detected filesystem: ${FS_TYPE:-NONE}"
-
-
-# ------------------------------------------------------------
-# STEP 13: FORMAT EBS ONLY WHEN EXPLICITLY ALLOWED
-# ------------------------------------------------------------
-
-# WHAT: Formats only a verified blank EBS device when explicitly enabled.
-# WHY : Prevents accidental destruction of existing filesystem data.
-# WHEN: Only while preparing a new and empty EBS volume.
-if [[ -z "$FS_TYPE" ]]; then
-    if [[ "$FORMAT_EBS" != "true" ]]; then
-        echo "ERROR: No filesystem detected on $EBS_DEVICE."
-        echo "Set FORMAT_EBS=true only after verifying the volume."
-        exit 1
-    fi
-
-    # WHAT: Counts block-device entries under the selected device.
-    # WHY : Refuses automatic formatting when partitions are detected.
-    # WHEN: Immediately before formatting a new EBS device.
-    DEVICE_COUNT=$(lsblk -nrpo NAME "$EBS_DEVICE" | wc -l)
-    if [[ "$DEVICE_COUNT" -ne 1 ]]; then
-        echo "ERROR: EBS device contains partitions."
-        echo "Refusing automatic formatting."
-        exit 1
-    fi
-
-    # WHAT: Checks disk signatures without modifying the device.
-    # WHY : Refuses formatting when recognizable signatures exist.
-    # WHEN: Before formatting a verified blank disk.
-    EXISTING_SIGNATURES=$(sudo wipefs -n "$EBS_DEVICE" || true)
-    if [[ -n "$EXISTING_SIGNATURES" ]]; then
-        echo "ERROR: Existing disk signatures detected."
-        echo "$EXISTING_SIGNATURES"
-        echo "Refusing automatic formatting."
-        exit 1
-    fi
-
-    # WHAT: Checks whether the device is mounted.
-    # WHY : A mounted filesystem must never be formatted.
-    # WHEN: Immediately before formatting.
-    if [[ -n "$(lsblk -nrpo MOUNTPOINTS "$EBS_DEVICE" | tr -d '[:space:]')" ]]; then
-        echo "ERROR: EBS device is mounted."
-        exit 1
-    fi
-
-    # WHAT: Creates an ext4 filesystem.
-    # WHY : ext4 is the filesystem selected for Jenkins storage.
-    # WHEN: Only for a verified new and empty EBS volume.
-    # WARNING: Formatting can destroy existing data.
-    echo "Creating ext4 filesystem on $EBS_DEVICE..."
-    sudo mkfs.ext4 "$EBS_DEVICE"
-    FS_TYPE=$(sudo blkid -o value -s TYPE "$EBS_DEVICE")
-fi
-
-
-# ------------------------------------------------------------
-# STEP 14: VERIFY FILESYSTEM TYPE
-# ------------------------------------------------------------
-
-# WHAT: Checks whether the detected filesystem is ext4.
-# WHY : Ensures the EBS filesystem matches our configuration.
-# WHEN: After detecting or creating a filesystem.
-if [[ "$FS_TYPE" != "ext4" ]]; then
-    echo "ERROR: Expected ext4 filesystem. Detected: $FS_TYPE"
-    exit 1
-fi
-
-
-# ------------------------------------------------------------
-# STEP 15: GET EBS UUID
-# ------------------------------------------------------------
-
-# WHAT: Retrieves the filesystem UUID.
-# WHY : UUID identifies the filesystem even if Linux device names change.
-# WHEN: When configuring persistent filesystem mounting.
-EBS_UUID=$(sudo blkid -s UUID -o value "$EBS_DEVICE")
-if [[ -z "$EBS_UUID" ]]; then
-    echo "ERROR: Unable to retrieve EBS UUID."
-    exit 1
-fi
-echo "EBS UUID: $EBS_UUID"
-
-
-# ------------------------------------------------------------
-# STEP 16: STOP EXISTING JENKINS SERVICE
-# ------------------------------------------------------------
-
-# WHAT: Checks whether the Jenkins service unit is installed.
-# WHY : Avoids stopping a nonexistent service.
-# WHEN: When rerunning installation or migrating existing Jenkins.
-if systemctl list-unit-files jenkins.service --no-legend |
-    grep -q '^jenkins.service'; then
-    # WHAT: Stops Jenkins.
-    # WHY : Prevents Jenkins from changing data during migration.
-    # WHEN: Before migrating Jenkins home to another filesystem.
-    sudo systemctl stop jenkins
-fi
-
-
-# ------------------------------------------------------------
-# STEP 17: PREPARE TEMPORARY MOUNT DIRECTORY
-# ------------------------------------------------------------
-
-# WHAT: Creates the temporary mount directory.
-# WHY : Provides a location to access EBS during migration.
-# WHEN: During filesystem migration.
-sudo mkdir -p "$TEMP_MOUNT_DIR"
-
-# WHAT: Checks whether the temporary directory is already mounted.
-# WHY : Prevents overlapping or unexpected mounts.
-# WHEN: Before mounting a filesystem.
-if mountpoint -q "$TEMP_MOUNT_DIR"; then
-    echo "ERROR: Temporary mount directory is already mounted."
-    exit 1
-fi
-
-
-# ------------------------------------------------------------
-# STEP 18: MOUNT EBS TEMPORARILY AND VERIFY
-# ------------------------------------------------------------
-
-# WHAT: Checks whether Jenkins home is already mounted.
-# WHY : Avoids mounting the same EBS volume unnecessarily.
-# WHEN: During installation reruns.
-if mountpoint -q "$JENKINS_HOME_DIR"; then
-    CURRENT_UUID=$(findmnt -n -o UUID --target "$JENKINS_HOME_DIR")
-    if [[ "$CURRENT_UUID" != "$EBS_UUID" ]]; then
-        echo "ERROR: Jenkins home is mounted from another volume."
-        exit 1
-    fi
-    echo "Correct EBS volume is already mounted at Jenkins home."
-else
-    # WHAT: Mounts EBS temporarily.
-    # WHY : Allows inspection of the destination before migration.
-    # WHEN: During EBS data migration.
-    sudo mount "$EBS_DEVICE" "$TEMP_MOUNT_DIR"
-
-    # WHAT: Verifies the UUID of the temporary mount.
-    # WHY : Confirms that the correct EBS volume was mounted.
-    # WHEN: Immediately after mounting.
-    TEMP_UUID=$(findmnt -n -o UUID --target "$TEMP_MOUNT_DIR")
-    if [[ "$TEMP_UUID" != "$EBS_UUID" ]]; then
-        echo "ERROR: Temporary mount UUID verification failed."
-        sudo umount "$TEMP_MOUNT_DIR"
-        exit 1
-    fi
-
-    # --------------------------------------------------------
-    # STEP 19: DETECT SOURCE AND DESTINATION DATA
-    # --------------------------------------------------------
-
-    # WHAT: Tracks whether Jenkins home and EBS contain data.
-    # WHY : Determines whether migration is required.
-    # WHEN: Before choosing a data migration path.
-    SOURCE_HAS_DATA=false
-    DESTINATION_HAS_DATA=false
-
-    # WHAT: Checks whether Jenkins home contains files/directories.
-    # WHY : Determines whether existing Jenkins data must be migrated.
-    # WHEN: When moving Jenkins to dedicated storage.
-    if [[ -d "$JENKINS_HOME_DIR" ]] &&
-       [[ -n "$(sudo find "$JENKINS_HOME_DIR" -mindepth 1 -maxdepth 1 -print -quit)" ]]; then
-        SOURCE_HAS_DATA=true
-    fi
-
-    # WHAT: Checks whether EBS contains data other than an empty lost+found.
-    # WHY : Prevents overwriting existing EBS data.
-    # WHEN: Before migrating Jenkins data.
-    if [[ -n "$(sudo find "$TEMP_MOUNT_DIR" -mindepth 1 -maxdepth 1 \
-        ! -name "lost+found" -print -quit)" ]]; then
-        DESTINATION_HAS_DATA=true
-    elif [[ -d "$TEMP_MOUNT_DIR/lost+found" ]] &&
-         [[ -n "$(sudo find "$TEMP_MOUNT_DIR/lost+found" -mindepth 1 -print -quit)" ]]; then
-        DESTINATION_HAS_DATA=true
-    fi
-
-    echo "SOURCE_HAS_DATA=$SOURCE_HAS_DATA"
-    echo "DESTINATION_HAS_DATA=$DESTINATION_HAS_DATA"
-
-
-    # --------------------------------------------------------
-    # STEP 20: PREVENT DATA OVERWRITE
-    # --------------------------------------------------------
-
-    # WHAT: Detects data on both source and destination.
-    # WHY : Avoids mixing or overwriting existing Jenkins information.
-    # WHEN: Before migrating between storage volumes.
-    if [[ "$SOURCE_HAS_DATA" == "true" ]] &&
-       [[ "$DESTINATION_HAS_DATA" == "true" ]]; then
-        echo "ERROR: Both Jenkins home and EBS contain data."
-        echo "Manual verification is required."
-        sudo umount "$TEMP_MOUNT_DIR"
-        exit 1
-    fi
-
-
-    # --------------------------------------------------------
-    # STEP 21: MIGRATE EXISTING JENKINS DATA
-    # --------------------------------------------------------
-
-    # WHAT: Copies Jenkins data to EBS.
-    # WHY : Preserves jobs, plugins, credentials and build history.
-    # WHEN: When moving existing Jenkins data to dedicated storage.
-    # -a archive; -H hard links; -A ACLs; -X extended attributes;
-    # --numeric-ids preserves numeric ownership IDs.
-    if [[ "$SOURCE_HAS_DATA" == "true" ]] &&
-       [[ "$DESTINATION_HAS_DATA" == "false" ]]; then
-        echo "Migrating existing Jenkins data to EBS..."
-        sudo rsync -aHAX --numeric-ids "$JENKINS_HOME_DIR/" "$TEMP_MOUNT_DIR/"
-        echo "Jenkins data migration completed."
-    elif [[ "$SOURCE_HAS_DATA" == "false" ]] &&
-         [[ "$DESTINATION_HAS_DATA" == "true" ]]; then
-        echo "Source is empty. Existing EBS data will be preserved."
-    else
-        echo "Both Jenkins source and EBS destination are empty."
-    fi
-
-
-    # --------------------------------------------------------
-    # STEP 22: UNMOUNT TEMPORARY EBS MOUNT
-    # --------------------------------------------------------
-
-    # WHAT: Unmounts EBS from the temporary directory.
-    # WHY : The volume must be unmounted before final mounting.
-    # WHEN: After completing data migration.
-    sudo umount "$TEMP_MOUNT_DIR"
-
-
-    # --------------------------------------------------------
-    # STEP 23: MOUNT EBS AT JENKINS HOME
-    # --------------------------------------------------------
-
-    # WHAT: Ensures the Jenkins home mount-point directory exists.
-    # WHY : Linux requires an existing directory as the mount point.
-    # WHEN: Before mounting EBS at Jenkins home.
-    sudo mkdir -p "$JENKINS_HOME_DIR"
-
-    # WHAT: Mounts EBS at Jenkins home.
-    # WHY : Jenkins data will reside on the dedicated EBS filesystem.
-    # WHEN: After migration is complete.
-    sudo mount "$EBS_DEVICE" "$JENKINS_HOME_DIR"
-fi
-
-
-# ------------------------------------------------------------
-# STEP 24: CONFIGURE AUTOMATIC EBS MOUNT AT BOOT
-# ------------------------------------------------------------
-
-# WHAT: Inspects /etc/fstab for the EBS UUID and mount point.
-# WHY : Prevents duplicate or conflicting mount entries.
-# WHEN: Before adding persistent filesystem configuration.
-FSTAB_CHECK=$(sudo awk \
-    -v uuid="UUID=$EBS_UUID" \
-    -v mount="$JENKINS_HOME_DIR" '
-    /^[[:space:]]*#/ { next }
-    $1 == uuid && $2 == mount { correct=1 }
-    $2 == mount && $1 != uuid { conflict=1 }
-    $1 == uuid && $2 != mount { conflict=1 }
-    END {
-        if (conflict) print "CONFLICT"
-        else if (correct) print "EXISTS"
-        else print "MISSING"
-    }' /etc/fstab)
-
-if [[ "$FSTAB_CHECK" == "CONFLICT" ]]; then
-    echo "ERROR: Conflicting EBS entry found in /etc/fstab."
-    echo "Manual verification is required."
-    exit 1
-elif [[ "$FSTAB_CHECK" == "MISSING" ]]; then
-    # WHAT: Appends an EBS UUID entry to /etc/fstab.
-    # WHY : Ensures EBS mounts automatically after reboot.
-    # WHEN: When configuring persistent storage.
-    # nofail allows boot to continue if the volume is unavailable;
-    # RequiresMountsFor in the Jenkins unit still makes Jenkins depend
-    # on the mount being available before Jenkins starts.
-    echo "UUID=$EBS_UUID $JENKINS_HOME_DIR ext4 defaults,nofail 0 2" | \
-        sudo tee -a /etc/fstab
-fi
-
-# WHAT: Validates filesystem-table entries.
-# WHY : Detects malformed or inconsistent /etc/fstab configuration.
-# WHEN: After changing /etc/fstab and before relying on boot mounts.
-sudo findmnt --verify --verbose
-
-# WHAT: Reloads systemd's generated mount units after fstab changes.
-# WHY : Makes systemd recognize the updated mount configuration.
-# WHEN: After modifying /etc/fstab.
-sudo systemctl daemon-reload
-
-
-# ------------------------------------------------------------
-# STEP 25: VERIFY EBS MOUNT
-# ------------------------------------------------------------
-
-# WHAT: Displays the filesystem mounted at Jenkins home.
-# WHY : Confirms EBS is mounted at the expected location.
-# WHEN: After configuring the mount.
-sudo findmnt "$JENKINS_HOME_DIR"
-
-# WHAT: Retrieves the mounted filesystem UUID.
-# WHY : Confirms Jenkins home uses the intended EBS volume.
-# WHEN: During storage validation.
-MOUNTED_UUID=$(findmnt -n -o UUID --target "$JENKINS_HOME_DIR")
-if [[ "$MOUNTED_UUID" != "$EBS_UUID" ]]; then
-    echo "ERROR: Jenkins home is not mounted from the expected EBS UUID."
-    exit 1
-fi
-echo "EBS mount verified successfully."
-
-
-# ------------------------------------------------------------
-# STEP 26: INSTALL JENKINS
-# ------------------------------------------------------------
-
-# WHAT: Refreshes package information after adding Jenkins repository.
-# WHY : Makes APT aware of the Jenkins package.
-# WHEN: After adding a new APT repository.
-sudo apt update
-
-# WHAT: Installs Jenkins from the official LTS repository.
-# WHY : Installs the Jenkins controller service and required files.
-# WHEN: After preparing Java, storage and the repository.
-sudo apt install -y jenkins
-
-
-# ------------------------------------------------------------
-# STEP 27: SET JENKINS HOME OWNERSHIP AND PERMISSIONS
-# ------------------------------------------------------------
-
-# WHAT: Changes ownership recursively to the Jenkins service account.
-# WHY : Jenkins must read and write its jobs, plugins and configuration.
-# WHEN: After mounting EBS or migrating Jenkins data.
-sudo chown -R jenkins:jenkins "$JENKINS_HOME_DIR"
-
-# WHAT: Restricts access to the Jenkins home directory.
-# WHY : Prevents other local users from accessing Jenkins data.
-# WHEN: When securing application data.
-# 700 = owner full access; group and others no access.
-sudo chmod 700 "$JENKINS_HOME_DIR"
-echo "Jenkins home ownership and permissions configured."
-
-
-# ------------------------------------------------------------
-# STEP 28: CONFIGURE FIREWALL
-# ------------------------------------------------------------
-
-echo "============================================================"
-echo "CONFIGURING JENKINS FIREWALL"
-echo "============================================================"
-
-# 28.1: ENABLE FIREWALL SERVICE
-# WHAT: Enables firewalld at boot and starts it immediately.
-# WHY : Ensures Linux firewall is active.
-# WHEN: When configuring network security on Linux servers.
-sudo systemctl enable --now firewalld
-sudo firewall-cmd --state
-
-
-# 28.2: DETECT ACTIVE NETWORK ZONE
-# WHAT: Identifies the default network interface.
-# WHY : Firewall zones may be associated with network interfaces.
-# WHEN: Before configuring firewall rules.
-DEFAULT_INTERFACE=$(ip -o route show default | awk '{print $5; exit}')
-if [[ -z "$DEFAULT_INTERFACE" ]]; then
-    echo "ERROR: Unable to detect default network interface."
-    exit 1
-fi
-
-# WHAT: Finds the zone assigned to the interface, or the default zone.
-# WHY : Adds rules to the zone handling the EC2 interface's traffic.
-# WHEN: Before configuring firewall rules.
-ACTIVE_ZONE=$(sudo firewall-cmd --get-zone-of-interface="$DEFAULT_INTERFACE" 2>/dev/null || true)
-if [[ -z "$ACTIVE_ZONE" || "$ACTIVE_ZONE" == "no zone" ]]; then
-    ACTIVE_ZONE=$(sudo firewall-cmd --get-default-zone)
-fi
-echo "Network interface : $DEFAULT_INTERFACE"
-echo "Firewall zone     : $ACTIVE_ZONE"
-
-
-# 28.3: VERIFY SSH ACCESS BEFORE APPLYING RULES
-# WHAT: Checks whether SSH is allowed in the active zone.
-# WHY : Avoids accidentally locking out remote administration.
-# WHEN: Before applying firewall configuration.
-if ! sudo firewall-cmd --zone="$ACTIVE_ZONE" --query-service=ssh; then
-    echo "ERROR: SSH service is not allowed in the active zone."
-    echo "Configure and verify SSH access before continuing."
-    exit 1
-fi
-
-
-# 28.4: CONFIGURE JENKINS WEB UI ACCESS
-# WHAT: Creates a source-restricted rule for Jenkins UI.
-# WHY : Limits TCP 8080 access to the trusted private network.
-# WHEN: When restricting Jenkins web-interface access.
-JENKINS_UI_RULE="rule family=\"ipv4\" source address=\"${JENKINS_ACCESS_CIDR}\" port port=\"${JENKINS_PORT}\" protocol=\"tcp\" accept"
-
-# WHAT: Adds the permanent UI rule only if it does not already exist.
-# WHY : Makes the script safe to rerun without ALREADY_ENABLED errors.
-# WHEN: During initial setup and repeatable firewall configuration.
-if ! sudo firewall-cmd --permanent --zone="$ACTIVE_ZONE" \
-    --query-rich-rule="$JENKINS_UI_RULE" >/dev/null; then
-    sudo firewall-cmd --permanent --zone="$ACTIVE_ZONE" \
-        --add-rich-rule="$JENKINS_UI_RULE"
-else
-    echo "Jenkins UI firewall rule already exists."
-fi
-
-
-# 28.5: CONFIGURE JENKINS AGENT ACCESS
-# WHAT: Creates a source-restricted rule for inbound Jenkins agents.
-# WHY : Allows trusted agent machines to connect to the controller.
-# WHEN: Only when using inbound TCP agent connections.
-JENKINS_AGENT_RULE="rule family=\"ipv4\" source address=\"${JENKINS_AGENT_CIDR}\" port port=\"${JENKINS_AGENT_PORT}\" protocol=\"tcp\" accept"
-
-# WHAT: Adds the permanent agent rule only if it does not already exist.
-# WHY : Makes firewall configuration repeatable.
-# WHEN: During initial setup and repeatable firewall configuration.
-if ! sudo firewall-cmd --permanent --zone="$ACTIVE_ZONE" \
-    --query-rich-rule="$JENKINS_AGENT_RULE" >/dev/null; then
-    sudo firewall-cmd --permanent --zone="$ACTIVE_ZONE" \
-        --add-rich-rule="$JENKINS_AGENT_RULE"
-else
-    echo "Jenkins agent firewall rule already exists."
-fi
-
-
-# 28.6: RELOAD FIREWALL
-# WHAT: Reloads firewalld configuration.
-# WHY : Applies permanent Jenkins firewall rules.
-# WHEN: After adding, modifying or removing permanent rules.
-sudo firewall-cmd --reload
-
-
-# 28.7: VERIFY FIREWALL RULES
-# WHAT: Displays active zone configuration and checks both rich rules.
-# WHY : Confirms the expected rules are present.
-# WHEN: After configuring firewall access.
-sudo firewall-cmd --zone="$ACTIVE_ZONE" --list-all
-sudo firewall-cmd --zone="$ACTIVE_ZONE" --query-rich-rule="$JENKINS_UI_RULE"
-sudo firewall-cmd --zone="$ACTIVE_ZONE" --query-rich-rule="$JENKINS_AGENT_RULE"
-echo "Jenkins firewall configuration completed."
-
-
-# ------------------------------------------------------------
-# STEP 29: CONFIGURE JENKINS LISTEN ADDRESS AND EBS DEPENDENCY
-# ------------------------------------------------------------
-
-# WHAT: Creates the systemd service override directory.
-# WHY : Customizes Jenkins without editing the package-managed unit.
-# WHEN: When changing service startup dependencies or environment.
-sudo mkdir -p /etc/systemd/system/jenkins.service.d
-
-# WHAT: Writes the Jenkins systemd drop-in configuration.
-# WHY :
-# RequiresMountsFor ensures systemd starts Jenkins only after the
-# filesystem containing JENKINS_HOME is mounted.
-# Environment variables set Jenkins HTTP port and listen address.
-# WHEN: When Jenkins uses a dedicated filesystem and custom network settings.
+    util-linux \
+    firewalld
+
+
+# ============================================================
+# 21. CONFIGURE FIREWALLD
+# ============================================================
+
+# WHY:
+# Firewalld manages incoming and outgoing network traffic.
+#
+# We configure the firewall to:
+#
+# 1. Allow SSH traffic.
+# 2. Allow Jenkins web interface traffic on TCP 8080.
+# 3. Apply firewall rules permanently.
+# 4. Start firewalld automatically after reboot.
 #
 # IMPORTANT:
-# Keep the [Unit] dependency and [Service] settings in the same file.
-# This avoids replacing the EBS startup dependency with only port settings.
-cat <<EOF | sudo tee /etc/systemd/system/jenkins.service.d/override.conf
-[Unit]
-RequiresMountsFor=${JENKINS_HOME_DIR}
+# Configure SSH access before starting firewalld.
+# This helps prevent losing remote SSH access.
 
-[Service]
-Environment="JENKINS_PORT=${JENKINS_PORT}"
-Environment="JENKINS_LISTEN_ADDRESS=${JENKINS_LISTEN_ADDRESS}"
+log "Configuring firewalld."
+
+
+# ------------------------------------------------------------
+# 21.1 VERIFY SSH SERVER
+# ------------------------------------------------------------
+
+# WHY:
+# We need the SSH daemon configuration to identify the
+# actual port used for remote server access.
+
+if ! command -v sshd >/dev/null 2>&1; then
+    die "SSH daemon (sshd) not found. Cannot safely configure firewall."
+fi
+
+
+# ------------------------------------------------------------
+# 21.2 DETECT SSH PORT
+# ------------------------------------------------------------
+
+# WHY:
+# Standard SSH port is 22.
+# However, a server may use a custom SSH port.
+#
+# sshd -T displays the effective SSH configuration.
+
+SSH_PORT=$(sshd -T 2>/dev/null |
+    awk '$1 == "port" {print $2; exit}')
+
+if [[ ! "$SSH_PORT" =~ ^[0-9]+$ ]] ||
+   (( SSH_PORT < 1 || SSH_PORT > 65535 )); then
+
+    die "Unable to detect a valid SSH port."
+
+fi
+
+log "Detected SSH port: $SSH_PORT"
+
+
+# ------------------------------------------------------------
+# 21.3 IDENTIFY FIREWALL DEFAULT ZONE
+# ------------------------------------------------------------
+
+# WHY:
+# Firewalld uses zones to manage network access rules.
+#
+# We identify the default zone before starting firewalld.
+
+FIREWALL_ZONE=$(firewall-offline-cmd --get-default-zone)
+
+if [[ -z "$FIREWALL_ZONE" ]]; then
+    die "Unable to identify the default firewalld zone."
+fi
+
+log "Firewalld default zone: $FIREWALL_ZONE"
+
+
+# ------------------------------------------------------------
+# 21.4 ADD PERMANENT SSH RULE BEFORE FIREWALL START
+# ------------------------------------------------------------
+
+# WHY:
+# Adding rules through firewall-offline-cmd allows us to
+# configure the firewall before starting its service.
+#
+# This helps protect existing SSH connectivity.
+
+firewall-offline-cmd \
+    --zone="$FIREWALL_ZONE" \
+    --add-port="${SSH_PORT}/tcp"
+
+log "SSH port $SSH_PORT added to permanent firewall configuration."
+
+
+# ------------------------------------------------------------
+# 21.5 ADD PERMANENT JENKINS RULE
+# ------------------------------------------------------------
+
+# WHY:
+# Jenkins web interface normally listens on TCP port 8080.
+#
+# Add the rule before starting firewalld.
+
+firewall-offline-cmd \
+    --zone="$FIREWALL_ZONE" \
+    --add-port="${JENKINS_PORT}/tcp"
+
+log "Jenkins port $JENKINS_PORT added to permanent firewall configuration."
+
+
+# ------------------------------------------------------------
+# 21.6 ENABLE AND START FIREWALLD
+# ------------------------------------------------------------
+
+# WHY:
+# Enable firewalld to start automatically after an EC2 reboot.
+# Start the service to activate firewall protection.
+
+systemctl enable --now firewalld
+
+if ! systemctl is-active --quiet firewalld; then
+    die "Firewalld service failed to start."
+fi
+
+log "Firewalld service is running."
+
+
+# ------------------------------------------------------------
+# 21.7 RELOAD FIREWALL RULES
+# ------------------------------------------------------------
+
+# WHY:
+# Reload applies the permanent firewall configuration.
+
+firewall-cmd --reload
+
+log "Firewalld rules reloaded."
+
+
+# ------------------------------------------------------------
+# 21.8 VERIFY SSH FIREWALL RULE
+# ------------------------------------------------------------
+
+if firewall-cmd \
+    --zone="$FIREWALL_ZONE" \
+    --query-port="${SSH_PORT}/tcp" >/dev/null; then
+
+    log "SSH firewall rule verified."
+
+else
+
+    die "SSH port $SSH_PORT is not allowed by firewalld."
+
+fi
+
+
+# ------------------------------------------------------------
+# 21.9 VERIFY JENKINS FIREWALL RULE
+# ------------------------------------------------------------
+
+if firewall-cmd \
+    --zone="$FIREWALL_ZONE" \
+    --query-port="${JENKINS_PORT}/tcp" >/dev/null; then
+
+    log "Jenkins firewall rule verified."
+
+else
+
+    die "Jenkins port $JENKINS_PORT is not allowed by firewalld."
+
+fi
+
+
+# ------------------------------------------------------------
+# 21.10 DISPLAY FIREWALL CONFIGURATION
+# ------------------------------------------------------------
+
+log "Current firewalld configuration:"
+
+firewall-cmd --zone="$FIREWALL_ZONE" --list-all
+
+
+# ============================================================
+# 22. VERIFY JAVA INSTALLATION
+# ============================================================
+
+# WHY:
+# Jenkins requires a supported Java runtime.
+# This installation uses OpenJDK 21.
+
+java -version
+
+log "Java installation verified."
+
+
+# ============================================================
+# 23. ADD JENKINS GPG SIGNING KEY
+# ============================================================
+
+# WHY:
+# APT uses the Jenkins signing key to verify packages downloaded
+# from the official Jenkins repository.
+
+wget -qO /usr/share/keyrings/jenkins-keyring.asc \
+    https://pkg.jenkins.io/debian-stable/jenkins.io-2026.key
+
+chmod 644 /usr/share/keyrings/jenkins-keyring.asc
+
+
+# ============================================================
+# 24. ADD JENKINS LTS REPOSITORY
+# ============================================================
+
+# WHY:
+# The official Jenkins repository provides Jenkins LTS packages.
+
+echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/" \
+    > /etc/apt/sources.list.d/jenkins.list
+
+
+# ============================================================
+# 25. UPDATE PACKAGE INFORMATION
+# ============================================================
+
+# WHY:
+# APT must refresh its package index after adding the Jenkins
+# repository so it can locate the Jenkins package.
+
+apt-get update
+
+
+# ============================================================
+# 26. INSTALL JENKINS
+# ============================================================
+
+# WHY:
+# On a fresh server, Jenkins is installed now.
+#
+# IMPORTANT:
+# EBS was mounted at /var/lib/jenkins before this installation.
+# Therefore, Jenkins creates its home directory on EBS.
+
+log "Installing Jenkins LTS."
+
+apt-get install -y jenkins
+
+
+# ============================================================
+# 27. STOP JENKINS BEFORE OWNERSHIP CONFIGURATION
+# ============================================================
+
+# WHY:
+# Package installation may automatically start Jenkins.
+# Stop it before changing ownership and permissions.
+
+systemctl stop jenkins
+
+if systemctl is-active --quiet jenkins; then
+    die "Jenkins is still running. Cannot safely configure ownership."
+fi
+
+
+# ============================================================
+# 28. VERIFY JENKINS USER
+# ============================================================
+
+# WHY:
+# The Jenkins service runs using the jenkins Linux account.
+# Its home directory must be accessible to this account.
+
+if ! id jenkins >/dev/null 2>&1; then
+    die "Jenkins Linux user was not created."
+fi
+
+
+# ============================================================
+# 29. SET JENKINS HOME OWNERSHIP
+# ============================================================
+
+# WHY:
+# Files copied from an existing server may have ownership that
+# does not match the Jenkins service account.
+#
+# lost+found is intentionally excluded because it is an
+# ext4 filesystem maintenance directory.
+
+chown jenkins:jenkins "$JENKINS_HOME_DIR"
+
+find "$JENKINS_HOME_DIR" \
+    -mindepth 1 \
+    -maxdepth 1 \
+    ! -name "lost+found" \
+    -exec chown -R jenkins:jenkins {} +
+
+
+# ============================================================
+# 30. CONFIGURE SYSTEMD MOUNT DEPENDENCY
+# ============================================================
+
+# WHY:
+# Jenkins must not start before its EBS-backed home directory
+# is available.
+#
+# RequiresMountsFor adds the required mount dependency to
+# the Jenkins systemd service.
+
+mkdir -p /etc/systemd/system/jenkins.service.d
+
+cat > /etc/systemd/system/jenkins.service.d/override.conf <<EOF
+[Unit]
+RequiresMountsFor=$JENKINS_HOME_DIR
 EOF
 
-# WHAT: Reloads systemd unit configuration.
-# WHY : Makes systemd recognize the updated Jenkins override.
-# WHEN: After creating or modifying service drop-in files.
-sudo systemctl daemon-reload
 
-# WHAT: Displays the effective Jenkins unit and drop-in configuration.
-# WHY : Allows verification that both mount dependency and environment
-#       settings are present.
-# WHEN: After changing a systemd service override.
-sudo systemctl cat jenkins
+# ============================================================
+# 31. RELOAD SYSTEMD CONFIGURATION
+# ============================================================
 
+# WHY:
+# systemd must reload its configuration after creating or
+# changing the Jenkins service override.
 
-# ------------------------------------------------------------
-# STEP 30: ENABLE AND START JENKINS
-# ------------------------------------------------------------
-
-# WHAT: Enables Jenkins at system boot.
-# WHY : Jenkins should automatically start after an EC2 reboot.
-# WHEN: When configuring Jenkins as a permanent service.
-sudo systemctl enable jenkins
-
-# WHAT: Starts Jenkins immediately.
-# WHY : Makes the Jenkins web application available.
-# WHEN: After completing installation and configuration.
-sudo systemctl start jenkins
+systemctl daemon-reload
 
 
-# ------------------------------------------------------------
-# STEP 31: VERIFY JENKINS SERVICE
-# ------------------------------------------------------------
+# ============================================================
+# 32. ENABLE JENKINS AT BOOT
+# ============================================================
 
-# WHAT: Displays Jenkins service status.
-# WHY : Shows whether Jenkins started and provides recent status.
-# WHEN: After starting Jenkins or troubleshooting startup.
-sudo systemctl status jenkins --no-pager
+# WHY:
+# Jenkins should start automatically when the EC2 instance
+# boots.
 
-# WHAT: Retrieves the current Jenkins service state.
-# WHY : Allows the script to verify Jenkins is running.
-# WHEN: During automated health checks.
-JENKINS_STATUS=$(systemctl is-active jenkins)
-if [[ "$JENKINS_STATUS" != "active" ]]; then
-    echo "ERROR: Jenkins service is not active."
-    sudo journalctl -u jenkins -n 80 --no-pager || true
-    exit 1
+systemctl enable jenkins
+
+
+# ============================================================
+# 33. START JENKINS
+# ============================================================
+
+# WHY:
+# Start Jenkins after the EBS mount, ownership and systemd
+# dependency have been configured.
+
+systemctl restart jenkins
+
+
+# ============================================================
+# 34. VERIFY JENKINS SERVICE
+# ============================================================
+
+# WHY:
+# Confirm that Jenkins started successfully.
+
+if ! systemctl is-active --quiet jenkins; then
+
+    systemctl status jenkins --no-pager -l || true
+
+    die "Jenkins service is not active."
+
 fi
 
-
-# ------------------------------------------------------------
-# STEP 32: VERIFY EBS MOUNT
-# ------------------------------------------------------------
-
-# WHAT: Checks whether Jenkins home is a mounted filesystem.
-# WHY : Prevents Jenkins from using the root filesystem accidentally.
-# WHEN: During Jenkins storage health checks.
-if ! mountpoint -q "$JENKINS_HOME_DIR"; then
-    echo "ERROR: Jenkins home is not mounted."
-    exit 1
-fi
-
-# WHAT: Retrieves the mounted filesystem UUID.
-# WHY : Confirms that the correct EBS volume is in use.
-# WHEN: During final storage verification.
-MOUNTED_UUID=$(findmnt -n -o UUID --target "$JENKINS_HOME_DIR")
-if [[ "$MOUNTED_UUID" != "$EBS_UUID" ]]; then
-    echo "ERROR: EBS UUID verification failed."
-    exit 1
-fi
+systemctl status jenkins --no-pager -l
 
 
-# ------------------------------------------------------------
-# STEP 33: VERIFY JENKINS PORT
-# ------------------------------------------------------------
+# ============================================================
+# 35. VERIFY JENKINS ENABLED STATUS
+# ============================================================
 
-# WHAT: Displays listening TCP sockets and associated processes.
-# WHY : Helps confirm Jenkins is listening on the configured port.
-# WHEN: When troubleshooting Jenkins networking.
-sudo ss -lntp
+# WHY:
+# Confirm that Jenkins is configured to start automatically
+# after a server reboot.
 
-# WHAT: Waits up to 60 seconds for Jenkins to open its HTTP port.
-# WHY : Jenkins may take time to initialize after service start.
-# WHEN: During automated application health checks.
-PORT_LISTENING=false
-for ATTEMPT in $(seq 1 30); do
-    if sudo ss -lntH | awk -v port=":${JENKINS_PORT}" '$4 ~ (port "$") { found=1 } END { exit !found }'; then
-        PORT_LISTENING=true
-        break
-    fi
-    echo "Waiting for Jenkins port ${JENKINS_PORT}... attempt ${ATTEMPT}/30"
-    sleep 2
-done
-
-if [[ "$PORT_LISTENING" != "true" ]]; then
-    echo "ERROR: Jenkins port $JENKINS_PORT is not listening."
-    sudo journalctl -u jenkins -n 80 --no-pager || true
-    exit 1
-fi
-
-echo "Jenkins HTTP port is listening."
+systemctl is-enabled jenkins
 
 
-# ------------------------------------------------------------
-# STEP 34: COLLECT INSTALLATION INFORMATION
-# ------------------------------------------------------------
+# ============================================================
+# 36. VERIFY EBS MOUNT
+# ============================================================
 
-# WHAT: Retrieves the installed Jenkins package version.
-# WHY : Records the installed Jenkins release.
-# WHEN: During installation reporting and troubleshooting.
-JENKINS_VERSION=$(dpkg-query -W -f='${Version}' jenkins)
+# WHY:
+# Confirm that Jenkins home is actually using the intended
+# EBS filesystem, not the EC2 root disk.
 
-# WHAT: Retrieves the installed Java version string.
-# WHY : Records which Java runtime is available.
-# WHEN: During application compatibility checks.
-JAVA_VERSION=$(java -version 2>&1 | head -n 1)
+findmnt --target "$JENKINS_HOME_DIR"
 
-# WHAT: Checks whether the Jenkins inbound agent port is listening.
-# WHY : A firewalld rule alone does not enable the Jenkins listener.
-# WHEN: When inbound TCP agents are intended to be used.
-AGENT_PORT_STATUS="NOT ENABLED OR NOT LISTENING"
-if sudo ss -lntH | awk -v port=":${JENKINS_AGENT_PORT}" '$4 ~ (port "$") { found=1 } END { exit !found }'; then
-    AGENT_PORT_STATUS="LISTENING"
+FINAL_UUID=$(findmnt -n -o UUID --target "$JENKINS_HOME_DIR")
+
+if [[ "$FINAL_UUID" != "$EBS_UUID" ]]; then
+    die "Final EBS UUID verification failed."
 fi
 
 
 # ============================================================
-# JENKINS INSTALLATION COMPLETED SUCCESSFULLY
+# 37. VERIFY JENKINS PACKAGE VERSION
 # ============================================================
 
-echo ""
+# WHY:
+# Display the installed Jenkins package version.
+
+dpkg-query -W -f='Jenkins version: ${Version}\n' jenkins
+
+
+# ============================================================
+# 38. VERIFY JENKINS PORT
+# ============================================================
+
+# WHY:
+# Jenkins normally listens on TCP port 8080.
+# This checks whether a process is listening on that port.
+
+if ss -lntH "sport = :$JENKINS_PORT" | grep -q .; then
+
+    log "A process is listening on port $JENKINS_PORT."
+
+else
+
+    log "WARNING: Nothing is listening on port $JENKINS_PORT yet."
+    log "Check Jenkins logs and service status."
+
+fi
+
+
+# ============================================================
+# 39. VERIFY FIREWALLD STATUS
+# ============================================================
+
+# WHY:
+# Confirm that firewalld is running and enabled at boot.
+# Also display the permanently configured firewall ports.
+
+if ! systemctl is-active --quiet firewalld; then
+    die "Firewalld service is not active."
+fi
+
+if ! systemctl is-enabled --quiet firewalld; then
+    die "Firewalld is not enabled at boot."
+fi
+
+log "Firewalld service verification passed."
+
+echo
+echo "Firewall Zone:"
+firewall-cmd --get-default-zone
+
+echo
+echo "Allowed Runtime Ports:"
+firewall-cmd --zone="$FIREWALL_ZONE" --list-ports
+
+echo
+echo "Permanent Firewall Rules:"
+firewall-cmd --permanent --zone="$FIREWALL_ZONE" --list-ports
+
+
+# ============================================================
+# 40. FINAL SUMMARY
+# ============================================================
+
+echo
 echo "============================================================"
-echo "JENKINS INSTALLATION COMPLETED SUCCESSFULLY"
+echo " JENKINS INSTALLATION COMPLETED"
+echo "============================================================"
+echo
+echo "Operating System : Ubuntu 24.04 LTS"
+echo "Java             : OpenJDK 21"
+echo "Jenkins          : $(dpkg-query -W -f='${Version}' jenkins)"
+echo "Jenkins Home     : $JENKINS_HOME_DIR"
+echo "EBS Device       : $EBS_DEVICE"
+echo "EBS UUID         : $EBS_UUID"
+echo "Filesystem       : $FS_TYPE"
+echo
+echo "Jenkins Port     : $JENKINS_PORT"
+echo "SSH Port         : $SSH_PORT"
+echo
+echo "Firewalld Status : $(systemctl is-active firewalld)"
+echo "Firewall Zone    : $FIREWALL_ZONE"
+echo "Firewall Boot    : $(systemctl is-enabled firewalld)"
+echo
+echo "Jenkins Service  : $(systemctl is-active jenkins)"
+echo "Enabled at Boot  : $(systemctl is-enabled jenkins)"
+echo
+echo "EBS Mount:"
+findmnt --target "$JENKINS_HOME_DIR"
+echo
+echo "Allowed Firewall Ports:"
+firewall-cmd --zone="$FIREWALL_ZONE" --list-ports
+echo
+echo "============================================================"
+echo " IMPORTANT:"
+echo " 1. Verify Jenkins access through port 8080."
+echo " 2. Verify EC2 Security Group allows TCP 8080."
+echo " 3. Keep SSH access restricted to your IP address."
 echo "============================================================"
 
-echo "Jenkins version        : $JENKINS_VERSION"
-echo "Java version           : $JAVA_VERSION"
-echo "Jenkins status         : $JENKINS_STATUS"
-
-echo "EBS device             : $EBS_DEVICE"
-echo "EBS UUID               : $EBS_UUID"
-echo "Jenkins home           : $JENKINS_HOME_DIR"
-echo "Filesystem             : $FS_TYPE"
-echo "EBS mount              : VERIFIED"
-
-echo "Jenkins listen address : $JENKINS_LISTEN_ADDRESS"
-echo "Jenkins UI port        : $JENKINS_PORT"
-echo "Jenkins UI CIDR        : $JENKINS_ACCESS_CIDR"
-
-echo "Jenkins Agent port     : $JENKINS_AGENT_PORT"
-echo "Jenkins Agent CIDR     : $JENKINS_AGENT_CIDR"
-echo "Agent listener status  : $AGENT_PORT_STATUS"
-
-echo "Firewall status        : $(sudo firewall-cmd --state)"
-echo "Firewall zone          : $ACTIVE_ZONE"
-
-echo "============================================================"
-echo "Initial Jenkins admin password:"
-echo "sudo cat ${JENKINS_HOME_DIR}/secrets/initialAdminPassword"
-echo "============================================================"
-
-echo "IMPORTANT:"
-echo "If you use inbound TCP agents, enable Fixed port ${JENKINS_AGENT_PORT}"
-echo "in Manage Jenkins > Security > Agents > TCP port for inbound agents."
-echo "Also configure matching inbound rules in the EC2 Security Group."
-echo "============================================================"
 
 
 
