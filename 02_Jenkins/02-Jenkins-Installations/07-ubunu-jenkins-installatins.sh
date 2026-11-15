@@ -6,6 +6,7 @@ apt update -y
 apt upgrade -y
 apt install wget git -y
 apt install fontconfig openjdk-21-jre -y
+mkdir -p /etc/apt/keyrings
 sudo wget -O /etc/apt/keyrings/jenkins-keyring.asc \
   https://pkg.jenkins.io/debian-stable/jenkins.io-2026.key
 echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc]" \
@@ -13,10 +14,12 @@ echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc]" \
   /etc/apt/sources.list.d/jenkins.list > /dev/null
 apt update -y
 apt install -y jenkins
-systemctl start jenkins
-systemctl enable jenkins
-#chkconfig jenkins on
-systemctl status jenkins --no-pager
+echo "jenkins ALL=(root) NOPASSWD: /usr/bin/systemctl start jenkins, /usr/bin/systemctl stop jenkins, /usr/bin/systemctl restart jenkins, /usr/bin/systemctl status jenkins, /usr/bin/systemctl enable jenkins, /usr/bin/systemctl disable jenkins" > /etc/sudoers.d/jenkins-service
+chmod 440 /etc/sudoers.d/jenkins-service
+visudo -cf /etc/sudoers.d/jenkins-service
+sudo -u jenkins sudo /usr/bin/systemctl start jenkins
+sudo -u jenkins sudo /usr/bin/systemctl enable jenkins
+sudo -u jenkins sudo /usr/bin/systemctl status jenkins --no-pager
 
 
 --------------------------------------------------------------------------------------------------
