@@ -31,7 +31,8 @@ grep '/var/lib/jenkins' /etc/fstab
 
 
 # Verify Jenkins mount dependency
-cat /etc/systemd/system/jenkins.service.d/override.conf
+# cat /etc/systemd/system/jenkins.service.d/override.conf
+systemctl cat jenkins
 # expected output
 [Unit]
 RequiresMountsFor=/var/lib/jenkins
