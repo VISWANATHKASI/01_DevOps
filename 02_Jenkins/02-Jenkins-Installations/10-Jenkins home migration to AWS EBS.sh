@@ -44,11 +44,19 @@ sudo rsync -aHAXnci --dry-run \
 sudo du -sh /var/lib/jenkins
 # Expected : 2.1G    /var/lib/jenkins
 sudo du -sh /mnt/jenkins-ebs
-# Expected : 2.1G    /var/lib/jenkins
+# Expected : 2.1G    /mnt/jenkins-ebs
 
 # Flush data and unmount temporary location
 sudo sync
 sudo umount /mnt/jenkins-ebs
+
+# Confirm temporary EBS mount is removed:
+findmnt /mnt/jenkins-ebs
+# Expected: No output
+
+# Confirm original Jenkins directory exists:
+ls -ld /var/lib/jenkins
+# Expected: Jenkins directory exists
 
 # Backup original Jenkins directory
 sudo mv /var/lib/jenkins /var/lib/jenkins.backup
@@ -60,7 +68,7 @@ sudo mkdir -p /var/lib/jenkins
 sudo mount UUID=4dff3227-e926-4d4b-8d77-523e12fcd65a /var/lib/jenkins
 
 # Configure automatic mounting using fstab
-cp -a /etc/fstab /etc/fstab.backup 
+sudo cp -a /etc/fstab /etc/fstab.backup 
 grep -qxF "UUID=4dff3227-e926-4d4b-8d77-523e12fcd65a /var/lib/jenkins ext4 defaults,nofail 0 2" /etc/fstab || echo "UUID=4dff3227-e926-4d4b-8d77-523e12fcd65a /var/lib/jenkins ext4 defaults,nofail 0 2" >> /etc/fstab
 
 # Configure Jenkins startup dependency
