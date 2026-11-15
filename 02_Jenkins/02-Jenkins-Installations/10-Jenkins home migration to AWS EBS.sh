@@ -94,15 +94,6 @@ findmnt /var/lib/jenkins
 # Check available space:
 df -hT /var/lib/jenkins
 
-# Start Jenkins:
-sudo systemctl start jenkins
-
-# Check service:
-sudo systemctl status jenkins --no-pager -l
-
-# Check active state:
-systemctl is-active jenkins
-
 # Reboot the EC2 instance:
 sudo reboot
 
@@ -114,6 +105,15 @@ findmnt /var/lib/jenkins
 # Expected: EBS UUID, ext4 filesystem, and /var/lib/jenkins mount point.
 systemctl is-active jenkins
 # Expected: active
+
+# Start Jenkins:
+sudo systemctl start jenkins
+
+# Check service:
+sudo systemctl status jenkins --no-pager -l
+
+# Check active state:
+systemctl is-active jenkins
 
 # Remove backup after successful validation
 # sudo rm -rf /var/lib/jenkins.backup
