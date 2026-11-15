@@ -61,7 +61,7 @@ FORMAT_EBS="false"
 # ============================================================
 
 # Replace this placeholder with your actual EBS by-id path.
-EBS_DEVICE_ID="/dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_volXXXXXXXX"
+EBS_DEVICE_ID="/dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_vol085b9b1beb6857153"
 
 # Keep false for an existing volume.
 # Set true ONLY when you intentionally want to format a new,
