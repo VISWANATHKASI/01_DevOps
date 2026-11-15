@@ -31,6 +31,7 @@ sudo reboot
 #Run below again
 findmnt /var/lib/jenkins
 df -hT /var/lib/jenkins
+grep -v '^[[:space:]]*#' /etc/fstab
 systemctl is-active jenkins
 
 
