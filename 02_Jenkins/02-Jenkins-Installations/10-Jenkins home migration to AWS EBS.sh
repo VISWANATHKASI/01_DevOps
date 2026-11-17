@@ -29,6 +29,12 @@ findmnt /mnt/jenkins-ebs
 df -hT /mnt/jenkins-ebs
 # Expected example: /dev/nvme1n1   ext4   50G   2G    48G   5%  /mnt/jenkins-ebs
 
+# Compare directory sizes:
+sudo du -sh /var/lib/jenkins
+# Expected : 2.1G    /var/lib/jenkins
+sudo du -sh /mnt/jenkins-ebs
+# Expected : 20K    /mnt/jenkins-ebs
+
 # Copy Jenkins data to EBS
 sudo rsync -aHAX --numeric-ids \
   /var/lib/jenkins/ \
@@ -49,6 +55,12 @@ sudo du -sh /mnt/jenkins-ebs
 # Flush data and unmount temporary location
 sudo sync
 sudo umount /mnt/jenkins-ebs
+
+# Compare directory sizes:
+sudo du -sh /var/lib/jenkins
+# Expected : 2.1G    /var/lib/jenkins
+sudo du -sh /mnt/jenkins-ebs
+# Expected : 20K    /mnt/jenkins-ebs  --> it is original path in root, data still be in EBS.
 
 # Confirm temporary EBS mount is removed:
 findmnt /mnt/jenkins-ebs
