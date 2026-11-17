@@ -101,6 +101,9 @@ sudo systemctl edit jenkins
 [Unit]
 RequiresMountsFor=/var/lib/jenkins
 
+#verify the above added content
+sudo systemctl cat jenkins
+
 # Reload systemd:
 sudo systemctl daemon-reload
 
