@@ -76,8 +76,20 @@ sudo mv /var/lib/jenkins /var/lib/jenkins.backup
 # Create the permanent mount point:
 sudo mkdir -p /var/lib/jenkins
 
+#Compare directory sizes:
+sudo du -sh /var/lib/jenkins
+# Expected : 0B    /var/lib/jenkins
+
 # Mount EBS permanently at Jenkins home
 sudo mount UUID=4dff3227-e926-4d4b-8d77-523e12fcd65a /var/lib/jenkins
+
+# Confirm temporary EBS mount is removed:
+findmnt /var/lib/jenkins
+#Expected: /var/lib/jenkins /dev/nvme1n1 ext4   rw,relatime
+
+#Compare directory sizes:
+sudo du -sh /var/lib/jenkins
+# Expected : 2.1G    /var/lib/jenkins
 
 # Configure automatic mounting using fstab
 sudo cp -a /etc/fstab /etc/fstab.backup 
