@@ -16,6 +16,10 @@ sudo useradd -m -s /bin/bash viswa    --> -m --> creates /home/viswa directory
                                           -s --> sets bash as the user’s login shell
 
 
+# set password before enabling passwd authentication
+sudo passwd viswa
+
+
 # config ssh password authentication
 sudo vi /etc/ssh/sshd_config
 
@@ -23,12 +27,20 @@ sudo vi /etc/ssh/sshd_config
 PasswordAuthentication yes
 PubkeyAuthentication yes
 
+# Validate the configuration before restarting:
+sudo sshd -t
+# No output means the configuration passed validation.
+# An error means fix the configuration before restarting.
+
 # restart ssh 
 sudo systemctl restart sshd
 sudo systemctl status sshd
 
-# set password :
-sudo passwd viswa
+
+Note: to prevent accidentally locking yourself out.
+1. Don not disconnect your existing EC2 session. 
+2. Open another terminal and test password authentication. 
+3. Only close the original session after confirming the new connection works
 
 # connect to ec2 instance
 ssh viswa@54.210.100.25 # enter password then promoted
@@ -39,6 +51,8 @@ whoami
 # disconnect from the user
 exit   or   ctrl+D
 
+# Before deleting, check for running processes
+ps -u viswa
 
 #delete user
 userdel viswa   # --> it deletes user only, not user home directory
@@ -124,7 +138,7 @@ sudo touch /home/viswa/.ssh/authorized_keys
 ssh-keygen -t ed25519 -f viswa
 
 # get pub key in local
-cat id_ed25519.pub
+cat viswa.pub
 
 cd /home/viswa/.ssh
 # copy local machine pub key in ec2-instance
@@ -152,8 +166,11 @@ sudo chmod 755 /home/viswa
 sudo chmod 700 /home/viswa/.ssh
 sudo chmod 600 /home/viswa/.ssh/authorized_keys
 
+ls -ld /home/viswa /home/viswa/.ssh
+ls -l /home/viswa/.ssh/authorized_keys
+
 # connect to ec2 instance
-ssh -i viswa viswa@54.210.100.25 # enter password when promoted
+ssh -i viswa viswa@54.210.100.25 
 
 # verify user
 whoami
@@ -161,6 +178,9 @@ whoami
 # disconnect from the user
 exit   or   ctrl+D
 
+
+# Before deleting, check for running processes
+ps -u viswa
 
 #delete user
 userdel viswa   # --> it deletes user only, not user home directory
