@@ -1,8 +1,11 @@
+
+
 CONNECT TO AWS EC2 INSTANCE USING SSH
 =====================================
 SSH (Secure Shell) is a protocol used to securely connect to a remote Linux server over a network.
 
-#STEP 1: OPEN THE DOWNLOADS DIRECTORY
+
+#OPEN THE DOWNLOADS DIRECTORY
 cd Downloads
 
 
@@ -15,7 +18,7 @@ WHY DO WE USE chmod 400?
 -   0 = No execute permission
 
 
-SSH requires the private key to have restricted permissions. Otherwise,it may reject the key with an UNPROTECTED PRIVATE KEY FILE warning.
+# SSH requires the private key to have restricted permissions. Otherwise,it may reject the key with an UNPROTECTED PRIVATE KEY FILE warning.
 
 
 #Execute the following SSH command:
