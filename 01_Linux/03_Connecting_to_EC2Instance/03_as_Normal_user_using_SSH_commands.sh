@@ -1,7 +1,8 @@
 
 METHOD 1: CONNECT USING USERNAME AND PASSWORD
 =============================================
-SECURITY RECOMMENDATION: For AWS EC2 instances, SSH key authentication is the recommended and more secure method. Password authentication is generally disabled by default because it is more vulnerable to brute-force attacks.
+SECURITY RECOMMENDATION: For AWS EC2 instances, SSH key authentication is the recommended and more secure method. Password authentication is generally disabled by 
+default because it is more vulnerable to brute-force attacks.
 
 If you enable password authentication:
     1. Restrict SSH access in the EC2 Security Group to your own public IP address.
