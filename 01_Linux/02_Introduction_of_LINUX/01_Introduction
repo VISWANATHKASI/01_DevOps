@@ -1,6 +1,7 @@
 
 
 LINUX:
+======
      It is a free, open-source operating system kernel that serves as the foundation for many complete operating systems called Linux distributions (or distros).
 
 Linux was created in 1991 by Linus Torvalds.
@@ -8,12 +9,15 @@ Linux was created in 1991 by Linus Torvalds.
 
 
 THINK OF IT THIS WAY:
+---------------------
 1. Kernel: The core software that manages your computer’s hardware (CPU, memory, storage, and devices).
 2. Operating System: The kernel plus tools, libraries, desktop environments, and applications that make a usable system.
 
 
 
 POPULAR LINUX DISTRIBUTIONS:
+============================
+
 +----------------------+-----------------------------------------------------------------------------------------------+
 | LINUX DISTRIBUTION   | DESCRIPTION                                                                                   |
 +----------------------+-----------------------------------------------------------------------------------------------+
@@ -33,6 +37,8 @@ POPULAR LINUX DISTRIBUTIONS:
 
 
 WHY PEOPLE USE LINUX:
+=====================
+
 +------------------------+---------------------------------------------------------------------------------------------+
 | FEATURE                | DESCRIPTION                                                                                 |
 +------------------------+---------------------------------------------------------------------------------------------+
@@ -56,6 +62,8 @@ WHY PEOPLE USE LINUX:
 
 
 LINUX VS. WINDOWS VS. macOS
+===========================
+
 +----------------+------------------------------+------------------------------+--------------------------------------+
 | FEATURE        | LINUX                        | WINDOWS                      | macOS                                |
 +----------------+------------------------------+------------------------------+--------------------------------------+
@@ -86,6 +94,7 @@ LINUX VS. WINDOWS VS. macOS
 
 
 KEY TAKEAWAYS:
+==============
 1.  Linux is an open-source operating system kernel.
 2.  Linus Torvalds created Linux in 1991.
 3.  A Linux distribution combines the Linux kernel with other software to provide a complete operating system.
