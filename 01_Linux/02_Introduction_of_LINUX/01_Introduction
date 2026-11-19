@@ -5,6 +5,7 @@ Linux is a free, open-source operating system kernel that serves as the foundati
 Linux was created in 1991 by Linus Torvalds.
 
 THINK OF IT THIS WAY:
+--------------------
 1. Kernel: The core software that manages your computer’s hardware (CPU, memory, storage, and devices).
 2. Operating System: The kernel plus tools, libraries, desktop environments, and applications that make a usable system.
 
