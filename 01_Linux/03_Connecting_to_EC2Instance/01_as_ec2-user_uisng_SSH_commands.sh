@@ -1,99 +1,42 @@
 
 
-CONNECT TO AWS EC2 INSTANCE USING SSH
-=====================================
 SSH (Secure Shell) is a protocol used to securely connect to a remote Linux server over a network.
-
 
 #OPEN THE DOWNLOADS DIRECTORY
 cd Downloads
 
 
 #Set the private key file permissions to 400 so that only the file ownercan read it.
-chmod 400 chandra-nv.pem
-
-WHY DO WE USE chmod 400?
--   4 = Read permission
--   0 = No write permission
--   0 = No execute permission
-
-
-# SSH requires the private key to have restricted permissions. Otherwise,it may reject the key with an UNPROTECTED PRIVATE KEY FILE warning.
+chmod 400 chandra-nv.pem  # SSH requires the private key to have restricted permissions. Otherwise,it may reject the key with an UNPROTECTED PRIVATE KEY FILE warning.
 
 
 #Execute the following SSH command:
 ssh -i chandra-nv.pem ec2-user@98.81.155.74   #-->Establishes a secure SSH connection. Specifies the identity (private key) file. EC2 instance private key file. Default username for            
                                                       Amazon Linux EC2 instances. Public IP address of the EC2 instance. 
 
-
-NOTE:
-1. ec2-user is commonly used for Amazon Linux instances.
-2. Ubuntu EC2 instances generally use ubuntu as the username.
-3. Ensure the EC2 instance is running and its Security Group allows inbound SSH traffic on port 22 from your public IP address.
-4. The PEM file must correspond to the EC2 instance’s key pair.
+# disconnect from the ec2 instance
+exit or Ctrl + D #Both methods terminate the SSH session and return you to your localterminal.
 
 
 
-#2. DISCONNECT FROM THE EC2 INSTANCE
-#Once you finish working on the EC2 instance, you can disconnect using either of the following methods.
+COMMON SSH CONNECTION ERRORS:
+=============================
++----------------------------+------------------------------------------+--------------------------------------------------+
+| ERROR                      | POSSIBLE REASON                           | SOLUTION                                         |
++----------------------------+------------------------------------------+--------------------------------------------------+
+| Permission denied          | Incorrect PEM file or username.          | Verify the correct private key and EC2          |
+| (publickey)                |                                          | username (ec2-user, ubuntu, etc.).               |
++----------------------------+------------------------------------------+--------------------------------------------------+
+| UNPROTECTED PRIVATE KEY    | Private key permissions are too open.    | Run:                                             |
+| FILE                       |                                          | chmod 400 chandra-nv.pem                         |
++----------------------------+------------------------------------------+--------------------------------------------------+
+| Connection timed out       | Port 22 is blocked or incorrect          | Check Security Group inbound rules,             |
+|                            | public IP address.                       | Network ACLs, and EC2 public IP.                 |
++----------------------------+------------------------------------------+--------------------------------------------------+
+| Connection refused         | SSH service may not be running or        | Check whether the SSH service is running        |
+|                            | listening on port 22.                    | and listening on port 22.                        |
++----------------------------+------------------------------------------+--------------------------------------------------+
+| No such file or directory  | PEM file not found in the current       | Verify the PEM file location and filename.      |
+|                            | working directory.                       |                                                  |
++----------------------------+------------------------------------------+--------------------------------------------------+
 
-#METHOD 1: USING THE exit COMMAND
-exit
-
-#METHOD 2: USING THE KEYBOARD SHORTCUT
-Ctrl + D
-
-#Both methods terminate the SSH session and return you to your localterminal.
-
-
-
-
-#3. COMPLETE SSH CONNECTION WORKFLOW
-    # Navigate to Downloads
-    cd Downloads
-
-    # Set private key permissions
-    chmod 400 chandra-nv.pem
-
-    # Connect to EC2
-    ssh -i chandra-nv.pem ec2-user@98.81.155.74
-
-    # Disconnect from EC2
-    exit
-
-
-
-
-#4. COMMON SSH CONNECTION ERRORS
-
-  ---------------------- ---------------------- ---------------------- --
-  Error                  Possible Reason        Solution               
-
-  Permission denied      Incorrect PEM file or  Verify the key pair    
-  (publickey)            username               and EC2 username.      
-
-  UNPROTECTED PRIVATE    Private key                                   
-  KEY FILE               permissions are | Run                         
-                         chmod 400                                     
-                         chandra-nv.pem. | too                         
-                         open |                                        
-
-  Connection timed out   Port 22 blocked or     Check Security Group   
-                         incorrect IP           inbound rules, network 
-                                                ACLs, and public IP.   
-
-  Connection refused     SSH service may not be Check the SSH service  
-                         running or listening   on the EC2 instance.   
-
-  No such file or        PEM file not found in  Verify the file        
-  directory              the current directory  location and filename. 
-  ---------------------- ---------------------- ---------------------- --
-
-KEY TAKEAWAYS
-
-1.  SSH is used to connect securely to remote Linux servers.
-2.  A .pem file acts as a private key for authentication.
-3.  chmod 400 restricts access to the private key.
-4.  ssh -i specifies the private key used for authentication.
-5.  exit or Ctrl + D disconnects the SSH session.
-6.  AWS Security Groups must allow inbound SSH traffic on port 22.
