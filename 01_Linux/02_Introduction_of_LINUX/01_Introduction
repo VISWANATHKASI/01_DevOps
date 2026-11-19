@@ -1,0 +1,71 @@
+INTRODUCTION TO LINUX
+
+Linux is a free, open-source operating system kernel that serves as the
+foundation for many complete operating systems called Linux
+distributions (or distros).
+
+Linux was created in 1991 by Linus Torvalds.
+
+THINK OF IT THIS WAY
+
+-   Kernel: The core software that manages your computer’s hardware
+    (CPU, memory, storage, and devices).
+
+-   Operating System: The kernel plus tools, libraries, desktop
+    environments, and applications that make a usable system.
+
+POPULAR LINUX DISTRIBUTIONS
+
++-------------------+------------------------------------------------+---+
+| Linux             | Description                                    |   |
+| Distribution      |                                                |   |
++-------------------+------------------------------------------------+---+
+| Ubuntu Fedora     | Beginner-friendly and widely used. | Features  |   |
+|                   | newer software and is popular with |           |   |
+| Debian Arch Linux | developers. Known for stability. | Highly      |   |
+| Linux Mint        | customizable and suitable for advanced users.| |   |
+|                   | Designed to be easy for people switching from  |   |
+|                   | | Windows. |                                   |   |
++-------------------+------------------------------------------------+---+
+
+WHY PEOPLE USE LINUX
+
++----------------------+-----------------------------------------------+
+| Feature              | Description                                   |
++----------------------+-----------------------------------------------+
+| Free and Open Source | Anyone can inspect, modify, and distribute    |
+|                      | the | source code. Strong permissions and a   |
+| Secure               | large open-source | community help identify   |
+|                      | and fix issues. | Many servers run Linux      |
+| Stable               | because it can operate | reliably for long    |
+|                      | periods. You can choose different desktop     |
+| Customizable         | environments, | software, and system          |
+|                      | configurations. | It can run well on both     |
+| Efficient            | modern and older hardware.|                   |
++----------------------+-----------------------------------------------+
+
+LINUX VS. WINDOWS VS. macOS
+
++-----------+----------------+----------------+----------------------+
+| Feature   | Linux          | Windows        | macOS                |
++-----------+----------------+----------------+----------------------+
+| Cost      | Usually free   | Paid license   | Included with Apple  |
+| Source    | Open source    | Proprietary    | hardware Mostly      |
+| Code      | Very high Huge | Moderate       | proprietary Limited  |
+| Cust      | open-source    | Excellent      | Strong creative and  |
+| omization | ecosystem      | commercial     | productivity apps    |
+| Software  | Improving      | software Best  | Limited compared to  |
+|           | rapidly        | overall        | Windows              |
+| Gaming    |                | support        |                      |
++-----------+----------------+----------------+----------------------+
+
+KEY TAKEAWAYS
+
+1.  Linux is an open-source operating system kernel.
+2.  Linus Torvalds created Linux in 1991.
+3.  A Linux distribution combines the Linux kernel with other software
+    to provide a complete operating system.
+4.  Ubuntu, Fedora, Debian, Arch Linux, and Linux Mint are popular Linux
+    distributions.
+5.  Linux is widely used in servers, cloud computing, DevOps, and
+    embedded systems.
