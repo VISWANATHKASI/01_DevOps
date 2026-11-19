@@ -1,32 +1,30 @@
-# Operating System (OS)
+Operating System (OS)
+=====================
+An Operating System (OS) is system software that acts as an intermediary between the user, applications, and computer hardware.
 
-An **Operating System (OS)** is system software that acts as an intermediary between the user, applications, and computer hardware.
-
-## Example
-
+Example
+=======
 When you open a browser like Chrome:
 
 1. You click the Chrome icon.
 2. The Operating System loads Chrome into memory (RAM).
 3. It allocates CPU time and RAM.
-4. It allows Chrome to access:
-   - Files
-   - Internet
-   - Keyboard
-   - Mouse
-   - Display
+4. It allows Chrome to access: Files, Internet, Keyboard, Mouse, Display
 5. When you close Chrome, the OS frees the resources used by Chrome.
 
-**Without an Operating System, your computer cannot run applications.**
+Note: Without an Operating System, your computer cannot run applications.**
 
----
 
-## Types of Operating Systems
 
-| Type | Examples |
-|---|---|
-| Desktop OS | Windows, Linux, macOS |
-| Mobile OS | Android, iOS |
-| Server OS | Ubuntu Server, Red Hat Enterprise Linux (RHEL), Windows Server |
-| Real-Time OS | VxWorks, QNX |
-| Embedded OS | FreeRTOS |
+Types of Operating Systems
+==========================
++----------------+------------------------------------------------------+
+| Type           | Examples                                             |
++----------------+------------------------------------------------------+
+| Desktop OS     | Windows, Linux, macOS                                |
+| Mobile OS      | Android, iOS                                         |
+| Server OS      | Ubuntu Server, Red Hat Enterprise Linux (RHEL),      |
+|                | Windows Server                                       |
+| Real-Time OS   | VxWorks, QNX                                         |
+| Embedded OS    | FreeRTOS                                              |
++----------------+------------------------------------------------------+
