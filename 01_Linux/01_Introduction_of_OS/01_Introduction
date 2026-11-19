@@ -1,9 +1,11 @@
 
 Operating System (OS):
+======================
 An Operating System (OS) is system software that acts as an intermediary between the user, applications, and computer hardware.
 
 
 Example:
+-------
 When you open a browser like Chrome:
 
 1. You click the Chrome icon.
@@ -19,6 +21,8 @@ Note: Without an Operating System, your computer cannot run applications.**
 
 
 Types of Operating Systems:
+===========================
+
 +----------------+------------------------------------------------------+
 | Type           | Examples                                             |
 +----------------+------------------------------------------------------+
