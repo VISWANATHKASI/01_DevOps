@@ -6,6 +6,7 @@ LINUX:
 Linux was created in 1991 by Linus Torvalds.
 
 
+
 THINK OF IT THIS WAY:
 1. Kernel: The core software that manages your computer’s hardware (CPU, memory, storage, and devices).
 2. Operating System: The kernel plus tools, libraries, desktop environments, and applications that make a usable system.
@@ -13,50 +14,73 @@ THINK OF IT THIS WAY:
 
 
 POPULAR LINUX DISTRIBUTIONS:
-+-------------------+------------------------------------------------+---+
-| Linux             | Description                                    |   |
-| Distribution      |                                                |   |
-+-------------------+------------------------------------------------+---+
-| Ubuntu Fedora     | Beginner-friendly and widely used. | Features  |   |
-|                   | newer software and is popular with |           |   |
-| Debian Arch Linux | developers. Known for stability. | Highly      |   |
-| Linux Mint        | customizable and suitable for advanced users.| |   |
-|                   | Designed to be easy for people switching from  |   |
-|                   | | Windows. |                                   |   |
-+-------------------+------------------------------------------------+---+
++----------------------+-----------------------------------------------------------------------------------------------+
+| LINUX DISTRIBUTION   | DESCRIPTION                                                                                   |
++----------------------+-----------------------------------------------------------------------------------------------+
+| Ubuntu               | Beginner-friendly Linux distribution. Widely used for desktop computers, servers, and cloud   |
+|                      | environments.                                                                                |
++----------------------+-----------------------------------------------------------------------------------------------+
+| Fedora               | Features newer software and technologies. Popular among developers and Linux enthusiasts.    |
++----------------------+-----------------------------------------------------------------------------------------------+
+| Debian               | Known for stability, reliability, and security. Commonly used in server environments.        |
++----------------------+-----------------------------------------------------------------------------------------------+
+| Arch Linux           | Highly customizable Linux distribution, suitable for advanced users who want complete        |
+|                      | control over their operating system.                                                         |
++----------------------+-----------------------------------------------------------------------------------------------+
+| Linux Mint           | Designed to be easy to use, especially for people switching from Windows.                    |
++----------------------+-----------------------------------------------------------------------------------------------+
 
 
 
 WHY PEOPLE USE LINUX:
-+----------------------+-----------------------------------------------+
-| Feature              | Description                                   |
-+----------------------+-----------------------------------------------+
-| Free and Open Source | Anyone can inspect, modify, and distribute    |
-|                      | the | source code. Strong permissions and a   |
-| Secure               | large open-source | community help identify   |
-|                      | and fix issues. | Many servers run Linux      |
-| Stable               | because it can operate | reliably for long    |
-|                      | periods. You can choose different desktop     |
-| Customizable         | environments, | software, and system          |
-|                      | configurations. | It can run well on both     |
-| Efficient            | modern and older hardware.|                   |
-+----------------------+-----------------------------------------------+
++------------------------+---------------------------------------------------------------------------------------------+
+| FEATURE                | DESCRIPTION                                                                                 |
++------------------------+---------------------------------------------------------------------------------------------+
+| Free and Open Source   | Anyone can inspect, modify, and distribute the Linux source code. Users can customize     |
+|                        | Linux according to their requirements without paying licensing fees for the core OS.       |
++------------------------+---------------------------------------------------------------------------------------------+
+| Secure                 | Strong file permissions, user authentication, security updates, and a large open-source    |
+|                        | community help identify and fix security issues.                                            |
++------------------------+---------------------------------------------------------------------------------------------+
+| Stable                 | Many servers run Linux because it can operate reliably for long periods with minimal      |
+|                        | downtime when properly maintained.                                                         |
++------------------------+---------------------------------------------------------------------------------------------+
+| Customizable           | Users can choose different desktop environments, software packages, system settings,      |
+|                        | and configurations according to their requirements.                                        |
++------------------------+---------------------------------------------------------------------------------------------+
+| Efficient              | Linux can run efficiently on both modern and older hardware. It offers flexibility in      |
+|                        | resource usage, making it suitable for desktops, servers, and cloud environments.          |
++------------------------+---------------------------------------------------------------------------------------------+
+
 
 
 
 LINUX VS. WINDOWS VS. macOS
-+-----------+----------------+----------------+----------------------+
-| Feature   | Linux          | Windows        | macOS                |
-+-----------+----------------+----------------+----------------------+
-| Cost      | Usually free   | Paid license   | Included with Apple  |
-| Source    | Open source    | Proprietary    | hardware Mostly      |
-| Code      | Very high Huge | Moderate       | proprietary Limited  |
-| Cust      | open-source    | Excellent      | Strong creative and  |
-| omization | ecosystem      | commercial     | productivity apps    |
-| Software  | Improving      | software Best  | Limited compared to  |
-|           | rapidly        | overall        | Windows              |
-| Gaming    |                | support        |                      |
-+-----------+----------------+----------------+----------------------+
++----------------+------------------------------+------------------------------+--------------------------------------+
+| FEATURE        | LINUX                        | WINDOWS                      | macOS                                |
++----------------+------------------------------+------------------------------+--------------------------------------+
+| Cost           | Usually free. Most Linux     | Requires a paid license      | Included with Apple hardware.        |
+|                | distributions are free to use.| for commercial editions.     |                                      |
++----------------+------------------------------+------------------------------+--------------------------------------+
+| Source Code    | Open source. Users can       | Proprietary. Source code     | Mostly proprietary. Source code      |
+|                | inspect and modify the code. | is controlled by Microsoft.  | is controlled by Apple.              |
++----------------+------------------------------+------------------------------+--------------------------------------+
+| Security       | Very high security potential.| Moderate to high security.   | Strong security with built-in        |
+|                | Strong permissions and       | Requires regular updates    | security features and regular       |
+|                | community support.           | and protection.              | updates.                             |
++----------------+------------------------------+------------------------------+--------------------------------------+
+| Customization  | Highly customizable.         | Moderate customization.     | Limited customization compared      |
+|                | Supports different desktop   | Supports themes, settings,  | with Linux and Windows.             |
+|                | environments and tools.      | and system configurations.  |                                      |
++----------------+------------------------------+------------------------------+--------------------------------------+
+| Software       | Large open-source ecosystem. | Excellent commercial        | Strong creative and productivity    |
+|                | Software availability is     | software support.            | applications.                       |
+|                | improving rapidly.           |                              |                                      |
++----------------+------------------------------+------------------------------+--------------------------------------+
+| Gaming         | Improving gaming support.    | Best overall gaming support.| Good gaming support, but a more     |
+|                | Supports Steam and Proton.   | Supports a wide range of    | limited game library.               |
+|                |                              | games.                       |                                      |
++----------------+------------------------------+------------------------------+--------------------------------------+
 
 
 
