@@ -2,13 +2,12 @@
 
 SSH (Secure Shell) is a protocol used to securely connect to a remote Linux server over a network.
 
+
 #OPEN THE DOWNLOADS DIRECTORY
 cd Downloads
 
-
 #Set the private key file permissions to 400 so that only the file ownercan read it.
 chmod 400 chandra-nv.pem  # SSH requires the private key to have restricted permissions. Otherwise,it may reject the key with an UNPROTECTED PRIVATE KEY FILE warning.
-
 
 #Execute the following SSH command:
 ssh -i chandra-nv.pem ec2-user@98.81.155.74   #-->Establishes a secure SSH connection. Specifies the identity (private key) file. EC2 instance private key file. Default username for Amazon Linux EC2 instances. Public IP address of the EC2 instance. 
@@ -19,7 +18,6 @@ exit or Ctrl + D #Both methods terminate the SSH session and return you to your 
 
 
 COMMON SSH CONNECTION ERRORS:
-=============================
 +----------------------------+------------------------------------------+--------------------------------------------------+
 | ERROR                      | POSSIBLE REASON                           | SOLUTION                                         |
 +----------------------------+------------------------------------------+--------------------------------------------------+
