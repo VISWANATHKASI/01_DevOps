@@ -31,17 +31,25 @@ ALL: Can execute any command.
 
 
 
-S.No	Sudoers Entry	Meaning
-1	viswa ALL=(ALL) ALL	User viswa can run any command as any user.
-2	viswa ALL=(root) ALL	User viswa can run any command as root.
-3	viswa ALL=(ALL) /usr/bin/systemctl	User viswa can run only systemctl as any user.
-4	viswa ALL=(root) /usr/bin/systemctl	User viswa can run systemctl as root.
-5	viswa ALL=(root) /usr/bin/systemctl restart nginx	User viswa can restart nginx only.
-6	viswa ALL=(root) /usr/bin/systemctl restart nginx, /usr/bin/systemctl status nginx	User viswa can restart nginx and check its status only.
-7	viswa ALL=(root) /usr/bin/journalctl	User viswa can run journalctl as root.
-8	viswa ALL=(root) /usr/bin/tail /var/log/messages	User viswa can use tail on /var/log/messages only.
-9	%developers ALL=(ALL) ALL	All users in the developers group get full sudo access.
-10	%developers ALL=(root) /usr/bin/systemctl	Users in the developers group can run systemctl as root.
+viswa ALL=(ALL) ALL	User                                                                   -->  viswa can run any command as any user.
+viswa ALL=(root) ALL	                                                                   -->  User viswa can run any command as root.
+viswa ALL=(ALL) /usr/bin/systemctl	                                                       -->  User viswa can run only systemctl as any user.
+viswa ALL=(root) /usr/bin/systemctl	                                                       -->  User viswa can run systemctl as root.
+viswa ALL=(root) /usr/bin/systemctl restart nginx	                                       --> User viswa can restart nginx only.
+viswa ALL=(root) /usr/bin/systemctl restart nginx, /usr/bin/systemctl status nginx	       --> User viswa can restart nginx and check its status only.
+viswa ALL=(root) /usr/bin/journalctl	                                                   --> User viswa can run journalctl as root.
+viswa ALL=(root) /usr/bin/tail /var/log/messages	                                       --> User viswa can use tail on /var/log/messages only.
+%developers ALL=(ALL) ALL	                                                               --> All users in the developers group get full sudo access.
+%developers ALL=(root) /usr/bin/systemctl	                                               --> Users in the developers group can run systemctl as root.
+viswa server1=(root) /usr/bin/systemctl restart nginx                                      --> User viswa can restart nginx in server1
+viswa server1,server2=(ALL) /usr/bin/tail /var/log/messages                                --> User viswa can use tail on /var/log/messages only in server1 and server2
+viswa 123.45.67.8=(root) /usr/bin/systemctl restart nginx                                  --> User viswa can restart nginx in 123.45.67.8
+viswa 123.45.67.8,123.45.67.9=(ALL) /usr/bin/tail /var/log/messages                        --> User viswa can use tail on /var/log/messages only in 123.45.67.8 and 123.45.67.9
+%developers server1=(root) /usr/bin/systemctl restart nginx                                --> All users in the developers group can restart nginx in server1
+%developers server1,server2=(ALL) /usr/bin/tail /var/log/messages                          --> All users in the developers group can use tail on /var/log/messages only in server1 and server2
+%developers 123.45.67.8=(root) /usr/bin/systemctl restart nginx                            --> All users in the developers group can restart nginx in 123.45.67.8
+%developers 123.45.67.8,123.45.67.9=(ALL) /usr/bin/tail /var/log/messages                  --> All users in the developers group can use tail on /var/log/messages only in 123.45.67.8 and 123.45.67.9
+
 
 
 Note: Command restrictions depend on the exact command and argument matching supported by sudoers. Allowing a command such as systemctl without restricting its arguments can provide broader privileges than intended.
