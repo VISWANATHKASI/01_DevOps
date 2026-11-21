@@ -15,6 +15,39 @@ THINK OF IT THIS WAY:
 
 
 
+LINUX ARCHITECTURE:
+===================
+
+Linux architecture consists of four main components:
+
+1. Hardware:
+   Physical components such as CPU, RAM, hard disk, and network devices.
+
+2. Kernel:
+   The core of Linux. It manages hardware, memory, processes, and devices.
+
+3. Shell:
+   An interface that allows users to communicate with the operating system
+   using commands.
+
+4. Utilities and Applications:
+   Programs and tools used to perform different tasks.
+
+Example:
+--------
+When you execute the command:
+
+ls
+
+1. You enter the command in the Shell.
+2. The Shell executes the command.
+3. The Linux system provides the required file information.
+4. The output is displayed on your terminal.
+
+
+
+
+
 POPULAR LINUX DISTRIBUTIONS:
 ============================
 
