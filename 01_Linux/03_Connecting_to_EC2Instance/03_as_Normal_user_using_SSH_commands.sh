@@ -51,7 +51,12 @@ sshd -T -C user=viswa,host=localhost,addr=203.0.113.10 --> user=viswa – We are
                                                            addr=203.0.113.10 – We are supplying the client IP address for matching purposes.
                                                            Replace 203.0.113.10 with your actual Windows machine public IP address.
 
-                                                           
+# execute below command in windows (localmachine) for host
+hostname
+# execute below command in windows power shell for addr
+(Invoke-RestMethod https://api.ipify.org)
+
+
 
 # Validate the configuration before restarting:
 sshd -t
