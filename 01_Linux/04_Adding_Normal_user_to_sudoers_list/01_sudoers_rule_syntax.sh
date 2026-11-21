@@ -121,11 +121,13 @@ sudo -l
 sudo whoami
 # Expected output: root  --> This confirms that viswa can execute the command with root privileges.
 
-
 # Recommended Approach: Create a Separate Sudoers File
 
-8. Important Sudoers Commands
 
+
+
+Important Sudoers Commands
+==========================
 -   sudo visudo Description: Safely edit the main sudoers file.
 -   sudo visudo -f /etc/sudoers.d/viswa Description: Edit a separate
     sudoers configuration file.
