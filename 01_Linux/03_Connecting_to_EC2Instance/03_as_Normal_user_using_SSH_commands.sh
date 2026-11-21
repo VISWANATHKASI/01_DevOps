@@ -166,7 +166,7 @@ sudo chown ec2-user:ec2-user /home/ec2-user/id_ed25519
 sudo chmod 600 /home/ec2-user/id_ed25519
 
 # to download to local
-scp -i chandra.mum.pem ec2-user@123.45.67.5:/home/ec2-user/id_ed25519 ./
+scp -i chandra-mum.pem ec2-user@123.45.67.5:/home/ec2-user/id_ed25519 ./
 
 # change permissions to downloaded file in local
 chmod 600 id_ed25519
