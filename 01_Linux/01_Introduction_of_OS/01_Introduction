@@ -27,7 +27,7 @@ Responsibility	           Purpose
 Process Management	       Manages running applications and processes.
 Memory Management	       Allocates and manages RAM.
 File Management	           Creates, stores, reads, and deletes files.
-Device Management	         Manages hardware devices such as keyboards, disks, and printers.
+Device Management	       Manages hardware devices such as keyboards, disks, and printers.
 Security Management	       Controls user permissions and access to system resources.
 
 
