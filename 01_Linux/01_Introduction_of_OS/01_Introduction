@@ -23,6 +23,7 @@ Note: Without an Operating System, your computer cannot run applications.**
 An Operating System performs the following important tasks:
 ===========================================================
 Responsibility	           Purpose
+--------------             -------
 Process Management	       Manages running applications and processes.
 Memory Management	         Allocates and manages RAM.
 File Management	           Creates, stores, reads, and deletes files.
