@@ -27,8 +27,7 @@ Linux architecture consists of four main components:
    The core of Linux. It manages hardware, memory, processes, and devices.
 
 3. Shell:
-   An interface that allows users to communicate with the operating system
-   using commands.
+   An interface that allows users to communicate with the operating system using commands.
 
 4. System Libraries, Utilities and Applications
    Programs and tools used to perform different tasks.
