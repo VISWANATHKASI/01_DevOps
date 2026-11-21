@@ -44,9 +44,8 @@ S.No	Sudoers Entry	Meaning
 10	%developers ALL=(root) /usr/bin/systemctl	Users in the developers group can run systemctl as root.
 
 
-
-
 Note: Command restrictions depend on the exact command and argument matching supported by sudoers. Allowing a command such as systemctl without restricting its arguments can provide broader privileges than intended.
+
 
 
 NOPASSWD: Execute Commands Without a Password
