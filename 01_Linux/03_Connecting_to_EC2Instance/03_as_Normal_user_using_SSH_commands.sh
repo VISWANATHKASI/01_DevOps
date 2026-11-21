@@ -43,10 +43,10 @@ PubkeyAuthentication yes
 # Check SSH configuration for duplicate settings
 grep -nE '^(Include|PasswordAuthentication|PubkeyAuthentication|KbdInteractiveAuthentication|AuthenticationMethods)' /etc/ssh/sshd_config
 
-sshd -T -C user=viswa,host=localhost,addr=203.0.113.10 | grep -E 'passwordauthentication|pubkeyauthentication|kbdinteractiveauthentication'
+sshd -T -C user=viswa,host=DESKTOP-DC1KR2F,addr=205.254.168.201 | grep -E 'passwordauthentication|pubkeyauthentication|kbdinteractiveauthentication'
 
 sshd -T  --> Displays the effective SSH server configuration. Does not start or restart the SSH service. Does not modify the configuration.
-sshd -T -C user=viswa,host=localhost,addr=203.0.113.10 --> user=viswa – We are checking configuration for user viswa.
+sshd -T -C user=viswa,host=DESKTOP-DC1KR2F,addr=205.254.168.201 --> user=viswa – We are checking configuration for user viswa.
                                                            host=localhost – We are supplying localhost as the client hostname.
                                                            addr=203.0.113.10 – We are supplying the client IP address for matching purposes.
                                                            Replace 203.0.113.10 with your actual Windows machine public IP address.
