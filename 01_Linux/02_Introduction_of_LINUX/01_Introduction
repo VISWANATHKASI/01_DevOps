@@ -10,8 +10,8 @@ Linux was created in 1991 by Linus Torvalds.
 
 THINK OF IT THIS WAY:
 ---------------------
-1. Kernel: The core software that manages your computer’s hardware (CPU, memory, storage, and devices).
-2. Operating System: The kernel plus tools, libraries, desktop environments, and applications that make a usable system.
+1. Kernel: The kernel is the core component of an Operating System. It manages CPU, memory, processes, and hardware resources.
+2. Operating System: An Operating System is the complete system software that includes the kernel and other system utilities and components.
 
 
 
