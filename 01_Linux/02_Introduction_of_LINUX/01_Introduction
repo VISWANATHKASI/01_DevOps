@@ -30,8 +30,9 @@ Linux architecture consists of four main components:
    An interface that allows users to communicate with the operating system
    using commands.
 
-4. Utilities and Applications:
+4. System Libraries, Utilities and Applications
    Programs and tools used to perform different tasks.
+
 
 Example:
 --------
@@ -43,6 +44,29 @@ ls
 2. The Shell executes the command.
 3. The Linux system provides the required file information.
 4. The output is displayed on your terminal.
+
+
+
+
+WHAT IS A SHELL?
+================
+
+A Shell is a command-line interface that allows users to
+interact with the Linux operating system.
+
+Popular Linux shells:
+
+1. Bash (Bourne Again Shell)
+2. Zsh (Z Shell)
+3. Fish (Friendly Interactive Shell)
+
+Example:
+--------
+bash
+
+When you execute Linux commands in a terminal,
+Bash interprets and executes those commands.
+
 
 
 
