@@ -19,6 +19,8 @@ chmod 400 chandra-nv.pem
 ssh -o PreferredAuthentications=publickey -o PasswordAuthentication=no -p 22 -v -i chandra-nv.pem ec2-user@98.81.155.74   #-->Establishes a secure SSH connection. Specifies the identity (private key) file. EC2 instance private key file. Default username for Amazon Linux EC2 instances. Public IP address of the EC2 instance. 
 
 ssh	            -->  Starts an SSH connection.
+-o PreferredAuthentications=publickey	  --> Prefer public-key authentication option
+-o PasswordAuthentication=no            --> Disable password authentication option
 -p 22           -->  to use port 22 specifically
 -v              --> Enables verbose mode to display detailed connection information for troubleshooting.
 -i	            -->  Specifies the private key file.
