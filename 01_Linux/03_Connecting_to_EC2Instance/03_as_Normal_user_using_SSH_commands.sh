@@ -91,8 +91,21 @@ Note: to prevent accidentally locking yourself out.
 # connect to ec2 instance
 ssh viswa@54.210.100.25 # enter password then promoted
 
+
 # verify user
 whoami
+
+
+# Check SSH authentication logs
+sudo journalctl -u sshd -f
+
+These logs help identify SSH login failures, such as:
+Permission denied.
+Invalid user.
+Authentication failure.
+Incorrect permissions on .ssh or authorized_keys.
+
+
 
 # disconnect from the user
 exit   or   ctrl+D
@@ -202,11 +215,7 @@ ssh -o PreferredAuthentications=publickey -o PasswordAuthentication=no -v -i id_
 
 
 # Check SSH authentication logs
-# For Amazon Linux:
-sudo tail -f /var/log/secure
-
-# For Ubuntu:
-sudo tail -f /var/log/auth.log
+sudo journalctl -u sshd -f
 
 These logs help identify SSH login failures, such as:
 Permission denied.
@@ -306,11 +315,7 @@ exit   or   ctrl+D
 
 
 # Check SSH authentication logs
-# For Amazon Linux:
-sudo tail -f /var/log/secure
-
-# For Ubuntu:
-sudo tail -f /var/log/auth.log
+sudo journalctl -u sshd -f
 
 These logs help identify SSH login failures, such as:
 Permission denied.
