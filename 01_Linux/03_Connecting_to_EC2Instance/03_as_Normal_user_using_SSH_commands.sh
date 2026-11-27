@@ -42,14 +42,15 @@ PubkeyAuthentication yes
 
 # Check SSH configuration for duplicate settings
 grep -nE '^(Include|PasswordAuthentication|PubkeyAuthentication|KbdInteractiveAuthentication|AuthenticationMethods)' /etc/ssh/sshd_config
+grep -RniE '^(Include|PasswordAuthentication|PubkeyAuthentication|KbdInteractiveAuthentication|AuthenticationMethods)' /etc/ssh/sshd_config /etc/ssh/sshd_config.d/
 
 sshd -T -C user=viswa,host=DESKTOP-DC1KR2F,addr=205.254.168.201 | grep -E 'passwordauthentication|pubkeyauthentication|kbdinteractiveauthentication'
 
 sshd -T  --> Displays the effective SSH server configuration. Does not start or restart the SSH service. Does not modify the configuration.
-sshd -T -C user=viswa,host=DESKTOP-DC1KR2F,addr=205.254.168.201 --> user=viswa – We are checking configuration for user viswa.
-                                                           host=localhost – We are supplying localhost as the client hostname.
-                                                           addr=203.0.113.10 – We are supplying the client IP address for matching purposes.
-                                                           Replace 203.0.113.10 with your actual Windows machine public IP address.
+sshd -T -C user=viswa,host=DESKTOP-DC1KR2F,addr=205.254.168.201 --> user=viswa – Remote Linux username being checked.
+                                                                    host=DESKTOP-DC1KR2F – Client machine hostname used for matching SSH configuration.
+                                                                    addr=205.254.168.201 – Client IP address used for matching SSH configuration
+                                                                    Replace 205.254.168.201 with your actual Windows machine public IP address.
 
 # execute below command in windows (localmachine) for host
 hostname
@@ -58,14 +59,23 @@ hostname
 
 
 
-# Validate the configuration before restarting:
+# Validate SSH configuration before reloading
 sshd -t
 # No output means the configuration passed validation.
 # An error means fix the configuration before restarting.
 
+# Check whether SSH password authentication is actually enabled
+sudo sshd -T | grep -i passwordauthentication
+# Expected output: passwordauthentication yes
 
-# restart ssh 
-systemctl restart sshd
+
+# Check SSH service status
+systemctl status sshd
+
+
+# Reload SSH configuration without terminating existing connections
+systemctl reload sshd
+# systemctl restart sshd
 systemctl status sshd
 
 # Check SSH listening port
@@ -88,6 +98,12 @@ exit   or   ctrl+D
 
 # Before deleting, check for running processes
 ps -u viswa
+
+# Find files owned by the user
+find / -user viswa -ls 2>/dev/null  --> -user viswa  --> Finds files owned by user viswa.
+                                        -ls          --> Displays detailed file information.
+                                        2>/dev/null  --> Redirects error messages to /dev/null.
+
 
 # Delete user but keep home directory
 userdel viswa   # --> it deletes user only, not user home directory
@@ -125,7 +141,10 @@ chmod 700 /home/viswa/.ssh
 cd /home/viswa/.ssh
 
 # create ssh keys in /home/viswa
-ssh-keygen -t ed25519
+ssh-keygen -t ed25519     -->  id_ed25519      = Private key (must remain secret).
+                               id_ed25519.pub  = Public key (can be shared).
+                               authorized_keys = Contains public keys allowed to connect.
+
 
 touch authorized_keys
 
@@ -180,6 +199,19 @@ sudo ss -tlnp | grep ssh
 #connect to ec2-instance
 ssh -o PreferredAuthentications=publickey -o PasswordAuthentication=no -v -i id_ed25519 viswa@54.210.100.25
 
+
+# Check SSH authentication logs
+# For Amazon Linux:
+sudo tail -f /var/log/secure
+
+# For Ubuntu:
+sudo tail -f /var/log/auth.log
+
+These logs help identify SSH login failures, such as:
+Permission denied.
+Invalid user.
+Authentication failure.
+Incorrect permissions on .ssh or authorized_keys.
 
 
                  or
@@ -272,8 +304,28 @@ whoami
 exit   or   ctrl+D
 
 
+# Check SSH authentication logs
+# For Amazon Linux:
+sudo tail -f /var/log/secure
+
+# For Ubuntu:
+sudo tail -f /var/log/auth.log
+
+These logs help identify SSH login failures, such as:
+Permission denied.
+Invalid user.
+Authentication failure.
+Incorrect permissions on .ssh or authorized_keys.
+
+
+
 # Before deleting, check for running processes
 ps -u viswa
+
+# Find files owned by the user
+find / -user viswa -ls 2>/dev/null  --> -user viswa  --> Finds files owned by user viswa.
+                                        -ls          --> Displays detailed file information.
+                                        2>/dev/null  --> Redirects error messages to /dev/null.
 
 # Delete user but keep home directory
 userdel viswa   # --> it deletes user only, not user home directory
