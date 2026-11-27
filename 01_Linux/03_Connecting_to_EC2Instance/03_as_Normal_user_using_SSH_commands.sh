@@ -44,6 +44,7 @@ PubkeyAuthentication yes
 grep -nE '^(Include|PasswordAuthentication|PubkeyAuthentication|KbdInteractiveAuthentication|AuthenticationMethods)' /etc/ssh/sshd_config
 grep -RniE '^(Include|PasswordAuthentication|PubkeyAuthentication|KbdInteractiveAuthentication|AuthenticationMethods)' /etc/ssh/sshd_config /etc/ssh/sshd_config.d/
 
+# check the actual SSH authentication settings that apply to the user
 sshd -T -C user=viswa,host=DESKTOP-DC1KR2F,addr=205.254.168.201 | grep -E 'passwordauthentication|pubkeyauthentication|kbdinteractiveauthentication'
 
 sshd -T  --> Displays the effective SSH server configuration. Does not start or restart the SSH service. Does not modify the configuration.
